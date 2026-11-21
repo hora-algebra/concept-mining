@@ -264,8 +264,9 @@ def main() -> None:
         r = subprocess.run([lake, "exe", "cache", "get"], cwd=up, capture_output=True, text=True, timeout=3600)
         open(os.path.join(out, "cache.log"), "w").write((r.stdout + r.stderr)[-20000:])
         ro = [p for p in (os.path.join(up, ".lake", "packages"), os.path.join(up, ".git")) if os.path.exists(p)]
-        hidden = [common.ROOT, out, os.path.expanduser("~/work") if os.path.isdir(os.path.expanduser("~/work")) else ""]
-        sandbox.self_test(cwd=up, rw=[up], ro=ro, hidden=[p for p in hidden if p], elan_home=elan)
+        # the trusted checkout (scripts, baselines) and the gate's output must
+        # not exist inside the sandbox; parents of the bind mounts do exist, empty
+        sandbox.self_test(cwd=up, rw=[up], ro=ro, hidden=[common.ROOT, out], elan_home=elan)
 
         def build(label):
             mods = modules(up, target)
