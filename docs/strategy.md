@@ -114,7 +114,34 @@ finally applied to (about 40 use sites read):
 | Goldschmidt | 32,529 | yes: O'Nan's analysis | Goldschmidt 1975's own counterexample |
 
 A theorem's price is freed only when **all** its uses go away, so none of these
-subtrees can be dropped this way. The catalog of facts about the known groups
+subtrees can be dropped this way.
+
+### One candidate survives: the classical involution theorem for q = 3
+
+The same check on the 19 other shared theorems of price at least 50,000 lines
+(Aschbacher's uniqueness case, weak closure, quasithin amalgams, the signalizer
+functor theorem, ...) found them applied to the simple group of their branch,
+or already built on facts about known groups, with one exception. The four
+pieces of Aschbacher's classical involution theorem for q = 3
+(`Q3Residuals₁₄.largeJ` 166,090, `Sec13.dLeafEnd_three` 72,191,
+`TwinPerp.twinPerp233E_proved` 64,721, `twinPerpV3E_proved` 51,304; together
+354,306 lines, 1.0 %) are applied only to groups smaller than G:
+
+- in the component branch the theorem meets a component J, which is
+  quasisimple, so J/O(J) is SL₂(q) with q ≥ 5 or 2A₇ and the case q = 3 does
+  not arise;
+- inside the classical involution theorem, `CIT3Below` is an induction
+  hypothesis on smaller groups (`Q3JITyped9.lean`, `MilestoneAssemblyWired14.lean`);
+- the other consumer, `QuaternionInspectionLie`, is stated under `KProper`.
+
+So `KProper` could take over every use. What it would need is one fact about
+the known groups that the library does not seem to have: a K-group generated
+by a class of such subgroups is, modulo its odd core, of Lie type over F₃. Its
+size is not known; it needs centralizers of involutions in the known groups.
+Not traced: whether one solvable branch (`partOne_of_l2PrimeBalance`) applies
+the theorem to G itself. The milestone for the quaternion component already
+takes `KProper` as an argument and does not use it. This is the best
+concept-level candidate found tonight; it needs the full build. The catalog of facts about the known groups
 would still help: several intermediate statements (`GH74ModelsInput`,
 `gorensteinWalterStatement`, `theorem_SE`, ...) are quantified over all groups
 without a K-group hypothesis, and the uses on sections could be rerouted. That
@@ -147,7 +174,7 @@ proved again is not measured yet.
 
 | Strategy | What it looks at | Cost | Expected | Status |
 |---|---|---|---|---|
-| **Price-tag search** (new) | the expensive declarations and their statements; asks what else in the library, Mathlib or the induction hypothesis implies each one | an hour of analysis per class; one Lean bridge per hit | 1.44 % found; the K-group class gave nothing | running on the shared theorems |
+| **Price-tag search** (new) | the expensive declarations and their statements; asks what else in the library, Mathlib or the induction hypothesis implies each one | an hour of analysis per class; one Lean bridge per hit | 1.44 % found (Feit–Thompson); one 1.0 % candidate (classical involutions, q = 3) | 25 shared theorems checked |
 | Two-layer search over files ([two-layer-search.md](two-layer-search.md)) | files and hypothesis bundles of one region | ~1 h per region | StageK: 0.9 % of Feit–Thompson | done once |
 | Statement-schema families | statements equal up to numbers and type names | prototypes need only Mathlib | ≤ 2.8 % | handed to miner-b |
 | Cumulative stages / bundled contexts (StageK, generalized) | repeated hypotheses in statements | ~1 h + build per region | ~1 % of each region | proven on Feit–Thompson |
