@@ -1,0 +1,12 @@
+{
+  "target": "CFSG.FeitThompson",
+  "graph_commit": "3e39d100faa71fc30bb04ae4a57689bd96f67f92",
+  "modules": 1414,
+  "declarations": 18540,
+  "declaration_lines": 209419,
+  "reachable_declarations": 15236,
+  "reachable_lines": 187803,
+  "protected": 1,
+  "edges_to_outside": 0,
+  "single_user_declarations": 7633
+}

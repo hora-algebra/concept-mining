@@ -1,0 +1,27 @@
+{
+  "target": "FeitThompson",
+  "base": "e75b188afc3b3287ebc94542b6f5cc6b26afc652",
+  "head": "worktree",
+  "verdict": "accept",
+  "phase": "done",
+  "reason": "",
+  "files_changed": 26,
+  "tokens_before": 2867352,
+  "tokens_after": 2861748,
+  "tokens_saved": 5604,
+  "code_lines_before": 240495,
+  "code_lines_after": 240176,
+  "code_lines_saved": 319,
+  "build_seconds": 5,
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "candidate": "bundle-dd790378",
+  "agent": "claude",
+  "model": "claude-opus-5-5",
+  "concept": "IsTIDiff",
+  "meaning": "For subgroups W, W1, W2 of G, the set D = W \\ (W1 ∪ W2) has stabilizer exactly W under conjugation and is a TI set relative to W: every conjugate of D by an element outside W is disjoint from D. IsCyclicTIPair now extends this predicate.",
+  "date": "2026-11-21"
+}

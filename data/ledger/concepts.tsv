@@ -1,0 +1,4 @@
+date	target	concept	meaning	lines_before	lines_after	lines_saved	uses	commit
+2026-11-21	FeitThompson	hallCoreIn	The Hall core of a subgroup M (the product of its normal Sylow subgroups), seen as a subgroup of the ambient group; previously defined five times under different names.	189217	189160	57	716	0001-copies-hallCoreIn.patch
+2026-11-21	FeitThompson	IsTIDiff	For subgroups W, W1, W2 of G, the set D = W \ (W1 ∪ W2) has stabilizer exactly W under conjugation and is a TI set relative to W: every conjugate of D by an element outside W is disjoint from D. IsCyclicTIPair now extends this predicate.	189160	188871	289	64	0002-bundle-dd790378.patch
+2026-11-21	FeitThompson	Irr	Irr G is the set of irreducible complex characters of a group G: the functions G → ℂ that are characters of some finite-dimensional irreducible complex representation of G.	188871	188871	0	2650	0003-copies-CauchySchwarzProjection-irr.patch

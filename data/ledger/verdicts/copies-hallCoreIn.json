@@ -1,0 +1,27 @@
+{
+  "target": "FeitThompson",
+  "base": "965a0775e82217494217503621b843e1b0e1e337",
+  "head": "worktree",
+  "verdict": "accept",
+  "phase": "done",
+  "reason": "",
+  "files_changed": 82,
+  "tokens_before": 2868073,
+  "tokens_after": 2867352,
+  "tokens_saved": 721,
+  "code_lines_before": 240567,
+  "code_lines_after": 240495,
+  "code_lines_saved": 72,
+  "build_seconds": 5,
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "candidate": "copies-hallCoreIn",
+  "agent": "recipe tools/recipes/hall_core_in.py",
+  "model": "claude-opus-5-5",
+  "concept": "hallCoreIn",
+  "meaning": "The Hall core of a subgroup M, seen as a subgroup of the ambient group.",
+  "date": "2026-11-21"
+}
