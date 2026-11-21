@@ -93,8 +93,9 @@ def main() -> None:
             hyps = [binder_type(b) for b in bs if is_hyp(b)]
             for k in windows:
                 for i in range(len(hyps) - k + 1):
-                    key = " ∧ ".join(sorted(set(hyps[i:i + k])))
-                    if key.count(" ∧ ") == k - 1:
+                    distinct = set(hyps[i:i + k])
+                    if len(distinct) == k:
+                        key = tuple(sorted(distinct))
                         windows[k][key] += 1
                         wex.setdefault(key, c[1])
                         wfold[key].add(folder)
@@ -115,10 +116,10 @@ def main() -> None:
             for key, m in cnt.most_common(a.top // 3):
                 w.write(f"{k}\t{m}\t{len(folders[key])}\t{key[:600]}\t{example[key]}\n")
     with open(os.path.join(a.out, "hyp_windows.tsv"), "w") as w:
-        w.write("k\toccurrences\tfolders\thypotheses\texample\n")
+        w.write("k\toccurrences\tfolders\thypotheses (separated by ; )\texample\n")
         for k, cnt in windows.items():
             for key, m in cnt.most_common(a.top // 2):
-                w.write(f"{k}\t{m}\t{len(wfold[key])}\t{key[:600]}\t{wex[key]}\n")
+                w.write(f"{k}\t{m}\t{len(wfold[key])}\t{' ; '.join(key)[:600]}\t{wex[key]}\n")
     print(f"{n} theorems")
 
 
