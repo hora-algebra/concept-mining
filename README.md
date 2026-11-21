@@ -42,7 +42,10 @@ terms) is an open design question. See [Open questions](#open-questions).
 | 3. Pilot | Refactor one small, self-contained part and measure the shrinkage | laptop / one server |
 | 4. Scale | Apply the abstractions that worked across the library | shared build cache |
 
-Status: **planning**. Nothing here has been run yet.
+Status: **stage 1 done**. The dependency graph of all 2.2 million
+declarations has been extracted without a build; see
+[Stage 1: Map](docs/stage1-map.md) for the layout of the formalization, the
+most used declarations, and candidate ranges for stages 2 and 3.
 
 ## How to contribute
 

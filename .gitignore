@@ -1,0 +1,5 @@
+# local mirrors and intermediate outputs (never commit upstream sources or raw data)
+/upstream/
+/cache/
+/out/
+__pycache__/

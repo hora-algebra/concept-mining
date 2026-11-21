@@ -1,0 +1,25 @@
+{
+  "commit": "3e39d100faa71fc30bb04ae4a57689bd96f67f92",
+  "declarations": 2216163,
+  "edges": 17211386,
+  "edges_reported": 17211386,
+  "kinds": {
+    "def": 391619,
+    "theorem": 1778483,
+    "abbrev": 20046,
+    "instance": 8905,
+    "structure": 16473,
+    "inductive": 417,
+    "example": 144,
+    "class": 64,
+    "opaque": 11,
+    "class inductive": 1
+  },
+  "lines_in_declarations": 35093004,
+  "reachable_from_final": 2053885,
+  "reachable_reported": 2053885,
+  "unreachable_lines": 1897095,
+  "declarations_with_no_users": 61407,
+  "declarations_with_one_user": 1024079,
+  "final": "CFSG.classification_finite_simple_groups"
+}

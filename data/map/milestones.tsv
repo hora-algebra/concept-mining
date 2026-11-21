@@ -1,0 +1,201 @@
+title	category	declaration	statement_lines	proof_lines
+Cyclic groups of prime order are simple	overview	CFSG.Milestones.cat_native_realization_cyclic	4	4
+Finite abelian simple groups belong to the catalog		CFSG.Milestones.cls_abelian_simple_catalog	3	14
+The aggregate classical catalog is the union of the fixed models		CFSG.Milestones.fam_classical_model_membership	10	104
+The 26 exactly constructed sporadic representatives		CFSG.Milestones.fam_sporadic_representatives_definition	3	137
+Bounds on odd local ranks	char2	CFSG.Milestones.lc_gl_local_rank_bounds	39	167
+Gaschütz's splitting theorem	tools	CFSG.Quasithin.gaschutz	26	179
+Zsigmondy's theorem	tools	CFSG.Timmesfeld.exists_primitive_prime_dvd_two_pow_sub_one	225	239
+Glauberman replacement theorem for the maximum-order Thompson subgroup		CFSG.Milestones.glauberman_replacement	6	356
+Automorphisms of A_n come from S_n (n ≠ 6)	sporadic	CFSG.Milestones.alternating_automorphism_permutation	5	499
+Thompson's critical subgroup theorem	tools	CFSG.SectionRank.Ccomm.thompson_critical_subgroup	127	501
+Both explicit rank-three outcome lists belong to the catalog		CFSG.Milestones.r3e_model_outcomes_catalog	14	516
+Thompson's transfer lemma (index-2 subgroup)	tools	CFSG.ThompsonIndexTwo.exists_normal_index_two_of_thompson	64	519
+A nonabelian group on the list is alternating, of Lie type or sporadic	overview	CFSG.Milestones.ct_catalog_nonabelian_type_partition	35	557
+The classification-free Burnside–Schur dichotomy for a supplied regular cyclic subgroup		CFSG.Milestones.burnside_schur	9	796
+Borel–Tits theorem: local subgroups in the defining characteristic lie in parabolics		CFSG.Milestones.cl_lit_borel_tits_local_parabolic	12	935
+Involution centralizers modulo their odd core have characteristic 2	overview	CFSG.Milestones.cls_component_free_centralizer_quotient_characteristic_two	56	1087
+Characteristic 2 involution centralizers imply characteristic 2 type	overview	CFSG.Milestones.cls_involution_centralizers_characteristic_two_transfer	135	1093
+Generalized Fitting subgroup centralizer theorem		CFSG.Milestones.lc_generalized_fitting_self_centralizing	5	1290
+Brauer orthogonality within one block across different primary sections		CFSG.Milestones.block_section_orthogonality	7	1317
+Tits' classification of subgroups containing a Borel subgroup	lie	CFSG.AGLEmbedding.ParabPrime.eq_borel_sup_rankOne	84	1626
+Brauer characterization of virtual characters		CFSG.Milestones.bi_brauer_characterization	9	2239
+Frobenius kernel theorem		CFSG.Milestones.frobenius_kernel	9	2378
+Brauer third main theorem for relative principal blocks		CFSG.Milestones.brauer_third_main_theorem	8	4533
+Glauberman ZJ theorem for stable normal p-subgroup actions		CFSG.Milestones.zj_glauberman_characteristic_1	9	6000
+Strongly embedded Borel subgroup of PSL(2,2^f)	tools	CFSG.Milestones.ctgms_bender_1971_even_rank_one_model_and_strong_embedding_input_1	3	8649
+The original R is maximal among odd S-invariant overgroups and is the full odd core of its normalizer		CFSG.Milestones.gw_original_maximal_odd_s_invariant_r_and_normalizer_core	13	9618
+Borel–Tits theorem	lie	CFSG.LieType.Chevalley.holds_adjointGroup_tag	194	11208
+Hering's theorem on transitive linear groups	tools	CFSG.GH74.Uniqueness.hering32	2490	12631
+Dickson's list of subgroups of PSL(2,q)	lie	CFSG.Milestones.cl_lit_as_vol_i_background_1	33	14599
+Brauer–Suzuki theorem	small	CFSG.Milestones.brauer_suzuki	8	19394
+Even-order nonabelian simple groups have 2-rank at least 2	small	CFSG.Milestones.lr_nonabelian_simple_two_rank_lower_bound	4	19399
+Schur multipliers of PSL(n,q) (Steinberg–Griess)	lie	CFSG.Milestones.cl_lit_griess_schur_multipliers_lie_type	7	20864
+false_of_sylowModel		CFSG.EvenSmallLie.OmegaEight.SpBranch.false_of_sylowModel	19931	24192
+Solvable Signalizer Functor Theorem for elementary abelian 2-groups	tools	CFSG.Milestones.sg_two_signalizer_completeness	6967	24219
+Glauberman's Z* theorem	tools	CFSG.Milestones.glauberman_zStar	7	26049
+Aschbacher–Smith Theorem C (strongly quasithin simple K-groups)	quasithin	CFSG.Milestones.cl_lit_sqtk_simple_list	98	28494
+Aschbacher's Local C(G,T) / unique maximal 2-local theorem	tools	CFSG.CGT.PushingUpLit.ThmOne.aschbacherTheoremOneK_holds	3288	37496
+sp6Kill		CFSG.EvenSmallLie.OmegaEight.SplitIn.sp6Kill	7479	38279
+Glauberman's solvable signalizer functor theorem, rank one	tools	CFSG.SignalizerFunctorTheorem.solvableRankOneTheorem	9982	39261
+Simplicity of the Thompson group Th (248-dimensional construction)	sporadic	CFSG.Milestones.fam_th_simplicity	3	40240
+Steinberg presentation of the universal finite groups of Lie type of BN-rank at least three		CFSG.Milestones.cl_lit_steinberg_presentation_theorem	14	47798
+macwilliams_four_generators		CFSG.LargeEvenClassification.Helpers.macwilliams_four_generators	49576	51296
+MacWilliams's four-generator theorem for 2-groups	tools	CFSG.Milestones.cls_connectivity_macwilliams_four_generator	5	51301
+Curtis–Tits presentation theorem (BN-rank at least 3)	lie	CFSG.Milestones.cl_lit_curtis_tits_presentation_theorem	48	53005
+Existence and uniqueness of Fi22, Fi23 and Fi24	sporadic	CFSG.Milestones.cl_lit_fischer_3t_existence_uniqueness_full	35	90135
+isSolvable_of_odd_natCard		CFSG.FeitThompson.isSolvable_of_odd_natCard	187803	187803
+Feit–Thompson theorem	small	CFSG.Milestones.odd_order_solvable	3	187806
+Trivial odd cores of involution centralizers (no strong embedding)	overview	CFSG.Milestones.cls_component_free_involution_odd_cores_trivial	1481	222864
+Component type or characteristic 2 type	overview	CFSG.Milestones.cls_component_dichotomy	4	223281
+The 26 sporadic groups, as constructed, are simple	sporadic	CFSG.Milestones.fam_sporadic_native_converse	6	238990
+Fischer's theorem on 3-transposition groups	sporadic	CFSG.Milestones.cl_lit_fischer_three_transposition_theorem	146	336937
+pfSection14FinalDataBridge_theorem		CFSG.pfSection14FinalDataBridge_theorem	342284	566235
+odd_order_theorem		CFSG.odd_order_theorem	161953	574947
+Bender's theorem on abelian Sylow 2-subgroups of rank ≥ 3	small	CFSG.Walter.benderHyp	15676	874505
+Bender–Suzuki theorem on strongly embedded subgroups	tools	CFSG.Milestones.bender_suzuki	4	918519
+Classification of the disconnected involution-graph branch		CFSG.Milestones.cls_disconnected_simple_involution_graph_classification	4	919514
+Aschbacher's tightly embedded subgroups theorem	component	CFSG.ComponentClassification.AschbacherStrongEmbedding.theorem_2_part_two	2639	934927
+Gorenstein–Walter theorem (dihedral Sylow 2-subgroups, simple case)	small	CFSG.Milestones.lr_dihedral_simple_recognition	16	976020
+Original q=5 index-three fixed-kernel order implication eliminates every S-invariant character		CFSG.Milestones.gw_original_q_five_index_three_character_kernel_order_contradiction_full	9	976436
+Original normalizer coset fixed points force opposite projective torus divisibility and a strict global-index lower bound		CFSG.Milestones.gw_original_normalizer_coset_involution_fixedpoints_secondary_torus_divisibility	7	976794
+A proper original R-normalizer above C has a pure PGL₂ quotient, one common fixed four-group, and an exact local index divisor		CFSG.Milestones.gw_original_normalizer_r_pure_projective_shared_fourgroup_and_index_divisor	17	977371
+Every stationary original Sylow subgroup is maximal under S and its own proper center normalizer separates first and second classes		CFSG.Milestones.gw_original_post_proposition_sixteen_canonical_stationary_prime_normalizers_full	4	977896
+Janko–Wong characterization of McL (centralizer 2·A₈)	sporadic	CFSG.Sporadic.Recognition.JankoWong.jwContains	13177	1020189
+Groups of type HS are the Higman–Sims group	quasithin	CFSG.Quasithin.HSType.statementI48_holds	15600	1050768
+Local C*(G,T) theorem (Bender–Hunt–Stellmacher)	tools	CFSG.CGT.PushingUpLit.SYMB.bhsLocalCStar_of_restIH	18133	1104828
+Proposition 16 closes the original growing prime classes and activates all-prime stationary proper-local control		CFSG.Milestones.gw_original_post_proposition_sixteen_all_prime_stationarity_and_no_growth	13	1166834
+Parrott's characterization of Fi24' from 2·Fi22	sporadic	CFSG.EvenSporadicStandard.TwoFi22.DS81.RouteP.fi24RecognitionLocal_holds	36640	1241936
+McBride's Theorem A (signalizer completeness)	tools	CFSG.SignalizerFunctorTheorem.McBride.theoremA	57103	1270205
+Strongly closed TI 2-subgroups force a Bender group	quasithin	CFSG.Milestones.qt_unique_shult_simple_strongly_closed_ti_models	105	1363123
+Aschbacher's Theorem 1 (wreathed Sylow 2-subgroups)	small	CFSG.Timmesfeld.Bridge.Asc72.theoremOne_of_lemma44b	20	1368018
+Holt's Theorem 1 on (*)-groups	component	CFSG.Holt.H78.holtTheorem1	57987	1456854
+Aschbacher–Smith: groups of type Ru are Rudvalis	quasithin	CFSG.Quasithin.RuType.theorem_J11	32168	1517172
+Parrott's characterization of the Thompson group Th	sporadic	CFSG.GF2Type.Smith1979.parrottThKP_holds	11622	1524086
+Even Type Theorem (Aschbacher–Lyons–Smith–Solomon)	char2	CFSG.GH74.AS16.E2.s_alss3121E2_deep	5825	1538547
+gilman_solomon_theorem_B_iso_of_open_sub		CFSG.ComponentClassification.GSThmB.gilman_solomon_theorem_B_iso_of_open_sub	115044	1604548
+Walter's theorem on abelian Sylow 2-subgroups	small	CFSG.Milestones.cl_lit_walter_abelian_sylow_two_simple_models	42	1634691
+Alperin–Brauer–Gorenstein theorem (semidihedral Sylow 2-subgroups)	small	CFSG.Milestones.lr_semidihedral_simple_recognition_1	12	1726578
+Timmesfeld's root involution theorem		CFSG.Milestones.cl_lit_timmesfeld_root_involutions	21	1730783
+Aschbacher's Proper 2-Generated Core Theorem	tools	CFSG.Milestones.cl_lit_aschbacher_proper_two_generated_core	7	1775580
+Alperin–Brauer–Gorenstein theorem (wreathed Sylow 2-subgroups)	small	CFSG.Milestones.lr_wreathed_simple_recognition_1	12	1852522
+Classification of simple groups of 2-rank two	small	CFSG.Milestones.lr_rank_two_isomorphism_types	11	1932005
+Classification of simple groups of 2-rank at most 2	small	CFSG.Milestones.cls_low_two_rank_classification	20	1932550
+Signalizer Functor Theorem (Glauberman, McBride)	tools	CFSG.Milestones.cl_lit_signalizer_functor_theorem_1	172	1994726
+constrainedBranch_proved		CFSG.QuasithinUnique.constrainedBranch_proved	100618	2139080
+useInput_holds		CFSG.StandardType.ZS.useInput_holds	117158	2201100
+Goldschmidt's strongly closed abelian 2-subgroup theorem	tools	CFSG.Goldschmidt.coreStatement	32529	2333947
+Goldschmidt's strongly closed abelian 2-subgroup theorem		CFSG.Milestones.cl_lit_goldschmidt_strongly_closed_abelian_models	13	2334927
+Aschbacher's Theorem 5 (permuted semisimple sections)	component	CFSG.Milestones.cl_lit_aschbacher_component_type_theorem_5	75	2421785
+Aschbacher's GF(2)-type theorem	char2	CFSG.GF2Type.Aschbacher1976Full.aschbacher1976Statement_holds	13179	2448698
+Seitz's theorem on standard components L3(4)	component	CFSG.OddStandard.Seitz77.seitz77SimpleL34_of_gh74	34738	2505820
+strothSigma6_of_sections_v3_r0_h32_h228_hcharB_g_h227p		CFSG.CGT.Stroth77.strothSigma6_of_sections_v3_r0_h32_h228_hcharB_g_h227p	89597	2530059
+Baby Monster recognition from a {3,4}-transposition centralizer	sporadic	CFSG.Milestones.cl_lit_stroth_leon_sims_baby_monster_recognition_models	16902	2689435
+Quasithin groups with a unique maximal 2-local over a Sylow	quasithin	CFSG.Milestones.qt_unique_maximal_local_classification	54	2695707
+main_of_griess		CFSG.GH74.GLS.Stage12.Stage12LeavesB.main_of_griess	180601	2712535
+Solomon's theorem on Â_n-components	component	CFSG.OddStandard.Solomon75.solomon2AnInput_of_gh74_of_caseNotA	32217	2747547
+ggResCaseIQTwoRestInput_holds		CFSG.StandardType.ggResCaseIQTwoRestInput_holds	45962	2783817
+Existence of the Monster (Griess–Conway)	sporadic	CFSG.Milestones.cl_lit_monster_existence_griess_conway	10366	2881161
+Simplicity of the Monster (Y₄₄₃ construction)	sporadic	CFSG.Milestones.fam_m_simplicity	26	2933828
+Order of the Monster's Y₄₄₃ presentation group	sporadic	CFSG.Milestones.fam_m_finiteness	26	2933833
+Every concrete sporadic representative is finite		CFSG.Milestones.fam_sporadic_finiteness	4	2934077
+Griess–Meierfrankenfeld–Segev uniqueness of the Monster	sporadic	CFSG.Milestones.cl_lit_gms_monster_uniqueness	7431	2951685
+Sporadic catalog groups are finite nontrivial simple groups		CFSG.Milestones.fam_sporadic_converse	4	3018677
+Standard component or quaternion component in involution centralizers	component	CFSG.Milestones.ct_initial_standard_component_frontier	2955	3028014
+Every catalog group is finite nontrivial and simple		CFSG.Milestones.cat_converse	12	3036860
+largeJ		CFSG.ClassicalInvolution.MilestoneAssembly.W14.Q3Residuals₁₄.largeJ	166090	3209605
+Yoshida's characterization of Co₃ (centralizer Z₂ × M₁₂)	sporadic	CFSG.EvenSporadicStandard.M12Std.Rbc.yoshida74Co3K_holds	16750	3304197
+toCoreStep'		CFSG.ClassicalInvolution.MilestoneAssembly.W14.CoreOpenWired₁₄.toCoreStep'	272576	3314503
+stmt10_0_1_of_remainingA		CFSG.Quasithin.Vol2.Ch10.stmt10_0_1_of_remainingA	111118	3389868
+Timmesfeld's large extraspecial 2-subgroup theorem	char2	CFSG.Milestones.cl_lit_timmesfeld_1978_large_extraspecial_models	389	3474684
+frontier_models_of_epsilonOne		CFSG.EvenSmallLie.FrontierFinal.frontier_models_of_epsilonOne	94597	3594967
+ct_even_small_lie_standard_frontier_models		CFSG.Milestones.ct_even_small_lie_standard_frontier_models	41865	3615305
+The seven residual small Lie quotients have the even-standard outputs		CFSG.Milestones.ct_even_small_lie_standard_frontier	17	3615323
+Aschbacher's Embedding Theorems 4.4 and 5.1 for K-groups	component	CFSG.CGT.PushingUpLit.CGT6K1.aschbacherEmbeddingK_of_inputs'	67660	3657177
+child8_of_frontier		CFSG.EvenSporadicStandard.Frontier.child8_of_frontier	75405	3758160
+smith1981_of_E4G1_core		CFSG.RankThree.GF2n.Smith81.smith1981_of_E4G1_core	102088	3800372
+smith1981_of_rel		CFSG.RankThree.GF2n.Smith81.smith1981_of_rel	11419	3806282
+Gorenstein–Walter L-balance theorem	tools	CFSG.Milestones.cl_lit_gorenstein_walter_l_balance	9	3950655
+seitzHighRankExclusion_of_final11_gls3		CFSG.SeitzReduction.seitzHighRankExclusion_of_final11_gls3	297010	4003465
+Seitz's reduction for centerless even standard components	component	CFSG.Milestones.ct_seitz_centerless_reduction_frontier	97434	4155196
+ct_rank_two_standard_recognition_models		CFSG.ComponentClassification.RankTwoStandard.ct_rank_two_standard_recognition_models	99899	4190738
+Aschbacher–Seitz standard component recognition	component	CFSG.Milestones.ct_rank_two_standard_recognition_frontier_models	12	4190750
+milestone_forms_of_leaves13		CFSG.GH74.milestone_forms_of_leaves13	553339	4322153
+ct_even_standard_residual_reduction_of_yardstones		CFSG.Yardstones.M41b0c98b3153.ct_even_standard_residual_reduction_of_yardstones	66884	4408946
+milestone_forms_of_leaves35		CFSG.GH74.milestone_forms_of_leaves35	285681	4764964
+Even standard components: reduction to 32 quotient types	component	CFSG.Milestones.ct_even_standard_residual_reduction	342491	4796712
+Recognition in the unique central-seed overgroup case of source 15.3.1		CFSG.Milestones.qtfe_unique_centralizer_six_model_recognition	12	4914476
+Quasithin groups without a faithful local C-component	quasithin	CFSG.Milestones.qt_faithful_local_empty_classification	10744	4949231
+ys09		CFSG.Yardstones.Md0ec50421ce4.ys09	140903	5092471
+ys11		CFSG.Yardstones.Md0ec50421ce4.ys11	153747	5131588
+ys06		CFSG.Yardstones.Md0ec50421ce4.ys06	92688	5257242
+ys05		CFSG.Yardstones.Md0ec50421ce4.ys05	129465	5352378
+ys06_section82Steps		CFSG.Yardstones.M64f425cd8476.ys06_section82Steps	101823	5444181
+vanishingRecognition_of_remaining		CFSG.RankThree.PartOne.vanishingRecognition_of_remaining	329047	5453764
+movingAround		CFSG.Yardstones.M67c2c3e09a6b.movingAround	317243	6083805
+item1730_of_res1OpenFPt		CFSG.RankThree.PartTwo.Sec15.Sylow155R1.item1730_of_res1OpenFPt	165320	6360409
+item1730_of_l3_316		CFSG.RankThree.PartTwo.Sec15.GagenL3.item1730_of_l3_316	91907	6387879
+ys07_stmt11_0_1		CFSG.Yardstones.M64f425cd8476.ys07_stmt11_0_1	117571	6658536
+Gorenstein–Lyons Theorem A (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_theorem_a	390919	7207860
+ys09_fiveQuotientEliminations		CFSG.Yardstones.M64f425cd8476.ys09_fiveQuotientEliminations	133825	7727139
+Trichotomy for e(G) ≥ 4: preuniqueness, GF(2) or standard type	char2	CFSG.Milestones.lc_gl_constructed_pretrichotomy_rank_four	479972	8372651
+pretrichotomy_rank_four		CFSG.Assembly.LargeEven.pretrichotomy_rank_four	8	8372659
+Quasithin case H13 with a maximal local subgroup	quasithin	CFSG.Milestones.qt_h13_maximal_local_catalog_assembly	942137	8766079
+Quasithin groups with a faithful local C-component	quasithin	CFSG.Milestones.qt_faithful_local_nonempty_classification	36	8780483
+lc_gl_standard_type_lie_char_two_of_yardstones		CFSG.Yardstones.M3f9567aba59d.lc_gl_standard_type_lie_char_two_of_yardstones	2928854	9002262
+Gorenstein–Harada Sectional 2-Rank 4 Theorem	small	CFSG.Milestones.cl_lit_gh74_sectional_two_rank_four_models	205769	9013888
+Recognition of HN by (2·HS):2 centralizer	sporadic	CFSG.EvenSporadicStandard.HNRecog.haradaHNRecognitionKP_holds	119231	9261261
+Standard-type recognition (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_standard_type_recognition_rank_four	397418	9465684
+standard_type_recognition_rank_four		CFSG.Assembly.LargeEven.standard_type_recognition_rank_four	7	9465691
+Aschbacher–Smith quasithin theorem in catalog form		CFSG.Milestones.cls_qtke_classification_even_characteristic	7	9532506
+Aschbacher–Smith classification of quasithin groups	quasithin	CFSG.Assembly.quasithin	854	9532552
+GF(2)-type recognition (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_gf2_recognition_rank_four	17376	9992141
+Classical involution recognition for a quaternion component	component	CFSG.Milestones.ct_quaternion_component_recognition_frontier	278	10392642
+Aschbacher's Classical Involution Theorem	component	CFSG.Milestones.cl_lit_classical_involution_theorem_models	15	10458890
+smallF3U33Core_of_fz59		CFSG.OddStandard.SmallF3.FritzII.smallF3U33Core_of_fz59	145661	10620429
+strothSigma6_holds		CFSG.CGT.Stroth77.strothSigma6_holds	92992	10665756
+Characteristic 2 type with e(G) = 3: known group or local core	char2	CFSG.Milestones.r3e_part_one_outcome_assembly	72296	12138753
+part_one_outcome		CFSG.Assembly.RankThreeEven.part_one_outcome	6	12138759
+Aschbacher–Gorenstein–Lyons Embedding Theorem D1 (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_embedding_theorem_d1_rank_four	155378	12340361
+Gilman–Solomon Reduction Theorem: a doubly maximal small unbalancing 2-component		CFSG.Milestones.cl_lit_gilman_solomon_maximal_unbalancing_reduction_native	31	12398868
+Unbalanced K-proper simple groups are odd Lie type or alternating	component	CFSG.Milestones.ctu_kproper_simple_unbalanced_recognition	274	12400485
+Local B-property for K-proper groups of component type	component	CFSG.Milestones.ctb_kproper_component_local_b	360	12401548
+Aschbacher–Gorenstein–Lyons Embedding Theorem D2 (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_embedding_theorem_d2_rank_four	21750	12511173
+gf2nType_of_remaining_thm1		CFSG.RankThree.GF2n.Tim81.gf2nType_of_remaining_thm1	65827	12518441
+gf2nType_of_remaining_unRoot		CFSG.RankThree.GF2n.Tim81.gf2nType_of_remaining_unRoot	77371	12612393
+gf2nType_of_remaining_all		CFSG.RankThree.GF2n.Tim81.gf2nType_of_remaining_all	85668	12613353
+ctss_models_of_yardstones		CFSG.Yardstones.M1442643da6f2.ctss_models_of_yardstones	106864	12676026
+twelveTenGen_of_fields		CFSG.LocalAnalysis.AGL81TheoremCD.Section12.twelveTenGen_of_fields	110228	12682101
+gf2nType_of_remaining_three		CFSG.RankThree.GF2n.Tim81.gf2nType_of_remaining_three	34241	12741035
+gf2nType_of_tim79a_1111		CFSG.RankThree.GF2n.Tim81.gf2nType_of_tim79a_1111	154161	12784182
+oddLieThm187bResidualHigherRank_holds		CFSG.Yardstones.M0362f3a873a3.oddLieThm187bResidualHigherRank_holds	118653	12801793
+gf2nType_of_noSqE1_parrott_h5_janko_gh		CFSG.RankThree.GF2n.Parrott.gf2nType_of_noSqE1_parrott_h5_janko_gh	194871	13064700
+Gorenstein–Lyons Theorem C (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_theorem_c_rank_four	60174	13081734
+gf2nType_of_noSqE1		CFSG.RankThree.GF2n.Parrott.gf2nType_of_noSqE1	91334	13112872
+ctss_sporadic_standard_centerless_m12_j2_and_other_quotients_frontier_models		CFSG.Milestones.ctss_sporadic_standard_centerless_m12_j2_and_other_quotients_frontier_models	145488	14626511
+The centerless M12/J2 cases and every other original sporadic quotient remain to be recognized		CFSG.Milestones.ctss_sporadic_standard_centerless_m12_j2_and_other_quotients_frontier	37	14626560
+smallF3StandardOddLie_holds		CFSG.Yardstones.M0362f3a873a3.smallF3StandardOddLie_holds	341469	15149735
+Recognition of groups with an odd-type standard component	component	CFSG.Milestones.ct_odd_standard_recognition_frontier_models	4942	16115296
+Standard component case of the component-type analysis	component	CFSG.Milestones.ct_standard_recognition_assembly	394897	16115454
+standard_recognition		CFSG.Assembly.ComponentType.standard_recognition	5	16115459
+Classification of K-proper groups of component type	component	CFSG.Assembly.component_type	1048712	16120104
+Classification of the K-proper component-type branch		CFSG.Milestones.cls_component_classification	5	16120109
+Characteristic 2 type with e(G) = 3, attained at the prime 3	char2	CFSG.Milestones.r3e_part_two_prime_three_outcome	449	16935058
+ascSixteenSixtyNine		CFSG.Yardstones.Me2c15c2c995a.ascSixteenSixtyNine	186574	16999702
+agl81TheoremAResiduesE3_holds		CFSG.Yardstones.Mdac756b924db.agl81TheoremAResiduesE3_holds	125527	17483591
+ascSectionNineteen		CFSG.Yardstones.Me2c15c2c995a.ascSectionNineteen	210019	17600193
+Aschbacher's exclusion of the uniqueness case (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_uniqueness_exclusion_rank_four	173340	17824772
+Gorenstein–Lyons Theorem C (e(G) = 3)	char2	CFSG.Milestones.cl_lit_gl83_theorem_c_preuniqueness_rank_three	267139	18137478
+Aschbacher's Uniqueness Case Theorem (e(G) = 3)	char2	CFSG.Milestones.cl_lit_aschbacher_1983_uniqueness_case_rank_three	197628	18390117
+A non-local weak core exists (e(G) ≥ 4)	char2	CFSG.Milestones.lc_gl_preuniqueness_exclusion_rank_four	4791	18503452
+preuniqueness_exclusion_rank_four		CFSG.Assembly.LargeEven.preuniqueness_exclusion_rank_four	6	18503458
+Characteristic 2 type with e(G) = 3: excluding the local core case	char2	CFSG.Milestones.r3e_rank_three_core_uniqueness_exclusion	2151	21608603
+core_uniqueness_exclusion		CFSG.Assembly.RankThreeEven.core_uniqueness_exclusion	5	21608608
+Classification of characteristic 2 type, e(G) = 3	char2	CFSG.Assembly.rank_three_even	1506250	22069725
+Classification of characteristic-2-type groups with e(G)=3		CFSG.Milestones.cls_rank_three_even_classification	5	22069730
+Classification of characteristic 2 type, e(G) ≥ 4	char2	CFSG.Assembly.large_even	278576	24354594
+Classification of characteristic-2-type groups with e(G)≥4		CFSG.Milestones.cls_large_even_classification	5	24354599
+Assembly of the characteristic-2-type branch		CFSG.Milestones.cls_characteristic_two_classification	5	29479966
+Every finite simple group is cyclic, alternating, of Lie type or sporadic	overview	CFSG.Milestones.cfsg_exhaustiveness	6	33195901
+Assembly for K-proper simple groups		CFSG.Milestones.cls_k_proper_simple_classification_catalog	10	33195904
+Classification of finite simple groups, with realization	overview	CFSG.Milestones.cfsg_classification_native_and_realization	16	33196234

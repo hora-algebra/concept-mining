@@ -1,0 +1,301 @@
+k	theorems	folders	prefix	example
+4	2844	16	{K : Type} [Field K] [Finite K] [CharP K 2]	CFSG.ClassicalGroups.Orthogonal.isSolvable_minusProjectiveBorel
+4	2752	12	{G : Type} [Group G] [Finite G] {p : ℕ}	CFSG.Semidihedral.FixedCoreNontrivial.exists_sylow_eq_of_card
+4	1402	15	{F : Type} [Field F] [Finite F] [CharP F 2]	CFSG.CGT.PushingUpLit.A78L3.exists_omega
+4	1036	1	{G : Type u} [Group G] [Finite G] [IsMinCE G]	CFSG.source_typeP_U_hall_from_W1_kappa_hall
+4	999	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X))	CFSG.FiveTransitive.Degree15.card_fixedBy_subgroup_perm
+4	944	27	{G : Type*} [Group G] [Finite G] {p : ℕ}	CFSG.subgroupOf_le_pPrimeCore_map
+4	917	2	{G : Type} [Group G] [Finite G] {B Bs : Subgroup G}	CFSG.LieType.Steinberg.CentralExt.TwistedE6TwoCover.exists_twE6ToralCoords_of_route_proved
+4	672	4	{τ : Tag} {L : Type} [Field L] [IsAlgClosed L]	CFSG.HardMathSupport.C14Idx.rootDiagUnit_coordTuple_mem_closure_of_a2Cycle
+4	669	1	(hW : CFSG.Walter.WalterOrderForm) (h : Setup G L f t) (d : G2Data L K) (hK : Nat.card K = 2 ^ f)	CFSG.LocalAnalysis.EvenBN.G2.Setup.isCyclic_quotient_yamadaP_of_field
+4	630	1	{G : Type u} [Group G] [Finite G] (hmin : IsMinimalCounterexample G)	CFSG.GorensteinWalter.properSubgroups_areDGroups_test
+4	623	7	{G : Type} [Group G] [Finite G] {L : Subgroup G}	CFSG.ClassicalInvolution.Q3.Q3W.pow_twelve_of_exact
+4	597	4	{ι F : Type} [Fintype ι] [DecidableEq ι] [Field F]	CFSG.LocalAnalysis.RankThreeTheoremC.KFactProofs.Stroth.InnerAction.N1D4Aux.exists_noncomm_pSubgroup_of_hom
+4	524	6	{ι K : Type} [Fintype ι] [DecidableEq ι] [Field K]	CFSG.HardMathSupport.Timmesfeld.Tables.Census.threeTwoWitness_statedProj_klein
+4	520	14	{K : Type} [Field K] [Finite K] {n : ℕ}	CFSG.Blueprint.EvenSource.nonempty_statedOmegaMinus_equiv
+4	513	13	{X Y : Type} [Group X] [Group Y] (e : X ≃* Y)	CFSG.CGT.T75O.isConj_of_mulEquiv
+4	468	21	{X Y : Type*} [Group X] [Group Y] (e : X ≃* Y)	CFSG.CGT.PushingUpLit.C2L.fusionStronglyEmbedded_map_mulEquiv
+4	442	22	{A B : Type*} [Group A] [Group B] (e : A ≃* B)	CFSG.CGT.A8S.Perm8.card_centralizer_mulEquiv
+4	435	10	(K : Type) [Field K] [Finite K] [CharP K 2]	CFSG.CGT.PushingUpLit.CGT6.EmbModule.natRep_dual_equiv
+4	421	9	{K : Type} [Field K] [Finite K] (hK : Nat.card K = 2)	CFSG.GH74.Exceptional.statedSL_eq_top_of_card_two
+4	414	9	{X : Type} [Group X] [Finite X] {p : ℕ}	CFSG.GH74.GLS.Stage2.Signalizer.Odd87.noTwoA7ClassicalAt_of_data
+4	414	9	{G Ω : Type*} [Group G] [Finite G] [MulAction G Ω]	CFSG.GH74.Uniqueness.Bender.benderCore_of_pointData
+4	411	1	(X : Type) [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X))	CFSG.FiveTransitive.Degree14.five_point_stabilizer_card_le_eight_or_nine_mul_divisor_eight
+4	408	1	(h : FCHyp L K n φ t) (i : Axis) (hne : ⁅𝐀[i], 𝐅 ⊓ 𝐃[i.swap]⁆ ≠ ⊥) (hbot : ⁅𝐀[i.swap], 𝐅 ⊓ 𝐃[i]⁆ = ⊥)	CFSG.LocalAnalysis.SymplecticFourStandard.SixF.conj_X_mem_P₂
+4	399	1	{G : Type} [Group G] [Finite G] {D : Data G}	CFSG.LocalAnalysis.UniquenessCase.PartTwo.Three.R856NonNormal.centralizes_sylow_of_cover_choice
+4	393	15	{ι : Type} [Fintype ι] [DecidableEq ι] {K : Type}	CFSG.Blueprint.isMulCommutative_sylow_statedProj_of_gl
+4	384	1	{G : Type u} [Group G] [Finite G] (c : CentralizerSetup G)	CFSG.GorensteinWalter.centralizerSetup_FU_isNormalIn_H
+4	380	17	{G : Type} [Group G] [Finite G] [IsSimpleGroup G]	CFSG.CGT.M24S.centralizer_eq_self
+4	380	2	{p : ℕ} [Fact p.Prime] {V : Type} [AddCommGroup V]	CFSG.StandardType.lup10ci_linearIndependent_of_dual
+4	377	12	{K : Type} [Field K] [Finite K] {p f : ℕ}	CFSG.Blueprint.statedSU_pow_p_eq_one
+4	369	22	{G H : Type*} [Group G] [Group H] (e : G ≃* H)	CFSG.CGT.Foote81L6.commAut_congr
+4	366	11	{X : Type} [Group X] [Finite X] {n : ℕ}	CFSG.CGT.PushingUpLit.E3A.five_dvd_card_block
+4	342	7	{n : ℕ} {K : Type} [Field K] [Finite K]	CFSG.ClassicalInvolution.Q3.PhilipHall.Frame.TwinModel.oddCoreIn_centralizer_eq_bot_of_equiv
+4	341	1	(F : Type) [Field F] [Fintype F] [DecidableEq F]	CFSG.LocalAnalysis.UniquenessCase.PartOne.Section8.K328.row1_holds
+4	331	19	{X : Type*} [Group X] [Finite X] {p : ℕ}	CFSG.CGT.T75N.isCyclic_of_isPGroup_of_cyclic_hall
+4	318	1	{G : Type u} [Group G] [Finite G] {I J : Type*}	CFSG.Section10.uniformMu_card_I_eq_card_W1_of_hypothesis_10_1_supported_data
+4	317	2	(n : ℕ) {F : Type} [Field F] [Finite F]	CFSG.CGT.T75Q.card_statedProj_dvd
+4	315	7	{τ : Tag} {K : Type} [Field K] [Finite K]	CFSG.GH74.GLS.Stage2.OddAut.exists_conj_mul_eq_of_norm_eq_one_r_aux
+4	302	10	{A B : Type} [Group A] [Group B] (e : A ≃* B)	CFSG.CGT.PushingUpLit.CGT6.card_center_congr
+4	302	1	{G : Type u} [Group G] [Finite G] {L : Subgroup G}	CFSG.BenderSuzuki.PFAppendixIV.appendixIV_unionImage_agreesOnIntegerSpanOn_of_split
+4	301	20	{G H : Type*} [Group G] [Group H] (f : G →* H)	CFSG.CGT.PushingUpLit.SolKNA.map_conjSubgroup_hom
+4	291	18	{K V : Type*} [Field K] [AddCommGroup V] [Module K V]	CFSG.KC.Misc.RankOne.comp_self_eq_smul
+4	287	1	(H : ThCyc G L R t) (W : ThLocalIn L S A B z) (W2 : ThLocalIn2 B A Aa b) (hD : DHyp A Aa t D)	CFSG.EvenSporadicStandard.ThStd.QHyp.inf_centralizer_t_eq
+4	285	9	{K V : Type} [Field K] [AddCommGroup V] [Module K V]	CFSG.ClassicalInvolution.Asc77.Hub.mem_negSpace_iff_apply
+4	279	11	{X : Type} [Group X] [Finite X] [IsSimpleGroup X]	CFSG.ClassicalInvolution.Q3.PhilipHall.Frame.genFittingFStar_eq_top_of_simple
+4	278	1	(h : Setup G L f t) (d : G2Data L K) (hK : Nat.card K = 2 ^ f) (hD : h.DoublingFacts d)	CFSG.LocalAnalysis.EvenBN.G2.Setup.mul_self_mem_yamadaCstar
+4	273	1	{G : Type u} [Group G] [Finite G] (Smax Tmax W W1 W2 P Q U V C D : Subgroup G)	CFSG.Section13.hypothesis_13_1_signNormalizationFor_of_sourceData
+4	271	3	{L : Type} [Field L] [IsAlgClosed L] [CharP L 2]	CFSG.HardMathSupport.C14Idx.rootDiagUnit_coordTuple_mem_closure_of_reeA2Cycle
+4	257	6	{W : Type} [CommGroup W] [Finite W] (hW : ∀ w : W, w ^ 2 = 1)	CFSG.CGT.PushingUpLit.CGT6.Diag.Count.exists_fixed_of_hom
+4	257	10	{K : Type} [Field K] [Finite K] {p : ℕ}	CFSG.ClassicalGroups.Symplectic.Sp4.exists_isElemAbelian_card_sq_of_dvd_card_add_one
+4	254	1	(n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G) (e : S ≃* Wreath (2 ^ n))	CFSG.Wreathed.centralizerLiftedLayer_relIndex_eq
+4	252	9	{F : Type} [Field F] [Finite F] {n : ℕ}	CFSG.ClassicalInvolution.RouteD.standardPair_oddDatum_edge'
+4	250	10	{p f : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (hf : 1 ≤ f)	CFSG.CGT.PushingUpLit.SolKNA.R4.TwinSocF4.exists_involution_frob
+4	250	1	(S : Setting z E F) {a : G} {w : ℕ} (h : Sec3Hyp S a w)	CFSG.RankThree.GF2n.Stroth78.exists_naturalSeries_psp
+4	231	6	{K : Type} [Field K] [Finite K] {σ : K ≃+* K}	CFSG.CGT.PushingUpLit.SolKNA.R4.RonanRes.fieldAut_invol_eq_pow
+4	226	1	{G : Type} [Group G] [Finite G] {b₀ : G}	CFSG.StandardType.FrameRoute.FS81.le_normalizer_inf_of_normalizer_le
+4	224	1	{f n : ℕ} {K : Type} [Field K] [Finite K]	CFSG.StandardType.psuCPF_dag_mem
+4	217	1	{X : Type u} [Group X] [Finite X] {M : Subgroup X}	CFSG.benderSuzuki_isStronglyEmbedded
+4	216	1	{G : Type u} [Group G] [Finite G] {W1 W2 W : Subgroup G}	CFSG.natCard_coprime_of_section12InternalDirectProduct_cyclic
+4	214	10	{S : Type} [Group S] [Finite S] [IsSimpleGroup S]	CFSG.CGT.T75D.typeBound
+4	214	1	(hRig : GGLabelRigidInput) {G : Type} [Group G] [Finite G]	CFSG.StandardType.ggInnerDiagOnLabel_phiOneTwo_L_of_innerDiag
+4	212	1	{H : Subgroup G} {z : G} (h : MinimalInvolutionPointLocalFailure H z) (hcomm : ProperStrongEmbeddingCommutingImages G)	CFSG.ProperTwoGeneratedCore.RankOnePair.involution_coset_normalizer_solvable_or_projective_seven
+4	211	9	{G : Type} [Group G] [Finite G] {n : ℕ}	CFSG.CGT.PushingUpLit.C2L.isNatSL_of_quadratic
+4	209	1	{D : Data G} {V₀ V L : Subgroup G} {hV : IsElemAbelian 2 V} (c : S168e3Ctx D V₀ V L hV)	CFSG.LocalAnalysis.UniquenessCase.PartTwo.exists_m22_active_conjugate
+4	203	1	{G : Type} [Group G] [Finite G] (M : RuDataM G)	CFSG.ASVolI.burnsideJ28_comm_HC_mem_Z
+4	200	9	{K : Type} [Field K] [Finite K] (σ : K ≃+* K)	CFSG.GH74.GLS.Stage2.Bender.Thm1.commute_of_fixes_element
+4	197	5	{G : Type} [Group G] {p : ℕ} [Fact p.Prime]	CFSG.GH74.GLS.Stage4.Rest.T2.simple_of_section_irred
+4	196	1	(hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G)	CFSG.Wreathed.centralizerFullQuotient_layer_exactly_one
+4	196	9	{G : Type} [Group G] [Finite G] {z : G}	CFSG.ClassicalInvolution.tight_solvable_data
+4	195	1	{Q : Type u} [Group Q] [Finite Q] {q : ℕ}	CFSG.BenderSuzuki.External.hkt_normalizer_quotient_centralizer_isPGroup_of_hasNormalPComplement
+4	193	6	{K : Type} [Field K] {ι : Type} [Fintype ι]	CFSG.Blueprint.EvenSource.nonempty_statedProj_statedOmega_equiv
+4	193	1	{G : Type} [Group G] [Finite G] (D : Data G)	CFSG.LocalAnalysis.UniquenessCase.PartOne.Section8.r869_of_spine
+4	192	1	{G : Type u} [Group G] [Finite G] (prime : ℕ)	CFSG.RankThreeEvenClassification.Helpers.exists_greatest_fixed_normalized_primeSetSubgroup
+4	185	1	[Finite G] (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G)	CFSG.Wreathed.modelVActualQuotientAction_ker
+4	184	4	{n : ℕ} {F : Type} [Field F] [CharP F 2]	CFSG.HardMathSupport.Cooperstein.Coordinator.LieInput.center_sp_eq_bot
+4	183	13	{G H : Type} [Group G] [Group H] (e : G ≃* H)	CFSG.CGT.PushingUpLit.SolKNA.R4.Z2Big.s8_isSylow2In_map_equiv
+4	180	12	{K : Type} [Field K] [Finite K] {f : ℕ}	CFSG.TauCetiBridge.charP_two_of_card_eq_two_pow
+4	180	8	{G : Type} [Group G] [Finite G] {A : Subgroup G}	CFSG.GH74.GLS.IVK.Lifted.isPGroup_sup_zpowers_of_involution
+4	178	12	{G : Type} [Group G] [Finite G] {K : Subgroup G}	CFSG.Assembly.card_section_lt
+4	178	17	{X Y : Type*} [Group X] [Group Y] [Finite X]	CFSG.CGT.PushingUpLit.LIT.Foote.exists_lift_primePower
+4	177	1	{p N : ℕ} [Fact p.Prime] {V : Type} [AddCommGroup V]	CFSG.StandardType.l05nDF2_two_le_of_dep
+4	176	1	(hP : IsGeneralizedPolygon Γ 4) (hT : IsThick Γ) (c : Γ.Coloring (Fin 2)) {s t : ℕ}	CFSG.Geometry.GeneralizedQuadrangles.two_le_s
+4	175	15	{A B : Type*} [Group A] [Group B] [Finite A]	CFSG.CGT.Foote82.Proof511.injective_domRestrict_of_odd
+4	174	15	(G : Type) [Group G] [Finite G] [IsSimpleGroup G]	CFSG.Adapters.dihedral_simple_recognition
+4	173	7	{K : Type} [Field K] [Fintype K] [CharP K 2]	CFSG.GroupTheory.eq_top_of_order_three_of_two_le
+4	172	4	{S : Type} [Group S] [Finite S] (hS : IsSimpleGroup S)	CFSG.GH74.GLS.C3.Layer1.Thm1P31c.pPrimeCore_eq_bot_of_simple
+4	172	5	(K : Type) [Field K] [Finite K] {p : ℕ}	CFSG.HardMathSupport.Dickson.LocalTwoBalance.Cross.W2.innerPlaneBalance_adjointE6_four_R3
+4	165	10	{n : ℕ} {F : Type} [Field F] [Finite F]	CFSG.ClassicalGroups.SpecialLinear.exists_elemAbelian_of_diagGen
+4	164	2	{G : Type} [Group G] [Finite G] {Ω : Set (Subgroup G)}	CFSG.ClassicalInvolution.T7F25.Asc77.T7T.c25_5_swap
+4	162	1	{L1 L2 S : Subgroup G} {k m : ℕ} {F : Type} [Field F]	CFSG.Quasithin.Stroth.str86_le_lhat_of_isPGroup
+4	160	1	(h : Setup G L f t) (d : TrialityD4Data L (2 ^ f)) (hp : ProductHyp h d) {K : Subgroup G}	CFSG.LocalAnalysis.EvenBN.TrialityD4.ProductCase.ProductDecompAux.qThree_le_kThree
+4	159	3	{L : Type} [Field L] [IsAlgClosed L] {p₀ : ℕ}	CFSG.HardMathSupport.Solomon.Coordinator.ChevQ.E6Three.KSLineR.d4t2_rElem_mem_layer
+4	159	1	{Omega : Type} [Field Omega] [IsAlgClosed Omega] [CharP Omega 2]	CFSG.StandardType.LieKnownR2.ExcPos.isConnectedAlgebraicSubgroup_e6_root_pair_stabilizer
+4	159	1	{p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G}	CFSG.StandardType.bstar_eq_of_twoSub
+4	158	6	{V : Type} [CommGroup V] [Finite V] (hV : ∀ v : V, v ^ 2 = 1)	CFSG.CGT.PushingUpLit.BHS.exists_module_identification
+4	158	8	{K : Type} [Group K] [Finite K] {p : ℕ}	CFSG.KC.ThThreeCov.generating_of_coatom
+4	157	1	{p : ℕ} (hp : p.Prime) {lab : LargeEvenLabel} (hlab : LargeEvenInLambda2 lab)	CFSG.LocalAnalysis.GLTheoremA.FQ.canonStOrder_derived
+4	157	1	{G : Type} [Group G] {Bs L : Subgroup G} {x : G}	CFSG.StandardType.A8Coord.a8lmModelFun_surjective
+4	156	9	{G : Type u} [Group G] [Finite G] {p : ℕ}	CFSG.CGT.PushingUpLit.CGT6.thompson_p_times_perfect
+4	156	9	{F : Type} [Field F] [Finite F] {p f : ℕ}	CFSG.Semidihedral.AllPrime.fi_charP
+4	156	1	{p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) {lab : LargeEvenLabel}	CFSG.LocalAnalysis.GLTheoremA.FP.canonOddAut
+6	780	1	{G : Type} [Group G] [Finite G] {B Bs : Subgroup G} {x : G} {L D J : Subgroup G}	CFSG.StandardType.ExcPay.pow_six_le_card_range_ggGamma_E7_three
+6	715	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G}	CFSG.StandardType.hasNormalPComplement_commutator_ggFixedSubgroup_of_ggConfig
+6	346	1	{G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] {B Bs : Subgroup G}	CFSG.StandardType.lup10d_absorb
+6	289	1	{G : Type u} [Group G] [Finite G] {I J : Type*} [Fintype I] [Fintype J]	CFSG.Section10.uniformMu_card_I_eq_card_W1_of_hypothesis_10_1_supported_data
+6	282	1	{G : Type u} [Group G] [Finite G] (hmin : IsMinimalCounterexample G) (c : CentralizerSetup G) (hfirst : FirstCase c)	CFSG.GorensteinWalter.firstCase_cyclic_layer_aSeven_and_prime_three
+6	273	1	{G : Type u} [Group G] [Finite G] (Smax Tmax W W1 W2 P Q U V C D : Subgroup G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax))	CFSG.Section13.hypothesis_13_1_signNormalizationFor_of_sourceData
+6	223	2	{K : Type} [Field K] [Finite K] [CharP K 2] {p : ℕ} (hp : p.Prime)	CFSG.LocalAnalysis.GLTheoremA.rk2_E8_toralRankInput
+6	214	1	{p : ℕ} [Fact p.Prime] {V : Type} [AddCommGroup V] [Module (ZMod p) V] {n : ℕ}	CFSG.StandardType.HdRo7C.hdRo7CSignXAux_signx_not_sp
+6	207	5	{K : Type} [Field K] [Finite K] {p f : ℕ} (hp : p.Prime) (hp2 : p ≠ 2)	CFSG.ClassicalInvolution.two_ne_zero_of_card_eq_prime_pow
+6	201	1	{f n : ℕ} {K : Type} [Field K] [Finite K] [CharP K 2] {h : UnitaryFieldData 2 f K}	CFSG.StandardType.psuCPF_dag_mem
+6	188	2	{τ : Tag} {L : Type} [Field L] [IsAlgClosed L] {p₀ : ℕ} (S : LangSetup τ L p₀)	CFSG.HardMathSupport.Dickson.Sec6.I1431.excres_twistInner_of_rankOne
+6	180	1	(n : ℕ) {F : Type} [Field F] [Finite F] [CharP F 2] {bq cq : F}	CFSG.StandardType.ClassicalPosition.exists_isComponentOf_glBlockCentralizer_POmegaMinus
+6	176	3	{K : Type} [Field K] [Finite K] [CharP K 2] {V : Type} [AddCommGroup V]	CFSG.HardMathSupport.Curtis.Coordinator.SPLCell.exists_Omega_big_factor
+6	160	1	(hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G) (e : S ≃* Wreath (2 ^ n)) (hfour : ¬ Nonempty (centralizerFullQuotient n hn S e ≃* Equiv.Perm (Fin 4)))	CFSG.Wreathed.centralizerFullQuotient_simple_layer_of_not_symmetric_four
+6	144	11	{ι : Type} [Fintype ι] [DecidableEq ι] {K : Type} [Field K] [Finite K]	CFSG.Blueprint.isMulCommutative_sylow_statedProj_of_gl
+6	126	1	{G : Type} [Group G] [Finite G] {D : Data G} {V₀ V L : Subgroup G} {hV : IsElemAbelian 2 V}	CFSG.LocalAnalysis.UniquenessCase.PartTwo.exists_l34_active_conjugate
+6	124	1	{G : Type} [Group G] [Finite G] {n : ℕ} {b : G} {L : Subgroup G}	CFSG.StandardType.FF81.CentA.exists_odd_radical
+6	124	1	(h : RootHyp M V) (hPH : Pc M V ≤ H) (hVH : V ≤ inSubgroup (pCore 2) H) {h₀ : G} (hH : H = Pc M V ⊔ conjSubgroup h₀ (Pc M V)) (hnM : ¬ H ≤ M)	CFSG.RankThree.GF2n.Tim81.RootHyp.conjY_apply_coe
+6	119	1	[Finite G] [IsSimpleGroup G] (hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G)	CFSG.BrauerLinearThree.QOne.caseOneA_of_simple
+6	119	1	{G : Type*} [Group G] [Finite G] (component : Subgroup G) (heven : Even (Nat.card component)) (huniversal : UniversalComponentBlock.Universal component)	CFSG.ComponentClassification.BlockCentralSylowCommutation.centralizes
+6	118	1	{G : Type u} [Group G] [Finite G] (hmin : IsMinimalCounterexample G) (c : CentralizerSetup G) (w : SecondCaseWitness c)	CFSG.GorensteinWalter.secondCase_a7_A_centralizer_card_le_108
+6	113	1	{G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Finite Ω] (H D Q K V W Q0 S Q1 : Subgroup G)	CFSG.BenderSuzuki.PFchapter1section2.corollary_H_involution_mem_S
+6	112	1	{H : Subgroup G} {z : G} (h : MinimalInvolutionPointLocalFailure H z) (hcomm : ProperStrongEmbeddingCommutingImages G) (hsmallerR1 : ∀ (F : Type) [Group F] [Finite F], Nat.card F < Nat.card G → 2 ≤ twoRank F → (∃ A : Subgroup F, fusionStronglyEmbedded A) → R1Full F) {beta : rightCosetSpace H}	CFSG.ShultStronglyClosedTI.AmbientDegree.minimalLocalFailure_pair_involution_ambient_degree_formulas
+6	112	1	{L1 L2 S : Subgroup G} {k m : ℕ} {F : Type} [Field F] [Finite F] (hI : Str86AbHyp L1 L2 S k m F)	CFSG.Quasithin.Stroth.str86_le_lhat_of_isPGroup
+6	107	1	{p : ℕ} {P T B : Subgroup G} {e : ℕ} {V : Type} [AddCommGroup V] [Module (ZMod 2) V]	CFSG.LocalAnalysis.RankThreeUC.ProofSupport.PPartAnnihilation.actual_pPart_annihilation
+6	107	1	{p N : ℕ} [Fact p.Prime] {V : Type} [AddCommGroup V] [Module (ZMod p) V] {h : Fin (N - 1) → V}	CFSG.StandardType.l05nDF2_two_le_of_dep
+6	106	2	{K : Type} [Field K] [Finite K] [CharP K 2] {b c : K} (hirr : ∀ s : K, s ^ 2 + b * s + c ≠ 0)	CFSG.SeitzReduction.F4Pilot.omIndex_quadMinus_three
+6	105	1	{G : Type u} [Group G] [Finite G] {W1 W2 W : Subgroup G} {I J ι : Type*} [Fintype I]	CFSG.Section3.betaIJ_eq_evalCoeff
+6	104	1	(D : Data G) {V₀ V : Subgroup G} {p : ℕ} {L A : Subgroup G} {t : G} {B : Subgroup G}	CFSG.LocalAnalysis.UniquenessCase.PartTwo.S19.A_le_M_of_ctx19_10
+6	103	3	{G V : Type*} [Group G] [Finite G] [AddCommGroup V] [Module ℂ V] [FiniteDimensional ℂ V]	CFSG.OddOrderBasics.character_values_algebraic_integer
+6	103	1	(n f : ℕ) (S : Set (GL (Fin n ⊕ Fin n) (GaloisField 2 f))) (hSU : ∀ s ∈ S, s ∈ CFSG.Open.StatedSp n (GaloisField 2 f)) (hS : ∀ s ∈ S, ∀ s' ∈ S, Commute s s') (hodd : ∀ s ∈ S, Odd (orderOf s)) {e : Matrix (Fin n ⊕ Fin n) (Fin n ⊕ Fin n) (GaloisField 2 f)}	CFSG.StandardType.ClassicalPosition.bmSTS_degree_two
+6	103	1	{G : Type u} [Group G] [Finite G] (Smax Tmax W W1 W2 P Q U V C D H : Subgroup G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax))	CFSG.Section13.section13_theorem_13_10_H_eq_fitting_of_sourceContext
+6	103	1	{G : Type u} [Group G] [Finite G] (c : CentralizerSetup G) (w : SecondCaseWitness c) (d : SecondCaseComponentData w)	CFSG.GorensteinWalter.secondCase_a7_equation_eight
+6	99	1	{ι K : Type} [Fintype ι] [DecidableEq ι] [Field K] [Fintype K] [CharP K 2]	CFSG.StandardType.omegaBlockGroup_fixed_eq_statedOmega
+6	99	1	(X : Type) [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 24) (h5 : ∀ a b : Fin 5 → X, Function.Injective a → Function.Injective b → ∃ q : P, ∀ i, q • a i = b i)	CFSG.FiveTransitive.Degree24.order_eleven_cycleType_eq_double
+6	98	4	{G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] (hp2 : p ≠ 2)	CFSG.GroupTheory.exists_noncyclic_exponent_classTwo_normalized
+6	98	1	(hRig : GGLabelRigidInput) {G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime]	CFSG.StandardType.HdRo7C.hdRo7CKCoordAux_model
+6	96	1	{n : ℕ} (hn : 1 ≤ n) {K : Type} [Field K] [Finite K] (hK : Nat.card K = (2 ^ n) ^ 2)	CFSG.LocalAnalysis.GLTheoremA.FQ.stOrderBody_twE6
+6	96	1	{L : Type u} [Group L] [Finite L] {G : Type u} [Group G] [Finite G]	CFSG.Section10.coherentExtension_agreesOn_sub_of_mem_of_degree_eq
+6	94	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] {I J : Type*} [Fintype I]	CFSG.Section10.theorem_10_3_supported
+6	93	1	(n : ℕ) {F : Type} [Field F] [Finite F] [CharP F 2] (hn : 3 ≤ n)	CFSG.StandardType.ClassicalPosition.fepomep_blockCentralizer_stable
+6	92	1	{G : Type u} [Group G] [Finite G] {L : Subgroup G} {H W1 W2 W Z : Subgroup L} {S SZ X Y : Finset (Section1.ClassFunction L)}	CFSG.Section6.theorem_6_8_caseC2_nonbase_piColumn_mem_SZ_of_reducible_card_eq
+6	90	1	{F : Type} [Field F] [Finite F] [CharP F 2] {f : ℕ} {hc : Nat.card F = (2 ^ f) ^ 2}	CFSG.StandardType.LieKnownR2.PSU.l10su5_suH_symm
+6	89	1	{F : Type} [Field F] [Finite F] [CharP F 2] {f : ℕ} (hc : Nat.card F = (2 ^ f) ^ 2)	CFSG.StandardType.ClassicalPosition.bmSDU_isUnitaryInvolution
+6	87	1	(D : Data G) (S : s16h_Std D) (hσ : D.sig = D.sig1) (hJP : K_JonesParshallH1) {V L : Subgroup G} (h : Setting16 D ⊥ V L)	CFSG.LocalAnalysis.UniquenessCase.PartTwo.s16h_mixed_open_unique
+6	87	1	{t : ZMod (2 * n) → V} (ht : IsPolygonApartment Γ n t) (hn : 3 ≤ n) (hP : IsGeneralizedPolygon Γ n) (hT : IsThick Γ) (hM : MoufangCondition D Γ n)	CFSG.Quasithin.Stroth.exists_reflection
+6	86	6	{F : Type} [Field F] [Finite F] [CharP F 2] {f : ℕ} (hF : Nat.card F = (2 ^ f) ^ 2)	CFSG.GroupTheory.gomiLeviFactor_gbU_su
+6	86	2	{τ : Tag} {L : Type} [Field L] [IsAlgClosed L] {p : ℕ} (S : LangSetup τ L p)	CFSG.HardMathSupport.Dickson.Sec6.I1431.ssOth_twoD_high
+6	85	1	(h89 : PartThree.Lemma8_9) (h113 : PartThree.Theorem11_3) (hC : HypothesisC D) (hrad : ∀ N : Subgroup G, N.Normal → Group.IsSolvable N → N = ⊥) (hW : ¬ ∃ f n : ℕ, 2 ≤ f ∧ Nonempty (G ≃* L2Wreath f n)) (hn3 : ¬ ∀ d ∈ D, ∀ e ∈ D, orderOf (d * e) ∈ ({1, 2, 3} : Set ℕ))	CFSG.OddTranspositions.PartFour.ncard_blockImage
+6	84	1	(hb : ¬ X.Z 0 ≤ X.Gi 3) (hc : CharTwoStab (V := V) (G := G)) (hGT : Even (Nat.card X.GT)) (hs : IsSingularity Γ G s) (hodd : Odd s) (h5 : 5 ≤ s)	CFSG.Quasithin.St84.Setup.Z_one_eq_centerOf_L_one
+6	84	1	{G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Finite Ω] (H D Q : Subgroup G)	CFSG.BenderSuzuki.PFchapter1section1.proposition_1_a
+6	84	1	{G : Type u} [Group G] [Finite G] {W1 W2 W : Subgroup G} {I J : Type*} [Fintype I]	CFSG.Section13.theorem_13_9_zeroColumn_linearCharacter_right_eq_one
+6	83	1	{Q : Type u} [Group Q] [Finite Q] {q : ℕ} [Fact q.Prime] (S : Sylow q Q)	CFSG.BenderSuzuki.External.hkt_factorization_lt_normalizerIn_sylow_of_lt_sylow
+6	82	1	(S : Setting z E F) {a : G} {w : ℕ} (h : Sec3Hyp S a w) (h217 : ∀ Y : Subgroup (Hbar z), CFSG.GroupTheory.oddOrderClosure Y = Y → (∀ P : Subgroup (Hbar z), P ≤ Y → IsPGroup 2 P → Y ≤ Subgroup.normalizer (P : Set (Hbar z)) → P = ⊥) → (∀ y ∈ Y, ∀ r ∈ Rbar S a, y * r = r * y) → (∀ y ∈ Y, ∀ r ∈ Rbar S a, ∀ v ∈ commSpace (rhoLin S r), rhoLin S y v = v) → aVec S h.mem_Q ∉ (⨆ y ∈ Y, commSpace (rhoLin S y)) → Lbar S a ≤ Subgroup.normalizer (Y : Set (Hbar z)) → Rbar S a = ⊥ ∨ Y = ⊥) (h3 : ∀ α ∈ Eset S a, ∀ α' ∈ Eset S a, orderOf (α * α') ≤ 3)	CFSG.RankThree.GF2n.Stroth78.stroth78_35
+6	81	1	(h34 : Stroth34Statement) (hspread : StrothNoA2SpreadStatement) {hc : Ctx M Q Z B} {n : ℕ} (H : Sec10Hyp hc n) {t : G}	CFSG.RankThree.GF2n.Stroth80.Good101.sup_inf_QB_inf_Vt
+6	79	1	{H : Subgroup G} {z : G} (h : InvolutionPointLocalEmbedding H z) (S : Sylow 2 G) (hzS : z ∈ (S : Subgroup G)) (hzcenter : (⟨z, hzS⟩ : (S : Subgroup G)) ∈ Subgroup.center (S : Subgroup G))	CFSG.ProperTwoGeneratedCore.LocalCriterionCentralizerHull.original_central_sylow_entire_point_index_and_oddness
+6	78	1	{K V : Type} [Field K] [AddCommGroup V] [Module K V] {Q : QuadraticForm K V} {P P' : HypPair Q}	CFSG.StandardType.LieKnownR2.POmega.Radical.core_polar_span_eq_zero
+6	77	1	(hc : CharTwoStab (V := V) (G := G)) (hn0 : 2 ≤ X.n 0) (hs : IsSingularity Γ G s) (hodd : Odd s) (h5 : 5 ≤ s) (hX : ¬ RightTransitive Γ G (X.line.arc 0 s).vert 0 s)	CFSG.Quasithin.St84.Setup.E_eq_Z_one_sup_Z_neg_one_sup_QT
+6	77	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] (M MF U W1 W2 H0 C : Subgroup G) (p q u : ℕ)	CFSG.Section9.theorem_9_10_quotient_complement_centralizer_source_core_sec9
+6	76	1	(hP : IsGeneralizedPolygon Γ 4) (hT : IsThick Γ) (c : Γ.Coloring (Fin 2)) {s t : ℕ} (hdeg : ∀ v, Γ.degree v = if c v = 0 then t + 1 else s + 1) (hreg : ∀ x, c x = 0 → IsRegularVertex Γ x)	CFSG.Geometry.GeneralizedQuadrangles.ncard_starLine_of_dist_four
+6	76	1	{Omega : Type} [Field Omega] [IsAlgClosed Omega] [CharP Omega 2] {lab : LargeEvenLabel} {p : ℕ}	CFSG.StandardType.S2MathAs1E6Companion1625.ltrv3j1_geomCentralizer_eq
+6	76	1	{K : Type} [Field K] {ι : Type} [Fintype ι] [DecidableEq ι] (S : ClSetting K ι)	CFSG.HardMathSupport.C14Cl.ClSetting.mem_A_of_mem
+6	72	1	{n : ℕ} {K : Type} [Field K] [Finite K] [CharP K 2] {G : Matrix (Fin n) (Fin n) K}	CFSG.StandardType.pslGraph_star_mem
+6	72	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 36) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree36AbelianFiveBound.eq_one_of_nineteen_fixed
+6	71	5	{K V : Type} [Field K] [Finite K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]	CFSG.ClassicalInvolution.Asc77.T7S2R.elementaryGroup_le_normE_sup_hub
+6	71	5	{G : Type} [Group G] [Finite G] {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2)	CFSG.LieType.OutStructure.sylow_normal_of_normal_cyclic_of_card_lt_two_mul
+6	71	1	(H : ThCyc G L R t) (W : ThLocalIn L S A B z) (W2 : ThLocalIn2 B A Aa b) (hD : DHyp A Aa t D) (h4 : ∀ d ∈ D, d ^ 4 = 1) (hb : ∀ d ∈ D, b * d * b⁻¹ = d⁻¹)	CFSG.EvenSporadicStandard.ThStd.QHyp.eq_of_le_of_comm
+6	71	1	{p : ℕ} [Fact p.Prime] (hp2 : p ≠ 2) {V : Type} [AddCommGroup V] [Module (ZMod p) V]	CFSG.StandardType.ggDepA_pair_zero_symm
+6	71	1	{G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] {Bs : Subgroup G}	CFSG.StandardType.ggF4_frame
+6	70	6	{K : Type} [Field K] [Finite K] {p f : ℕ} [Fact p.Prime] [CharP K p]	CFSG.Blueprint.statedSU_pow_p_eq_one
+6	70	2	{K V : Type} [Field K] [Finite K] [CharP K 2] [AddCommGroup V] [Module K V]	CFSG.LocalAnalysis.GLTheoremA.T171Sh.orthComponentBlockAnalysis_holds
+6	70	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 72) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree72Classification.alternatingGroup_le
+6	70	1	{G : Type u} [Group G] [Finite G] (M MF H U C H0 W1 W2 : Subgroup G) (S : Finset (Section1.ClassFunction M)) (τ : Section1.ClassFunction M →ₗ[ℂ] Section1.ClassFunction G)	CFSG.Section11.theorem_11_typePDefinitionData_of_hypothesis
+6	69	4	{K : Type} [Field K] [Finite K] {V : Type} [AddCommGroup V] [Module K V]	CFSG.Blueprint.EvenSource.nonempty_sourceOmega_equiv_minus
+6	69	2	(H : Hyp4 S g) (C : Cons311 S g) {t : S.O} (ht : t ∈ S.Lbar g) (ht1 : t ≠ 1) (hVQ : ¬ V S g t ≤ S.Qa g)	CFSG.GF2Type.Smith1979.W4ThmA.false_of_transitive_four
+6	69	1	{K : Type} [Field K] [Finite K] {n : ℕ} (hn : 1 ≤ n) (hK : Nat.card K = (2 ^ n) ^ 2)	CFSG.LocalAnalysis.GLTheoremA.T156.twE6FixOn_isRoot
+6	68	1	(D : Data G) (Ch : Choice2011 G) (h4 : S23_4 D Ch) (h23 : S23_23 D Ch) (h1930 : H1930 D) (c : Ctx23L D Ch)	CFSG.LocalAnalysis.UniquenessCase.UC22.Ctx23L.sq_mem_inf_centralizer_V_of_mem_centralizer_Z
+6	67	1	{D : Data G} {V₀ V L X : Subgroup G} {p n l : ℕ} {C Dc : Subgroup G} {Gamma : Set G} (ctx : Ctx17_42 D V₀ V L X p n l C Dc Gamma)	CFSG.LocalAnalysis.UniquenessCase.PartTwo.S17.Ctx17_42.borelChevOver
+6	67	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 52) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree52Classification.exists_odd_five_fixer
+6	66	3	(K : Type) [Field K] [Finite K] {ℓ f : ℕ} [Fact ℓ.Prime] [CharP K ℓ]	CFSG.HardMathSupport.Dickson.LocalTwoBalance.Cross.W2.e6_four_exists_nonregular_at
+6	66	1	{L1 L2 S : Subgroup H} {n : ℕ} (hF : F112Hyp L1 L2 S) (h1 : VS3 L1) (hn : 2 ≤ n) (h2 : IsL2Quot n (oTwoQuot ↥L2))	CFSG.Quasithin.F112R.St84.f112sa_relIndex_left
+6	65	1	{L1 L2 S : Subgroup G} {k : ℕ} {F : Type} [Field F] [Finite F] (hF : F112Hyp L1 L2 S)	CFSG.Quasithin.Stroth.str86_card_q2_and_card_s
+6	64	2	{τ : Tag} {L : Type} [Field L] [IsAlgClosed L] [CharP L 2] {p₀ : ℕ}	CFSG.HardMathSupport.Dickson.Sec6.Up34Chev2.bad3_e6class
+6	64	1	[Finite G] {H : Subgroup G} {z : G} (h : InvolutionPointLocalEmbedding H z) (S : Sylow 2 G) (hzS : z ∈ (S : Subgroup G))	CFSG.ProperTwoGeneratedCore.LocalCriterionDegreeIdentity.distinguished_swap_fiber_eq_pair_stabilizer_class
+6	64	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 69) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree69Classification.alternatingGroup_le
+6	64	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 80) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree80Classification.alternatingGroup_le
+6	63	1	[IsSimpleGroup G] (hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G) (e : S ≃* Wreath (2 ^ n))	CFSG.Wreathed.ComponentCoveringLocal.original_preimage_quaternion_quotient_surjective
+6	63	1	{G : Type} [Group G] [Finite G] {B Bs L D J K : Subgroup G} {x y : G} (hH : GGResHyp 3 B Bs x L D J y K)	CFSG.StandardType.K_only_E6_dependent_L_B5_join_raw
+6	63	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 54) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree54Classification.alternatingGroup_le
+6	62	1	(hS : SchreierFor Blueprint.Catalog) (hU : CatalogueU.CatalogAlmostSimpleUnbalancedOutcome) (hheld : KProperRelativeB.HeldInput) (hSol : SolomonCommutingCoreInput) (hGW : GorensteinWalterConnectedInput) (hMax : MaximalTwoComponentInput)	CFSG.ComponentClassification.GrSLit.GrS5.false_of_isL34Type_component_central
+6	62	1	{K : Type} [Field K] [Finite K] {σ : K ≃+* K} {n p : ℕ} {E : Subgroup (twistedE6RootGroup K σ)}	CFSG.StandardType.ggKGTl_conj_injective
+6	62	1	(h86 : Lemma8_6) (h87 : Theorem8_7) (hC : HypothesisC D) (hrad : ∀ N : Subgroup G, N.Normal → Group.IsSolvable N → N = ⊥) (hO4 : ¬ O4PairData G D) (hF : FaithfulOnBlocks hC.alpha)	CFSG.OddTranspositions.PartThree.EightEight.odd_ncard_conjOrbit
+6	62	1	{G X : Type*} [Group G] [Finite G] [Finite X] [MulAction G X] (Q : Subgroup G)	CFSG.FiveTransitive.CentralFreeFixedDivisibility.complementary_fixed_dvd
+6	62	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] {I J : Type u} [Fintype I]	CFSG.Section10.theorem_10_8_derived_nonidentity_subset_A_of_hypothesis_10_4_a_supported_data
+6	61	3	{G : Type} [Group G] [Finite G] {F : Type} [Field F] [Finite F]	CFSG.Semidihedral.FixedCoreNontrivial.sq_dvd_card_of_sl2_inverting
+6	61	6	{F : Type} [Field F] [Finite F] {p f : ℕ} [Fact p.Prime] [CharP F p]	CFSG.ClassicalInvolution.Disconnected.AschTight.S19M.center_pow_three_su
+6	61	3	{F : Type} [Field F] [Finite F] [CharP F 2] {b c : F} (hirr : ∀ s : F, s ^ 2 + b * s + c ≠ 0)	CFSG.ClassicalInvolution.WeakCT.twistedB2BlockStandardPair_minusDatum_even
+6	61	1	{W : Type*} [CommGroup W] [Finite W] (hw2 : ∀ w : W, w ^ 2 = 1) (x : MulAut W) (hx3 : x ^ 3 = 1)	CFSG.LocalAnalysis.WeakClosure81.hGaloisLinearEquiv_one
+6	61	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 79) (h5 : IsMultiplyPretransitive P X 5)	CFSG.FiveTransitive.Degree79Classification.alternatingGroup_le
+6	61	1	[Finite G] [IsMinCE G] {p : ℕ} [Fact p.Prime] {M : Subgroup G} (hM : M ∈ section8MaximalSubgroups G)	CFSG.section8SylowSubgroupInAmbient_le_fitting_of_isPGroup
+8	339	1	{G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] {B Bs : Subgroup G} {x : G} {L D J : Subgroup G}	CFSG.StandardType.lup10d_absorb
+8	283	1	{G : Type u} [Group G] [Finite G] {I J : Type*} [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J]	CFSG.Section10.uniformMu_card_I_eq_card_W1_of_hypothesis_10_1_supported_data
+8	275	1	{G : Type} [Group G] [Finite G] {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} {y : G} {K : Subgroup G}	CFSG.StandardType.A8Coord.a8kf_card_ker
+8	271	1	{G : Type u} [Group G] [Finite G] (Smax Tmax W W1 W2 P Q U V C D : Subgroup G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax)) (τS : Section1.ClassFunction Smax →ₗ[ℂ] Section1.ClassFunction G) (τT : Section1.ClassFunction Tmax →ₗ[ℂ] Section1.ClassFunction G)	CFSG.Section13.hypothesis_13_1_signNormalizationFor_of_sourceData
+8	205	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} {𝒦 : Finset (Subgroup G)}	CFSG.StandardType.ggF4_join_nonempty
+8	198	1	{f n : ℕ} {K : Type} [Field K] [Finite K] [CharP K 2] {h : UnitaryFieldData 2 f K} {X B : GL (Fin n) K} (S : PSUGraphSetting h n X B)	CFSG.StandardType.psuCPF_dag_mem
+8	167	3	{K : Type} [Field K] [Finite K] [CharP K 2] {V : Type} [AddCommGroup V] [Module K V] [FiniteDimensional K V]	CFSG.HardMathSupport.Dickson.Sec6.fixedLayer_of_isD42_component
+8	143	1	(n : ℕ) {F : Type} [Field F] [Finite F] [CharP F 2] {bq cq : F} (hirr : ∀ s : F, s ^ 2 + bq * s + cq ≠ 0) (hn : 4 ≤ n)	CFSG.StandardType.ClassicalPosition.exists_isComponentOf_glBlockCentralizer_POmegaMinus
+8	124	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} (hcfg : GGConfig p B Bs x L D J)	CFSG.StandardType.ggBeta_range_rank_three_of_innerDiag
+8	111	1	{H : Subgroup G} {z : G} (h : MinimalInvolutionPointLocalFailure H z) (hcomm : ProperStrongEmbeddingCommutingImages G) (hsmallerR1 : ∀ (F : Type) [Group F] [Finite F], Nat.card F < Nat.card G → 2 ≤ twoRank F → (∃ A : Subgroup F, fusionStronglyEmbedded A) → R1Full F) {beta : rightCosetSpace H} (hbeta : beta ≠ rightCosetMk H 1) {t : G}	CFSG.ShultStronglyClosedTI.AmbientDegree.minimalLocalFailure_pair_involution_ambient_degree_formulas
+8	111	1	{G : Type} [Group G] [Finite G] {n : ℕ} {b : G} {L : Subgroup G} {z : Fin 3 → ↥L} (h : Counterexample G n b L z)	CFSG.StandardType.FF81.PropOne.exists_aStar
+8	105	1	{G : Type u} [Group G] [Finite G] {W1 W2 W : Subgroup G} {I J ι : Type*} [Fintype I] [Fintype J] [Fintype ι]	CFSG.Section3.betaIJ_eq_evalCoeff
+8	99	1	(n f : ℕ) (S : Set (GL (Fin n ⊕ Fin n) (GaloisField 2 f))) (hSU : ∀ s ∈ S, s ∈ CFSG.Open.StatedSp n (GaloisField 2 f)) (hS : ∀ s ∈ S, ∀ s' ∈ S, Commute s s') (hodd : ∀ s ∈ S, Odd (orderOf s)) {e : Matrix (Fin n ⊕ Fin n) (Fin n ⊕ Fin n) (GaloisField 2 f)} (he : IsPrimIdemIn (Algebra.adjoin (GaloisField 2 f) (Units.val '' S)) e) (hadj : formAdj (RingHom.id (GaloisField 2 f)) (bmSTS_J n f) e = e)	CFSG.StandardType.ClassicalPosition.bmSTS_degree_two
+8	97	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} {y : G}	CFSG.StandardType.ggF4Plus_original_b3_of_cfg
+8	94	1	{p N : ℕ} [Fact p.Prime] {V : Type} [AddCommGroup V] [Module (ZMod p) V] {h : Fin (N - 1) → V} {α : Fin (N - 1) → Module.Dual (ZMod p) V} {r : Fin (N - 1) → (V ≃ₗ[ZMod p] V)}	CFSG.StandardType.l6kp_finrank_R
+8	92	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] {I J : Type*} [Fintype I] [Fintype J] [DecidableEq I]	CFSG.Section10.theorem_10_3_supported
+8	90	1	(hRig : GGLabelRigidInput) {G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] {B Bs : Subgroup G} {x : G}	CFSG.StandardType.HdRo7C.hdRo7CKCoordAux_model
+8	89	1	(hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G) (e : S ≃* Wreath (2 ^ n)) (hfour : ¬ Nonempty (centralizerFullQuotient n hn S e ≃* Equiv.Perm (Fin 4))) (p f : ℕ) (hp : p.Prime)	CFSG.Wreathed.ActualCentralizerSemilinear.actual_projective_model_cover_inputs
+8	86	1	(D : Data G) (S : s16h_Std D) (hσ : D.sig = D.sig1) (hJP : K_JonesParshallH1) {V L : Subgroup G} (h : Setting16 D ⊥ V L) (hs2 : s15 D.M ⊥ V h.hyp151.isElemAbelian L = 2) {t : MulAut (Vtil ⊥ V h.hyp151.isElemAbelian)}	CFSG.LocalAnalysis.UniquenessCase.PartTwo.s16h_mixed_open_unique
+8	84	1	{G : Type u} [Group G] [Finite G] {W1 W2 W : Subgroup G} {I J : Type*} [Fintype I] [Fintype J] [DecidableEq I]	CFSG.Section13.theorem_13_9_zeroColumn_linearCharacter_right_eq_one
+8	83	1	{ι K : Type} [Fintype ι] [DecidableEq ι] [Field K] [Fintype K] [CharP K 2] (Φ : QuadraticForm K (ι → K)) (hΦ : (QuadraticMap.polarBilin Φ).Nondegenerate)	CFSG.StandardType.omegaBlockGroup_fixed_eq_statedOmega
+8	82	1	{F : Type} [Field F] [Finite F] [CharP F 2] {f : ℕ} {hc : Nat.card F = (2 ^ f) ^ 2} {n : ℕ} {v w v' w' : Fin n → F}	CFSG.StandardType.LieKnownR2.PSU.l10su5_frame_proj_mem_K
+8	73	1	(hc : CharTwoStab (V := V) (G := G)) (hn0 : 2 ≤ X.n 0) (hs : IsSingularity Γ G s) (hodd : Odd s) (h5 : 5 ≤ s) (hX : ¬ RightTransitive Γ G (X.line.arc 0 s).vert 0 s) (hGT : Even (Nat.card X.GT)) {m : ℕ}	CFSG.Quasithin.St84.Setup.E_eq_Z_one_sup_Z_neg_one_sup_QT
+8	72	1	{n : ℕ} {K : Type} [Field K] [Finite K] [CharP K 2] {G : Matrix (Fin n) (Fin n) K} {B : GL (Fin n) K} (S : PSLGraphSetting n K G B)	CFSG.StandardType.pslGraph_star_mem
+8	68	1	(X : Type) [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 24) (h5 : ∀ a b : Fin 5 → X, Function.Injective a → Function.Injective b → ∃ q : P, ∀ i, q • a i = b i) (hnotAlt : ¬alternatingGroup X ≤ P) (s : Set X)	CFSG.FiveTransitive.Degree24.five_point_stabilizer_mod_eleven_global_bound
+8	66	1	{G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Finite Ω] (H D Q : Subgroup G) (t : G) (hA1 : HypothesisA1 G Ω H D Q t)	CFSG.BenderSuzuki.PFchapter1section1.proposition_1_a
+8	64	1	(h34 : Stroth34Statement) (hspread : StrothNoA2SpreadStatement) {hc : Ctx M Q Z B} {n : ℕ} (H : Sec10Hyp hc n) {t : G} (ht : Good101 M Q Z B t) {Y : Subgroup G}	CFSG.RankThree.GF2n.Stroth80.Good101.sup_inf_QB_inf_Vt
+8	63	1	{Omega : Type} [Field Omega] [IsAlgClosed Omega] [CharP Omega 2] {lab : LargeEvenLabel} {p : ℕ} {R : Type} [Group R]	CFSG.StandardType.S2MathAs1E6Companion1625.ltrv3j1_geomCentralizer_eq
+8	63	1	{L1 L2 S : Subgroup G} {k : ℕ} {F : Type} [Field F] [Finite F] (hF : F112Hyp L1 L2 S) (hSB : bigB L1 L2 S ≤ Subgroup.normalizer (S : Set G)) (hk : 2 ≤ k)	CFSG.Quasithin.Stroth.str86_card_q2_and_card_s
+8	63	1	{G : Type u} [Group G] [Finite G] (hmin : IsMinimalCounterexample G) (c : CentralizerSetup G) (w : SecondCaseWitness c) (d : SecondCaseComponentData w) (hA7 : Nonempty ((d.E ⧸ Subgroup.center d.E) ≃* alternatingGroup (Fin 7)))	CFSG.GorensteinWalter.secondCase_a7_A_centralizer_card_le_108
+8	62	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] {I J : Type u} [Fintype I] [Fintype J] [DecidableEq I]	CFSG.Section10.theorem_10_8_derived_nonidentity_subset_A_of_hypothesis_10_4_a_supported_data
+8	61	3	(K : Type) [Field K] [Finite K] {ℓ f : ℕ} [Fact ℓ.Prime] [CharP K ℓ] (hf : 1 ≤ f) (hK : Nat.card K = ℓ ^ f)	CFSG.HardMathSupport.Dickson.LocalTwoBalance.Cross.W2.e6_four_actor
+8	61	1	{G : Type} [Group G] [Finite G] {D : Data G} {V₀ V L : Subgroup G} {hV : IsElemAbelian 2 V} (c : S168e3Ctx D V₀ V L hV) (hcomp : IsComponentOf (lBar V₀ V hV L) (Mbar D.M V₀ V hV))	CFSG.LocalAnalysis.UniquenessCase.PartTwo.s168e3_alt_five_orbit_three_parabolic
+8	61	1	{G : Type u} [Group G] [Finite G] (Smax Tmax W W1 W2 P Q U V C D H : Subgroup G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax)) (τS : Section1.ClassFunction Smax →ₗ[ℂ] Section1.ClassFunction G) (τT : Section1.ClassFunction Tmax →ₗ[ℂ] Section1.ClassFunction G)	CFSG.Section13.section13_theorem_13_10_H_eq_fitting_of_sourceContext
+8	60	1	{n : ℕ} (hn : 1 ≤ n) {K : Type} [Field K] [Finite K] (hK : Nat.card K = (2 ^ n) ^ 2) (σ : K ≃+* K) (hσ : ∀ c, σ c = c ^ 2 ^ n)	CFSG.StandardType.E6Dep.ZL.tFrame_hat
+8	59	1	{K : Type} [Field K] {ι : Type} [Fintype ι] [DecidableEq ι] (S : ClSetting K ι) [Fintype K] [CharP K 2]	CFSG.HardMathSupport.C14Cl.ClSetting.sigma_idempotent
+8	58	1	{G : Type*} [Group G] [Finite G] (component : Subgroup G) (heven : Even (Nat.card component)) (huniversal : UniversalComponentBlock.Universal component) (hquasisimple : IsQuasisimple component) (hcard : 3 ≤ Nat.card ↥(UniversalOrbitBlock.block component))	CFSG.ComponentClassification.BlockCentralSylowCommutation.centralizes
+8	57	1	{Omega : Type} [Field Omega] [IsAlgClosed Omega] [CharP Omega 2] {lab : LargeEvenLabel} {R : Type} [Group R] {I : Set (MulAut R)}	CFSG.StandardType.E6R16FieldTwo.compRank_repr_eq_four
+8	55	1	(hRig : GGLabelRigidInput) {G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G}	CFSG.StandardType.ggInnerDiagOnLabel_phiOneTwo_L_of_innerDiag
+8	55	1	{G : Type} [Group G] [Finite G] {B Bs : Subgroup G} {z : Fin 3 → G} {Lc T : Fin 3 → Subgroup G} {χ : Fin 3 → (B →* Multiplicative (ZMod 3))} {X Xk : Subgroup G}	CFSG.GGQ2Prime.O1pTriple.ω3_ne_one
+8	53	1	(h34 : Stroth34Statement) (h311a : Stroth311aStatement) (hc : Ctx M Q Z B) {n : ℕ} {t : G} (hs : Sec9Hyp hc n t) {X Y : Subgroup G} (hsplit : Split95 M Q Z B t X Y)	CFSG.RankThree.GF2n.Stroth80.HS9.exists_a2_in_kappa
+8	52	1	{G : Type} [Group G] [Finite G] {b₀ : G} {K E : Subgroup G} (hstd : StdTwD5 b₀ K E) {B : Basis3 G (5 + 1)} (hB : Adapted B b₀ K E)	CFSG.StandardType.FrameRoute.FS81.centralizer_eq_sup_of_recOutTwD5
+8	52	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {K : Type} [Field K] [Finite K]	CFSG.StandardType.ggNSDiag_toral_bound
+8	52	1	{G : Type u} [Group G] [Finite G] {W W1 W2 Smax Tmax P Q U V : Subgroup G} (hmin : IsMinCE G) (hcase : Section8.theorem_8_8_case_b_data W W1 W2 Smax Tmax P Q) (hSTypeP : Section8.typePData Smax P U W1 W2) (hTTypeP : Section8.typePData Tmax Q V W2 W1)	CFSG.pfSection13SourceTailSetupForCaseB_core
+8	51	4	{ℓ f : ℕ} (hℓ : ℓ.Prime) (hf : 1 ≤ f) (K : Type) [Field K] (hK : Nat.card K = (ℓ ^ f) ^ 2) (σ : K ≃+* K) (hσ : ∀ c, σ c = c ^ (ℓ ^ f))	CFSG.HardMathSupport.Dickson.LocalTwoBalance.Cross.exists_langFrame_twistedE6_sylow
+8	51	2	{K V : Type} [Field K] [Finite K] [CharP K 2] [AddCommGroup V] [Module K V] [FiniteDimensional K V] {Q : QuadraticForm K V}	CFSG.LocalAnalysis.GLTheoremA.T171Sh.orthComponentBlockAnalysis_of_cases
+8	51	1	{G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Finite Ω] (H D Q K V W Q0 S Q1 : Subgroup G) (t s : G) (hsec : ((_root_.CFSG.BenderSuzuki.PFchapter1section1.HypothesisA G Ω H D Q t ∧ K ≤ D ∧ (∀ x : G, x ∈ K ↔ x ∈ D ∧ _root_.CFSG.BenderSuzuki.PFAppendixIII.rightConjugateElem x t = x⁻¹) ∧ V = _root_.CFSG.BenderSuzuki.PFchapter1section1.peterfalviV D t ∧ W ≤ V ∧ W = _root_.CFSG.BenderSuzuki.PFchapter1section1.peterfalviW V (K : Set G) ∧ Q0 ≤ Q ∧ (∀ x : G, x ∈ Q0 ↔ x = 1 ∨ (x ∈ H ∧ _root_.CFSG.BenderSuzuki.PFAppendixIII.IsInvolution x)) ∧ S ≤ Q ∧ Q1 ≤ Q ∧ (∃ P : Sylow 2 Q, S = (P : Subgroup Q)	CFSG.BenderSuzuki.PFchapter1section3.section3_q_card_eq_complement_card
+8	50	3	{K : Type} [Field K] [Finite K] {V : Type} [AddCommGroup V] [Module K V] [FiniteDimensional K V] {Q : QuadraticForm K V}	CFSG.HardMathSupport.Dickson.LocalTwoBalance.Cross.isLocallyBalancedAbs_two_projOrth_of_three_lt
+8	50	1	(h : Tim79a.ParrottHyp z) (P : GL8) (hP : ∀ a : A45, actionQA45 (z := z) h D a = P * rhoA a * P⁻¹) {σ₂ : ↥(H z)} (hσ₂ : orderOf σ₂ = 3) (hq₂ : qH (z := z) D σ₂ = s2A) (hc₂ : σ₂ * sigma1Nine (z := z) D = sigma1Nine (z := z) D * σ₂) {τ : ↥(H z)}	CFSG.RankThree.GF2n.Parrott.mem_centralizer_of_conjV_pi_eq
+8	49	1	{G : Type} [Group G] [Finite G] [IsSimpleGroup G] (hGnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 4 ≤ n) (S : Sylow 2 G)	CFSG.Semidihedral.AllPrime.frontier_abg_II_4_4
+8	49	1	(n : ℕ) {F : Type} [Field F] [Finite F] [CharP F 2] (hn : 3 ≤ n) (S : Set (GL (fepomepι n) F)) (hSU : ∀ s ∈ S, s ∈ (fepomepJ n F).range)	CFSG.StandardType.ClassicalPosition.fepomep_blockCentralizer_stable
+8	49	1	{G : Type} [Group G] {p : ℕ} [Fact p.Prime] {Bs : Subgroup G} {x y : G} {D L J K : Subgroup G} (M : GGQTwoModel p Bs x y D L J K)	CFSG.StandardType.ggQ2x_nsmul_model
+8	46	1	(h86 : Lemma8_6) (h87 : Theorem8_7) (hC : HypothesisC D) (hrad : ∀ N : Subgroup G, N.Normal → Group.IsSolvable N → N = ⊥) (hO4 : ¬ O4PairData G D) (hF : FaithfulOnBlocks hC.alpha) (hne : derivedSeries (Halpha D hC.alpha) 1 ≠ derivedSeries (Halpha D hC.alpha) 2) {x w y : G}	CFSG.OddTranspositions.PartThree.EightEight.odd_ncard_conjOrbit
+8	46	1	{G : Type u} [Group G] [Finite G] (hmin : IsMinimalCounterexample G) (c : CentralizerSetup G) (hfirst : FirstCase c) (d : FirstCaseCountData c) (P : Sylow 3 G)	CFSG.GorensteinWalter.firstCase_exists_t2_order_four_swap
+8	45	1	{n : ℕ} (hn : 4 ≤ n) {K : Type} [Field K] [Finite K] [CharP K 2] {b c : K} (hirr : ∀ s : K, s ^ 2 + b * s + c ≠ 0)	CFSG.LocalAnalysis.GLTheoremA.S172C.nonempty_statedProjOmegaMinus_equiv_orthDerived
+8	45	1	{G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Finite Ω] (H D Q K V W Q0 S Q1 P : Subgroup G) (t s : G) (p : ℕ)	CFSG.BenderSuzuki.PFchapter2.claim_1_Q0_card_gt_two
+8	44	1	[Finite G] [IsSimpleGroup G] (hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G) (e : S ≃* Wreath (2 ^ n)) (K : Subgroup (involutionCentralizer n S e))	CFSG.Wreathed.centralizer_normal_index_eq_transferKernel
+8	44	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} {n f : ℕ}	CFSG.StandardType.sub_three_le_twoLocalRank_of_PSU
+8	44	1	(D : Data G) {V₀ V : Subgroup G} {p : ℕ} {L A : Subgroup G} {t : G} {B : Subgroup G} {r : ℕ} (h : Ctx19_10 D V₀ V p L A t B r)	CFSG.LocalAnalysis.UniquenessCase.PartTwo.S19.A_le_M_of_ctx19_10
+8	43	1	(S : Setting z E F) {a : G} {w : ℕ} (h : Sec3Hyp S a w) (h217 : ∀ Y : Subgroup (Hbar z), CFSG.GroupTheory.oddOrderClosure Y = Y → (∀ P : Subgroup (Hbar z), P ≤ Y → IsPGroup 2 P → Y ≤ Subgroup.normalizer (P : Set (Hbar z)) → P = ⊥) → (∀ y ∈ Y, ∀ r ∈ Rbar S a, y * r = r * y) → (∀ y ∈ Y, ∀ r ∈ Rbar S a, ∀ v ∈ commSpace (rhoLin S r), rhoLin S y v = v) → aVec S h.mem_Q ∉ (⨆ y ∈ Y, commSpace (rhoLin S y)) → Lbar S a ≤ Subgroup.normalizer (Y : Set (Hbar z)) → Rbar S a = ⊥ ∨ Y = ⊥) (h3 : ∀ α ∈ Eset S a, ∀ α' ∈ Eset S a, orderOf (α * α') ≤ 3) {α : Hbar z} (hα : α ∈ Tset S a)	CFSG.RankThree.GF2n.Stroth78.hyp_stroth78_36
+8	42	1	{G : Type} [Group G] [Finite G] {p : ℕ} {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} (hS : GGQTwoSetting p B Bs x L D J)	CFSG.StandardType.GGQ2CentPort.ggqTwoSetting_le_left
+8	42	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] (M MF H U C H0 W1 W2 : Subgroup G) (S : Finset (Section1.ClassFunction M)) (τ : Section1.ClassFunction M →ₗ[ℂ] Section1.ClassFunction G) (p q : ℕ)	CFSG.Section11.theorem_11_3_not_coherent_S_of_hypothesis
+8	41	1	{G : Type} [Group G] [Finite G] {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} (hS : GGQTwoSetting 3 B Bs x L D J) {lab : LargeEvenLabel}	CFSG.StandardType.GGQ2Frame.ExcPlacement.excTwE6_rank_of_orth
+8	39	1	{p : ℕ} {P T B : Subgroup G} {e : ℕ} {V : Type} [AddCommGroup V] [Module (ZMod 2) V] {ρ : Representation (ZMod 2) G V} (hc : BinaryActionRankCounterexample G p P T B e ρ)	CFSG.LocalAnalysis.RankThreeUC.Section5.AbelianImageCentralizerScalar.scalar
+8	39	1	{p : ℕ} [Fact p.Prime] {V V' : Type} [AddCommGroup V] [Module (ZMod p) V] [AddCommGroup V'] [Module (ZMod p) V'] (τ : V ≃ₗ[ZMod p] V')	CFSG.StandardType.HdRo7D.Small.hdRo7DSmAdaptAux_move
+8	39	1	(D : Data G) {V₀ V : Subgroup G} {p : ℕ} {L A : Subgroup G} {t : G} {B : Subgroup G} {r : ℕ} {A₀ H : Subgroup G}	CFSG.LocalAnalysis.UniquenessCase.PartTwo.S19.nineteen_glue_six
+8	39	1	(D : Data G) (S : s16h_Std D) (hr3 : CFSG.Open.evenRank G = 3) (hσ : D.sig = D.sig1) {V₀ V L : Subgroup G} (hV : IsElemAbelian 2 V) (h : Setting16 D V₀ V L) (hc : Conc4_136 D V₀ V hV L)	CFSG.LocalAnalysis.UniquenessCase.PartTwo.s16h_e3_CycThreeCent_three_dvd_of_not_dvd_ctilde
+8	39	1	{L : Type u} [Group L] [Finite L] {W1 W2 W : Subgroup L} {I J : Type*} [Fintype I] [Fintype J] [DecidableEq I]	CFSG.Section10.theorem_10_8_conjugate_omega_baseColumn_eq
+8	39	1	{G : Type u} [Group G] [Finite G] {L : Subgroup G} {H W1 W2 W Z : Subgroup L} {S SZ X Y : Finset (Section1.ClassFunction L)} {T : Section1.ClassFunction L →ₗ[ℂ] Section1.ClassFunction G} (h68 : theorem_6_8_hypothesis L H W1 W2 W S T)	CFSG.Section6.theorem_6_8_caseC2_nonbase_piColumn_mem_SZ_of_reducible_card_eq
+8	38	1	{G : Type u} [Group G] [Finite G] {L : Subgroup G} {H W1 W2 W Z : Subgroup L} {S SZ X Y : Finset (Section1.ClassFunction L)} {T τ₁ : Section1.ClassFunction L →ₗ[ℂ] Section1.ClassFunction G} (h68 : theorem_6_8_hypothesis L H W1 W2 W S T)	CFSG.Section6.theorem_6_8_caseB_Y_dade_agreement_subgroupImage
+8	37	3	{K : Type} [Field K] [Finite K] [Algebra K Ω] [IsAlgClosure K Ω] {ℓ f : ℕ} [Fact ℓ.Prime] [CharP Ω ℓ]	CFSG.HardMathSupport.Lang.SeitzPlane.phi3_D4_layer_data'
+8	37	1	[Finite G] {H : Subgroup G} {z : G} (h : InvolutionPointLocalEmbedding H z) (S : Sylow 2 G) (hzS : z ∈ (S : Subgroup G)) (hzcenter : (⟨z, hzS⟩ : (S : Subgroup G)) ∈ Subgroup.center (S : Subgroup G)) {beta : rightCosetSpace H}	CFSG.ProperTwoGeneratedCore.LocalCriterionFixedRoot.original_root_card_eq_t_centralizer_index
+8	37	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] (Smax Tmax W W1 W2 P Q U V C D : Subgroup G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax)) (τS : Section1.ClassFunction Smax →ₗ[ℂ] Section1.ClassFunction G)	CFSG.Section13.section13_theorem_13_16_Vinf_normalizer_W1_le_D_of_sourceContext
+8	37	1	{G : Type u} [Group G] [Finite G] [IsMinCE G] (Smax Tmax W W1 W2 P Q U V C D L H : Subgroup G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax)) (τS : Section1.ClassFunction Smax →ₗ[ℂ] Section1.ClassFunction G)	CFSG.Section13.section13_theorem_13_17_frobenius_of_not_conj_sourceContext
+8	36	1	{K : Type} [Field K] [Finite K] [CharP K 2] {d : ℕ} {Q : QuadraticForm K (Fin d → K)} {g : K[X]} [Fact (Irreducible g)]	CFSG.StandardType.OrthNs.exists_frameSetup
+8	36	1	{τ : Tag} {L : Type} [Field L] [IsAlgClosed L] {p₀ : ℕ} (S : LangSetup τ L p₀) {M : Type*} [CommGroup M]	CFSG.StandardType.TableCRes.fam_exists_inner_cover_le
+8	35	1	(hc : S10Ctx G p) (hin : AlphaInputs G p) {B : Subgroup G} {x : G} {L : Subgroup G} {b a : G} (h : Cfg p B x L b) (ac : AlphaCtx G p B x L b a)	CFSG.LocalAnalysis.GLTheoremA.S10.alpha_Da
+8	35	1	{G : Type} [Group G] {p : ℕ} [Fact p.Prime] {Bs : Subgroup G} {V : Type} [AddCommGroup V] [Module (ZMod p) V]	CFSG.StandardType.l05nLOE_exists_psi
+8	35	1	{τ : Tag} (hτ : τ = .E6 ∨ τ = .E7 ∨ τ = .E8) {L : Type} [Field L] [IsAlgClosed L] [CharP L 2] {p₀ p : ℕ} (S : LangSetup τ L p₀)	CFSG.StandardType.LangRat.langRatFieldSL_inner
+8	35	1	{G : Type} [Group G] [Finite G] {B Bs : Subgroup G} {x : G} {L D J : Subgroup G} {Rd Ra : Prop} (hR : GGSecFiveRestGen 5 B Bs x L D J Rd Ra)	CFSG.StandardType.ggF4N2Bstar_mem_signedAction_range
+8	35	1	(hb : ¬ X.Z 0 ≤ X.Gi 3) (hc : CharTwoStab (V := V) (G := G)) (hGT : Even (Nat.card X.GT)) (hs : IsSingularity Γ G s) (hodd : Odd s) (h5 : 5 ≤ s) (hX : ¬ RightTransitive Γ G (X.line.arc 0 s).vert 0 s) (hn0 : X.n 0 = 1)	CFSG.Quasithin.St84.Setup.Gi_one_eq_L_one
+8	35	1	(h : RootHyp M V) (hPH : Pc M V ≤ H) (hVH : V ≤ inSubgroup (pCore 2) H) {h₀ : G} (hH : H = Pc M V ⊔ conjSubgroup h₀ (Pc M V)) (hnM : ¬ H ≤ M) {F : Type} [Field F]	CFSG.RankThree.GF2n.Tim81.RootHyp.imgK_map_sl2
+8	35	1	{G : Type*} [Group G] {F : Type*} [Field F] {V : Type*} [AddCommGroup V] [Module F V] (ρ : Representation F G V)	CFSG.isTrivialCompSubtypeOfLeKer
+8	35	1	{G : Type u} [Group G] [Finite G] (Smax Tmax W W1 W2 P Q U V C D H : Subgroup G) (G0 : Set G) (Sfam : Finset (Section1.ClassFunction Smax)) (Tfam : Finset (Section1.ClassFunction Tmax)) (τS : Section1.ClassFunction Smax →ₗ[ℂ] Section1.ClassFunction G)	CFSG.Section13.section13_theorem_13_10_etaQSharpLowerBound_of_sourceContext
+8	34	1	{G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] {B Bs L D J K : Subgroup G} {x y : G} (hH : GGResHyp p B Bs x L D J y K)	CFSG.StandardType.ggResK_typed_E6_card_six_weyl_join
+8	34	1	{X : Type} [Fintype X] [DecidableEq X] (P : Subgroup (Equiv.Perm X)) (hcard : Fintype.card X = 80) (h5 : IsMultiplyPretransitive P X 5) (hnotAlt : ¬ alternatingGroup X ≤ P) (s : Set X)	CFSG.FiveTransitive.Degree80FactorizationBounds.two_le
+8	34	1	(Y : Setup Γ G) (H : Y.Sec5Hyp s n₀) {r₀ : ℕ} (hZ : Y.Zt 0 ≠ ⊥) (h3 : Y.Zt 1 = ⊥) (h4 : Y.Z 1 = centerOf (Y.L 1)) (hb : Y.HasB 0 1) (he : Y.ZtExt 0 r₀ r₀)	CFSG.Quasithin.St84.Setup.card_S_eq_sixtyfour
+8	34	1	{X : Type u} [Group X] [Finite X] {M W : Subgroup X} {t : X} (hM : IsStronglyEmbedded M) (ht : IsInvolution t) (htM : t ∉ M)	CFSG.BenderSuzuki.lemma101_sylow_D
+8	33	1	{G : Type} [Group G] [Finite G] {p : ℕ} [Fact p.Prime] (hp2 : p ≠ 2) {B Bs : Subgroup G} {x : G}	CFSG.StandardType.l05nDD1_alpha_x
+8	32	1	{K : Type} [Field K] [Finite K] {σ : K ≃+* K} {n p : ℕ} {E : Subgroup (twistedE6RootGroup K σ)} (hK : Nat.card K = (2 ^ n) ^ 2) (hσ : ∀ c, σ c = c ^ (2 ^ n))	CFSG.StandardType.ggKGTl_pick_spec
+8	32	1	{L : Type} [Field L] [IsAlgClosed L] {t : StatedLieTag} {n f p : ℕ} {Bs : Subgroup (GGAutU t n f)} {S : Matrix (Fin (ggU (absTag t) 6 f).D.rank) (Fin (ggU (absTag t) 6 f).D.rank) ℤ} {π : Equiv.Perm (Fin (ggU (absTag t) 6 f).D.rank)}	CFSG.StandardType.asmA_smat
+8	32	1	{L1 L2 S : Subgroup G} {k m : ℕ} {F : Type} [Field F] [Finite F] (hF : F112Hyp L1 L2 S) (hSB : bigB L1 L2 S ≤ Subgroup.normalizer (S : Set G)) (hk : 2 ≤ k)	CFSG.Quasithin.Stroth.str86_caseIIa_two_fixEq
+8	32	1	{G : Type u} [Group G] [Finite G] (hmin : IsMinimalCounterexample G) (c : CentralizerSetup G) (od : FirstCaseOrientedPrimeData c) (hfirst : FirstCase c) (hHhat : c.Hhat = c.H)	CFSG.GorensteinWalter.firstCase_cyclic_componentLayer_le_componentLayer_of_normalizer
+8	31	1	(h331 : Stmt3_3_1_F4) (h432 : Stmt4_3_2_F4) (h512 : Stmt5_1_2_F4) (h614 : Stmt6_1_4_F4) (h615 : Stmt6_1_5_F4) (h626 : Stmt6_2_6_F4) (h6210 : Stmt6_2_10_F4) (h6211 : Stmt6_2_11_F4)	CFSG.Quasithin.H13.Hyp6Sec2.two_six_ch615_F4
+8	31	2	{E : Type*} {J : Type} [Group E] [Group J] [Finite E] [Finite J] [Group.IsPerfect E] (η : E →* J)	CFSG.LieType.Chevalley.ordinary_exceptional_field_four_central_two_cover_trivial
+8	31	1	{F : Type} [Field F] [Finite F] [CharP F 2] {V : Type} [AddCommGroup V] [Module F V] [FiniteDimensional F V]	CFSG.LocalAnalysis.GLTheoremA.S172C.liftableRank_orthDerived_minus_aux2
+8	31	1	{D : Data G} {Ch : Choice2011 G} {c : Ctx23L D Ch} (X : S2341Frame D Ch c) (h4 : S23_4 D Ch) (h23 : S23_23 D Ch) (h39 : S23_39 D Ch) (h40 : S23_40 D Ch)	CFSG.LocalAnalysis.UniquenessCase.UC22.Ctx23L.S2341Frame.Wstar_mk_eq_one_iff
+8	31	1	(h331 : Stmt3_3_1) (h432 : Stmt4_3_2) (h512 : Stmt5_1_2) (h614 : Stmt6_1_4) (h615 : Stmt6_1_5) (h626 : Stmt6_2_6) (h6210 : Stmt6_2_10) (h6211 : Stmt6_2_11)	CFSG.Quasithin.H13.Hyp6Sec2.two_ch618M2
+8	30	1	{G : Type} [Group G] [Fintype G] [IsSimpleGroup G] (hnonab : ∃ a b : G, a * b ≠ b * a) (n : ℕ) (hn : 2 ≤ n) (S : Sylow 2 G)	CFSG.Wreathed.ConditionalCompleteBase.conditional_complete_base_column_support_and_principal_block_exhaustion
+8	30	1	(hS : Setting G) (hU0 : FullCoreLocal G) (hD1 : TheoremD1 G) (K1 : StronglyEmbeddedRankTwoKFactNoBM) (K2 : StronglyEmbeddedCyclicOuterKFact) (K3 : KFactOutCyclic) (K4 : KFactComponentPCoreThree) (hno : NoExcludedSection3 G)	CFSG.LocalAnalysis.RankThreeTheoremC.a6_lemma42_of_not_wc
