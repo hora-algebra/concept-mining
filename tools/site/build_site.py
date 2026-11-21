@@ -30,6 +30,7 @@ from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import scoring  # noqa: E402
+import potential  # noqa: E402
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -180,7 +181,7 @@ def in_flight(claims: list, prs: list, now: float) -> list[dict]:
 
 
 def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None = None,
-          prs_file: str | None = None) -> dict:
+          prs_file: str | None = None, hypotheses_file: str | None = None) -> dict:
     with open(os.path.join(ROOT, "data/map/blocks.json"), encoding="utf-8") as fh:
         blocks = json.load(fh)
     with open(os.path.join(ROOT, "data/map/summary.json"), encoding="utf-8") as fh:
@@ -340,6 +341,45 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
     flight = in_flight(read_json(claims_file, rep), read_json(prs_file, rep),
                        time.time())
 
+    # --- upper bounds and the two-layer search ----------------------------
+    pot_rows, problems = potential.read_potential(os.path.join(ROOT, "data/potential/blocks.tsv"))
+    for p in problems:
+        rep.err("data/potential/blocks.tsv", p)
+    pot: dict[str, dict] = {}
+    methods: set[str] = set()
+    for r in pot_rows:
+        f = r["folder"].replace("CFSG.", "", 1).replace("CFSG/", "", 1)
+        if f not in folders:
+            rep.err(r["_where"], f"folder {r['folder']!r} is not a folder of the map"); continue
+        parts = folders[f]["parts"]
+        if r["part"]:
+            match = [c for c in parts if c["part"] == r["part"]]
+            if not match:
+                rep.err(r["_where"], f"part {r['part']!r} is not a part of {f} on the map"); continue
+            shares = [(match[0], 1.0)]
+        else:
+            tot = sum(c["lines"] for c in parts) or 1
+            shares = [(c, c["lines"] / tot) for c in parts]
+        methods.add(r["method"])
+        for c, w in shares:
+            e = pot.setdefault(f + "/" + c["part"], {"lines": 0, "methods": {}})
+            e["methods"][r["method"]] = e["methods"].get(r["method"], 0) + round(r["lines"] * w)
+    for key, e in pot.items():
+        f, part = key.split("/", 1)
+        cap = next(c["lines"] for c in folders[f]["parts"] if c["part"] == part)
+        total = sum(e["methods"].values())
+        if total > cap:
+            rep.warn("data/potential/blocks.tsv", f"{key}: upper bounds add up to {total} lines, more than the "
+                     f"{cap} lines of the part; shown capped (methods may overlap)")
+        e["lines"] = min(total, cap)
+    hyps, problems = potential.read_hypotheses(hypotheses_file or os.path.join(ROOT, "data/search/hypotheses.jsonl"))
+    for p in problems:
+        rep.err("data/search/hypotheses.jsonl", p)
+    for h in hyps:
+        unknown = [g for g in h["regions"] if g.replace("CFSG.", "", 1).replace("CFSG/", "", 1) not in folders]
+        if unknown:
+            rep.warn("data/search/hypotheses.jsonl", f"{h['id']}: regions {unknown} are not folders of the map")
+
     strip = lambda rows: [{k: v for k, v in r.items() if not k.startswith("_")} for r in rows]
     return {
         "summary": {k: summary[k] for k in ("commit", "declarations", "edges", "lines_in_declarations", "final")},
@@ -355,6 +395,8 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
         "work": strip(work),
         "candidates": strip(cands),
         "scores": scores,
+        "potential": {"methods": sorted(methods), "blocks": pot},
+        "search": {"statuses": potential.STATUSES, "hypotheses": hyps},
         "in_flight": flight,
         "checks": {"errors": len(rep.errors), "warnings": rep.warnings},
     }
@@ -366,6 +408,7 @@ def main() -> None:
     ap.add_argument("--out", default=os.path.join(ROOT, "docs/site/data/site.json"))
     ap.add_argument("--check", action="store_true", help="do not write; fail if the output is stale")
     ap.add_argument("--today", help="YYYY-MM-DD, for tests")
+    ap.add_argument("--hypotheses", help="search results to show instead of data/search/hypotheses.jsonl (previews)")
     ap.add_argument("--claims", help="JSON from `claim.py list --json` (deploy only)")
     ap.add_argument("--open-prs", help="JSON from `gh pr list --json number,title,author,body,url,isDraft` (deploy only)")
     ap.add_argument("--example", action="store_true",
@@ -373,7 +416,7 @@ def main() -> None:
     a = ap.parse_args()
     today = dt.date.fromisoformat(a.today) if a.today else dt.datetime.now(dt.timezone.utc).date()
     rep = Report()
-    data = build(a.ledger, rep, today, a.claims, a.open_prs)
+    data = build(a.ledger, rep, today, a.claims, a.open_prs, a.hypotheses)
     if a.example:
         data = {"example": True, **data}
     for w in rep.warnings:

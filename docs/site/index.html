@@ -39,6 +39,7 @@
         <div class="seg" role="group" aria-label="Color shows">
           <button type="button" data-color="progress" aria-pressed="true">Progress</button>
           <button type="button" data-color="field" aria-pressed="false">Field</button>
+          <button type="button" data-color="bound" aria-pressed="false">Upper bound</button>
         </div></div>
       <div class="ctl"><span class="ctl-label">Show</span>
         <div class="seg" role="group" aria-label="Show">
@@ -61,6 +62,12 @@
     <h2 id="h-rank">Concepts found</h2>
     <p class="sub">Each concept is a definition or lemma that was introduced to shorten the proof, ranked by the Lean tokens it saved (the measure used for points).</p>
     <div id="rank"></div>
+  </section>
+
+  <section id="s-search" aria-labelledby="h-search">
+    <h2 id="h-search">Search for global concepts</h2>
+    <p class="sub">Small, local repetitions are found by scripts. To find concepts that unify arguments far apart, AI models from several providers first propose many hypotheses ("which concept would unify what?"); only the most promising are then tried, and Lean decides. Proposals cost little and are allowed to be wrong; only verified ones count.</p>
+    <div id="search"></div>
   </section>
 
   <section id="s-score" aria-labelledby="h-score">
