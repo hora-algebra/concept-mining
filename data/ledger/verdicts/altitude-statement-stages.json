@@ -1,0 +1,35 @@
+{
+  "target": "FeitThompson",
+  "base": "3b646fa558a70386f3e90062492be7c941cece30",
+  "head": "worktree",
+  "verdict": "accept",
+  "phase": "done",
+  "reason": "",
+  "checks": {
+    "paths_allowed": true,
+    "no_shortcuts": true,
+    "build": true,
+    "protected_unchanged": true,
+    "axioms_unchanged": true
+  },
+  "files_changed": 344,
+  "tokens_before": 2861184,
+  "tokens_after": 2844621,
+  "tokens_saved": 16563,
+  "code_lines_before": 240136,
+  "code_lines_after": 238473,
+  "code_lines_saved": 1663,
+  "investment": false,
+  "build_seconds": 4,
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "candidate": "altitude-statement-stages",
+  "agent": "claude",
+  "model": "claude-opus-5-5",
+  "concept": "StageK (cumulative stages)",
+  "meaning": "StageK is the conjunction of all global results of the odd order proof whose dependency depth is at most K, built as a chain of Prop structures each extending the previous one; a chapter result at depth K+1 is proved under the single assumption StageK (\"all earlier results hold\"), and the main theorem assembles stage1, stage2, … in order.",
+  "date": "2026-11-21"
+}
