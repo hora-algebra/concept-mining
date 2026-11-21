@@ -114,6 +114,24 @@ def export_tree(root: str, rev: str, folder: str, dest: str) -> None:
     subprocess.run(["tar", "-x", "-C", dest], input=tar.stdout, check=True)
 
 
+IMPORT = re.compile(r"^\s*(?:public\s+)?(?:meta\s+)?import\s+(?:all\s+)?([A-Za-z0-9_.'«»]+)", re.M)
+MODULE_NAME = re.compile(r"[A-Za-z][A-Za-z0-9_']*(?:\.[A-Za-z0-9_']+)*")
+
+
+def outside_imports(tree: str, target: str) -> list[str]:
+    """Modules outside the target that the target's files under `tree` import."""
+    prefix = common.module_prefix(target)
+    found = set()
+    for d, _, fs in os.walk(os.path.join(tree, "CFSG", *target.split("/"))):
+        for fn in fs:
+            if fn.endswith(".lean"):
+                with open(os.path.join(d, fn), encoding="utf-8", errors="replace") as fh:
+                    for m in IMPORT.findall(fh.read()):
+                        if MODULE_NAME.fullmatch(m) and m != prefix and not m.startswith(prefix + "."):
+                            found.add(m)
+    return sorted(found)
+
+
 def cleanup_tokens(root: str, base_env: dict, head_env: dict) -> int:
     """Tokens, in the base sources, of the declarations the patch deleted that
     were not reachable from the protected declarations."""
@@ -291,6 +309,23 @@ def main() -> None:
                 return None
             return env_facts.compact(json.load(open(res)))
 
+        # Everything outside the target is trusted (the patch cannot touch
+        # it): build the modules the target imports from outside it, and so
+        # Mathlib's and the other packages' artifacts, here, outside the
+        # sandbox, where Lake may write into .lake/packages and fetch widget
+        # dependencies. Only module names are taken from the patched sources.
+        outside = sorted(set(outside_imports(tb, target)) | set(outside_imports(th, target)))
+        t0 = time.time()
+        r = subprocess.run([lake, "build", *outside], cwd=up, capture_output=True, text=True, timeout=4 * 3600)
+        f["seconds"]["build_outside"] = round(time.time() - t0)
+        open(os.path.join(out, "build-outside.log"), "w").write((r.stdout + r.stderr)[-200000:])
+        if r.returncode:
+            # a missing module named by the patch fails here: that is the
+            # patch's fault; anything else is a setup problem
+            if any(m.startswith("CFSG.") for m in outside) and "unknown module" in (r.stdout + r.stderr):
+                fail("build", ["an imported module does not exist: "
+                               + ", ".join(m for m in outside if m.startswith("CFSG."))[:300]])
+            raise Setup("the modules the target imports from outside it do not build")
         r, mods = build("base")
         if r.returncode:
             raise Setup("main does not build in the gate (base build failed); the maintainers must fix main")
