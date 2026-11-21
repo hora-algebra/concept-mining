@@ -19,14 +19,16 @@ work=$2
 here=$(cd "$(dirname "$0")/.." && pwd)
 cd "$here"
 git fetch -q origin main
-bad=$(git diff --name-only --diff-filter=DMRT origin/main... -- . \
-      ':!data/ledger/concepts.tsv' ':!data/ledger/history.tsv' ":!data/pilot/$target/measure_latest.json" || true)
+bad=$(git diff --name-only --diff-filter=MRT origin/main... -- . \
+      ':!data/ledger/concepts.tsv' ':!data/ledger/history.tsv' ':!data/ledger/contributions.tsv' \
+      ":!data/pilot/$target/measure_latest.json" || true)
 added=$(git diff --name-only --diff-filter=A origin/main... -- . \
       ":!lean/patches/$target/*.patch" ':!data/ledger/verdicts/*.json' ":!data/claims/$target/*.json" || true)
-if [ -n "$bad$added" ]; then
-  echo "reject: the pull request changes files outside a contribution:"; echo "$bad$added"; exit 1
+deleted=$(git diff --name-only --diff-filter=D origin/main... -- . || true)
+if [ -n "$bad$added$deleted" ]; then
+  echo "reject: the pull request changes files outside a contribution:"; echo "$bad$added$deleted"; exit 1
 fi
-for t in concepts history; do
+for t in concepts history contributions; do
   if ! git diff origin/main... -- "data/ledger/$t.tsv" | grep '^-[^-]' >/dev/null; then :; else
     echo "reject: ledger rows may only be appended ($t.tsv)"; exit 1; fi
 done

@@ -67,6 +67,7 @@ Each is one patch.
 |---|---|---|---|---|
 | `hallCoreIn` | the Hall core of a subgroup, as a subgroup of the ambient group; defined five times before | 57 | 721 | recipe written in this session (`tools/recipes/hall_core_in.py`) |
 | `IsTIDiff` | the cyclic TI difference set of (W, W₁, W₂) has stabilizer W and is disjoint from its conjugates outside W; `IsCyclicTIPair` now extends it | 289 | 5,604 | **the unattended loop** (`tools/contribute.py`, Claude Code, 10 minutes, no human step) |
+| `StageK` | "all chapter results of depth at most K hold", a chain of 32 Prop structures; each chapter is proved under one such assumption instead of a list of earlier results | 1,771 | 16,563 | the unattended loop, 21 minutes, 344 files |
 | `Irr` | the irreducible complex characters of a group; defined three times before | 0 (all 40 lines saved were in declarations the theorem does not need) | 564 | the unattended loop, 10 minutes |
 
 Code lines in this table are the ledger's: lines of the needed declarations.

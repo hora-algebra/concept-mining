@@ -92,7 +92,11 @@ def main() -> None:
             finish(1)
         for f in LEDGER_FILES:
             old, nw = os.path.join(REPO, f), os.path.join(prdir, f)
-            if os.path.exists(old) and os.path.exists(nw):
+            if os.path.exists(old) and not os.path.exists(nw):
+                v["checks"]["paths_allowed"] = False
+                v["reasons"].append(f"paths_allowed: {f} may not be deleted")
+                finish(1)
+            if os.path.exists(old):
                 o, n = open(old).read(), open(nw).read()
                 if not n.startswith(o):
                     v["checks"]["paths_allowed"] = False
