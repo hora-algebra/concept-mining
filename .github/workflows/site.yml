@@ -34,7 +34,7 @@ jobs:
           python-version: "3.12"
       - name: Test the checker
         run: python3 tools/site/test_build_site.py
-      - name: Check the ledger and that the page data is up to date
+      - name: Check the ledger and that the page data can be built from it
         run: python3 tools/site/build_site.py --check
       - name: Report the ledger change
         if: github.event_name == 'pull_request'

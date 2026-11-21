@@ -16,7 +16,7 @@ let D, SNAP, folders, TOT;
 const state = { area: store.get("cm-area", "lines"), color: store.get("cm-color", "progress"), scope: "all", t: 0 };
 
 fetch("data/site.json").then(r => r.json()).then(init).catch(e => {
-  document.getElementById("map").outerHTML = `<p class="empty">Could not load the data (${esc(e.message)}). If you opened the file directly, serve the folder over HTTP instead, for example <code>python3 -m http.server -d docs/site</code>.</p>`;
+  document.getElementById("map").outerHTML = `<p class="empty">Could not load the data (${esc(e.message)}). To preview locally, build the data first with <code>python3 tools/site/build_site.py</code>, then serve the folder over HTTP, for example <code>python3 -m http.server -d docs/site</code>.</p>`;
 });
 
 function init(data) {
