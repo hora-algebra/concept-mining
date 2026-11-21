@@ -132,6 +132,10 @@ def main() -> None:
     ap.add_argument("--head", default=None, help="revision to judge (default: working tree)")
     ap.add_argument("--target", required=True, help="folder under CFSG/, e.g. FeitThompson")
     ap.add_argument("--min-tokens", type=int, default=50)
+    ap.add_argument("--allow-growth", type=int, default=0,
+                    help="investment rule (off by default): accept a change that grows the target by at most "
+                         "this many tokens; the verdict is marked investment=true and must be paid back by later "
+                         "patches using the concept (tools/concept_credit.py)")
     ap.add_argument("--skip-build", action="store_true", help="cheap phases only (never accepts)")
     ap.add_argument("--json", default=None)
     a = ap.parse_args()
@@ -192,8 +196,12 @@ def main() -> None:
         v.update(tokens_before=b["tokens"], tokens_after=h["tokens"], tokens_saved=b["tokens"] - h["tokens"],
                  code_lines_before=b["code_lines"], code_lines_after=h["code_lines"],
                  code_lines_saved=b["code_lines"] - h["code_lines"])
+        v["investment"] = False
         if v["tokens_saved"] < a.min_tokens:
-            raise Reject(f"saves {v['tokens_saved']} tokens, less than the required {a.min_tokens}")
+            if a.allow_growth and v["tokens_saved"] >= -a.allow_growth:
+                v["investment"] = True
+            else:
+                raise Reject(f"saves {v['tokens_saved']} tokens, less than the required {a.min_tokens}")
         if a.skip_build:
             v["verdict"], v["reason"] = "unchecked", "cheap phases passed; build skipped"
             code = 75

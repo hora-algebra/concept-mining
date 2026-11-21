@@ -42,6 +42,35 @@ tolerant of nonsense. Layer (b) should be narrow and unforgiving. Mixing them,
 by asking one agent to both imagine and prove, makes it timid. It proposes only
 what it already knows how to finish.
 
+## What the proposal layer borrows from `/simplify`
+
+Claude Code's built-in `/simplify` command reviews a change from four angles
+in parallel, one independent agent per angle, then deduplicates the findings
+and applies the survivors. The angles transfer to proofs almost word for word:
+
+| `/simplify` angle | Its wording (abridged) | Reading for a proof library |
+|---|---|---|
+| Reuse | flag code that re-implements something the codebase already has, and name the existing helper | a local notion or lemma that Mathlib or another region already has; replacing the notion removes its whole local API |
+| Simplification | redundant or derivable state, copy-paste with slight variation, deep nesting, dead code | hypothesis lists threaded through chains of single-use lemmas; structures whose fields follow from a few others; arguments copied with small changes |
+| Efficiency | wasted work, repeated computation | the same fact re-derived in many places; expensive tactic calls that a lemma would replace (build time, not size) |
+| **Altitude** | fix the root cause at the right depth instead of patching a symptom; special cases layered on shared infrastructure mean the fix is not deep enough; prefer the more general change to the underlying mechanism, and name it | **a family of theorems proved case by case (per group, per type, per prime, per symmetric variant) that one theorem at the right level of generality would cover; name that theorem** |
+
+Two features of `/simplify` matter more than the angles themselves:
+
+- **One agent per angle, run in parallel, blind to each other.** Each agent
+  looks for one kind of improvement, so no single agent drifts to the easiest
+  kind. Diversity comes from the angles, not from sampling temperature.
+- **A separate apply phase that may skip findings.** Proposals are cheap. The
+  phase that edits keeps only findings that do not change behaviour and do not
+  reach far outside the scope, and records why it skipped the others. For us
+  "behaviour" means the protected statements, and the judge is Lean.
+
+The proposal layer below follows this design. It runs one agent per angle
+(reuse, simplification, altitude, and a cross-region angle), each shown the
+global material and asked for hypotheses together with measured evidence.
+Verification then applies them one at a time through `tools/verify.py`.
+Altitude is the angle aimed at the global abstractions this memo is about.
+
 ## Material that improves the hypotheses
 
 | Material | What it reveals | Status |
@@ -125,6 +154,31 @@ Next experiment, once permitted: give layer (a) the top 200 cross-region groups,
 the hypothesis bundles of two regions (FeitThompson and LocalAnalysis), and the
 dominator regions, and ask for unifying concepts. Then verify the 10 best by
 potential in FeitThompson, the only region whose build is measured.
+
+## First run (2026-11-21)
+
+Four proposal agents ran in parallel, one per angle (altitude, reuse,
+simplification, cross-region). Each was shown the global material and
+measured its own evidence. Together they returned 19 hypotheses
+(`data/search/hypotheses.jsonl`). Two angles independently proposed the same
+best one. The cross-region agent sampled the members of its families and
+rejected one family at the proposal stage: 0 of 7 `exists_frame` lemmas
+share a statement.
+
+| Hypothesis | Angle | Estimated lines | Result |
+|---|---|---|---|
+| Cumulative stages of chapter results (`StageK`): every Feit–Thompson chapter is proved under the single assumption "all earlier results hold" | altitude, simplification | 2,200 | **accepted**: 16,563 tokens, 1,663 lines, one patch, written by the unattended loop in 21 minutes |
+| A shared basic group-theory layer across regions | cross-region | 85,000–130,000 | proposed |
+| Transport along group isomorphisms (tactic or class) | cross-region | 20,000 | proposed |
+| One conjugate-subgroup notion | cross-region | 7,500 | proposed |
+| One structure for the minimal counterexample | altitude | 1,250 | proposed |
+| Character-theory basics (inner product, induction, coherence) | altitude | 2,500 | proposed |
+| Mathlib's transfer and focal subgroup theorems; textbook facts | reuse | 870 + 1,000 | proposed |
+| Same last name across namespaces (`exists_frame`, ...) | cross-region | – | rejected: not one statement |
+
+The accepted concept is architecture rather than new mathematics. It is
+still the first single concept worth more than a thousand lines, and it came
+from the altitude angle.
 
 ## Cost estimate (to be approved before running)
 
