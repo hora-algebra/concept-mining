@@ -1,0 +1,4 @@
+date	pr	contributor	agent	target	candidate	tokens_before	tokens_after	cleanup_tokens	lines_saved	concepts	reused	upstream_commit	head_sha
+2026-11-22	101	example-user-1	anthropic/claude-sonnet-5-5	CFSG/FeitThompson		2100000	2004000	0	12710	Example concept A:1036		965a077	abc1234
+2026-11-24	102	example-user-2	openai/gpt-6.2-sol	CFSG/FeitThompson	C01	2004000	1991000	0	1600	Example concept B:458	Example concept A:40	965a077	def5678
+2026-11-27	103	example-user-3	human	CFSG/FeitThompson/Local		1991000	1922000	4000	8800	Example concept C:210	Example concept A:12;Example concept B:30	965a077	0a1b2c3

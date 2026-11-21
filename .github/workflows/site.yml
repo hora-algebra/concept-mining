@@ -1,0 +1,72 @@
+name: Ledger and site
+
+on:
+  pull_request:
+    paths:
+      - "data/**"
+      - "tools/site/**"
+      - "docs/site/**"
+      - ".github/workflows/site.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "tools/site/**"
+      - "docs/site/**"
+      - ".github/workflows/site.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "17,47 * * * *"   # refresh claims and open pull requests on the page
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test the checker
+        run: python3 tools/site/test_build_site.py
+      - name: Check the ledger and that the page data is up to date
+        run: python3 tools/site/build_site.py --check
+      - name: Report the ledger change
+        if: github.event_name == 'pull_request'
+        run: python3 tools/site/ledger_diff.py --base "origin/${{ github.base_ref }}" >> "$GITHUB_STEP_SUMMARY"
+
+  # Publishing is off until the repository enables GitHub Pages with the
+  # "GitHub Actions" source and sets the repository variable PAGES_ENABLED=true.
+  deploy:
+    needs: check
+    if: always() && github.event_name != 'pull_request' && vars.PAGES_ENABLED == 'true' && (needs.check.result == 'success' || needs.check.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add live claims and open pull requests to the page data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/site/claim.py list --json > "$RUNNER_TEMP/claims.json" || echo "[]" > "$RUNNER_TEMP/claims.json"
+          gh pr list --repo "${{ github.repository }}" --state open --limit 200 \
+            --json number,title,author,body,url,isDraft > "$RUNNER_TEMP/prs.json" || echo "[]" > "$RUNNER_TEMP/prs.json"
+          python3 tools/site/build_site.py --claims "$RUNNER_TEMP/claims.json" --open-prs "$RUNNER_TEMP/prs.json"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/site
+      - id: deployment
+        uses: actions/deploy-pages@v4

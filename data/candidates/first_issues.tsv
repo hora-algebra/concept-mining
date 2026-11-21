@@ -1,0 +1,11 @@
+id	kind	title	area	evidence	size	status	issue
+C01	both	One p-core O_p instead of six	library-wide	parallel_definitions.tsv:pcore	6 definitions, 111,514 direct users	draft	
+C02	refactor	Merge the two definitions of p-rank	library-wide	parallel_definitions.tsv:prank	2 definitions, 33,069 direct users	draft	
+C03	both	Elementary abelian p-groups: one predicate	library-wide	parallel_definitions.tsv:elemabelian+elementaryabelian	6 definitions, 92,272 direct users	draft	
+C04	both	Quasisimple groups: one definition	library-wide	parallel_definitions.tsv:quasisimple	4 definitions, 54,546 direct users	draft	
+C05	name	Components and subnormal subgroups	library-wide	parallel_definitions.tsv:component+subnormal	14 definitions, 53,344 direct users	draft	
+C06	both	One p′-core O_p′ instead of five	library-wide	parallel_definitions.tsv:pprimecore	5 definitions, 34,790 direct users	draft	
+C07	name	29 ways to say "Sylow subgroup"	library-wide	parallel_definitions.tsv:sylow+sylowtwo	34 definitions, 42,699 direct users	draft	
+C08	both	The odd core O(G), defined 25 times	library-wide	parallel_definitions.tsv:oddcore	25 definitions, 19,202 direct users	draft	
+C09	name	"K is a finite field of odd characteristic" as a hypothesis bundle	library-wide	hyp_windows.tsv:1 ≤ f ; p ≠ 2 ; p.Prime	1,011 + 458 theorems in 16 folders	draft	
+C10	name	What is a "frame"? 136 copies of exists_frame	LocalAnalysis/StandardType	name_families.tsv:exists_frame	136 copies, 8,962 lines in 16 folders	draft	

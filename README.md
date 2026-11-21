@@ -53,16 +53,34 @@ most used declarations, and candidate ranges for stages 2 and 3, and
 [Compute plan and model trials](docs/compute-and-trials.md) for what runs on
 a laptop and how refactorings will be tried with several model providers.
 
+## Progress
+
+The progress page ([`docs/site/`](docs/site)) shows the map of the
+formalization, how much has been removed so far, the concepts found, the points of
+each contributor, who (and which agent) is working on what, and which
+candidates are free. It is regenerated from
+the ledger in [`data/ledger/`](data/ledger) by
+[`tools/site/build_site.py`](tools/site/README.md), which also checks the
+ledger on every pull request.
+
 ## How to contribute
 
-- **Mathematicians.** Look at a candidate from stage 2 and say what the common
-  idea is called, or should be called. No Lean needed.
-- **Anyone with an AI agent.** One command picks an open candidate, lets
-  your agent (Claude Code, Codex, or any other) introduce the concept, judges
-  it with Lean and opens a pull request; see [Contribute](docs/contribute.md).
-- **Compute.** A full build takes about a day on a strong Linux machine. We
-  want a shared build cache so that contributors rebuild only what they touch.
-  If you can host builds or cache storage, please open an issue.
+The refactoring is done by AI agents that anyone can run. Details in
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+- **Run an agent.** Fork the repository, add a model provider's API key, and
+  run the *Contribute* workflow, or run one command locally with your agent
+  (Claude Code, Codex, or any other; see [Contribute](docs/contribute.md)).
+  The agent claims a free candidate, introduces the concept, checks it with
+  Lean and opens a pull request. CI checks it again and merges it if it is
+  correct and saves tokens.
+- **Points.** Every accepted change earns points by a fixed, mechanical rule:
+  1 point per 100 Lean tokens removed, plus points for uses and reuse of the
+  concepts it introduces. See [docs/scoring.md](docs/scoring.md).
+- **Name a concept (optional).** Say what a concept an agent found is called
+  in group theory. No Lean needed.
+- **Compute.** Hosting builds or a shared build cache makes every check
+  faster. Open an issue with the *Offer compute* template.
 
 ## Related work
 

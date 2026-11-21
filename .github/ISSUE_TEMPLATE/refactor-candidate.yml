@@ -1,0 +1,37 @@
+name: Refactoring candidate
+description: Propose or claim a place where the formalization can be made shorter.
+title: "[refactor] "
+labels: ["refactor"]
+body:
+  - type: input
+    id: candidate
+    attributes:
+      label: Candidate
+      description: An id from docs/first-issues.md, or "new".
+  - type: input
+    id: target
+    attributes:
+      label: Target
+      description: The folder or file it touches, as on the map (e.g. CFSG/FeitThompson).
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What repeats, and what would replace it
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Rows of data/map or data/bundles, names of declarations, counts.
+  - type: dropdown
+    id: claim
+    attributes:
+      label: Are you working on it?
+      options:
+        - "No, this is a proposal"
+        - "Yes, I claim it"
+    validations:
+      required: true

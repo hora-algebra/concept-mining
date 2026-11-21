@@ -1,0 +1,83 @@
+name: Contribute
+
+# The "Contribute" button. Run it from the Actions tab of YOUR FORK
+# (Actions -> Contribute -> Run workflow). It runs tools/contribute.py: pick a
+# free candidate, claim it, let an AI agent (Claude Code or Codex CLI) rewrite
+# it, judge the result with Lean, and record it. With the secret PR_TOKEN it
+# also opens the pull request on hora-algebra/concept-mining; without it, the
+# result is pushed to a branch of your fork and the run summary links to it.
+#
+# Secrets in your fork: ANTHROPIC_API_KEY (agent "claude") or OPENAI_API_KEY
+# (agent "codex"); the provider bills you per use, capped by budget_usd.
+# Optional PR_TOKEN: a fine-grained token that may open pull requests for you.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Part of the library to work on"
+        default: FeitThompson
+      candidate:
+        description: "Candidate id from data/pilot/<target>/candidates.jsonl, or empty for the best free one"
+        default: ""
+      agent:
+        description: "AI agent"
+        type: choice
+        options: [claude, codex]
+        default: claude
+      model:
+        description: "Model id (empty = the agent's default)"
+        default: ""
+      budget_usd:
+        description: "Hard spending limit for this run, in USD"
+        default: "5"
+
+permissions:
+  contents: write
+
+jobs:
+  contribute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check that the contribute command is installed
+        run: |
+          test -f tools/contribute.py || { echo "::error::tools/contribute.py is not in this repository yet"; exit 1; }
+      - name: Install Lean (elan) and the agent
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          if [ "${{ inputs.agent }}" = claude ]; then npm install -g @anthropic-ai/claude-code; else npm install -g @openai/codex; fi
+      - name: Search, claim, rewrite, judge, record
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ secrets.PR_TOKEN || secrets.GITHUB_TOKEN }}
+          HAS_PR_TOKEN: ${{ secrets.PR_TOKEN != '' }}
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          args=(--target "${{ inputs.target }}" --root "$RUNNER_TEMP/cfsg-work" --agent "${{ inputs.agent }}"
+                --budget-usd "${{ inputs.budget_usd }}" --contributor "${{ github.actor }}")
+          [ -n "${{ inputs.candidate }}" ] && args+=(--candidate "${{ inputs.candidate }}")
+          [ -n "${{ inputs.model }}" ] && args+=(--model "${{ inputs.model }}")
+          [ "$HAS_PR_TOKEN" = "true" ] || args+=(--no-pr)
+          python3 tools/contribute.py "${args[@]}"
+      - name: Push the result to a branch of this fork
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain lean/patches data/ledger)" ] || [ "$(git rev-list --count origin/${{ github.ref_name }}..HEAD)" != 0 ]; then
+            b="contribute/${{ github.run_id }}"
+            git add lean/patches data/ledger docs/site/data 2>/dev/null || true
+            git commit -qm "Contribution from run ${{ github.run_id }}" || true
+            git push -q origin "HEAD:refs/heads/$b"
+            echo "Result pushed to [$b](https://github.com/${{ github.repository }}/tree/$b). [Open a pull request](https://github.com/hora-algebra/concept-mining/compare/main...${{ github.repository_owner }}:concept-mining:$b?expand=1)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Nothing was accepted in this run; no branch pushed." >> "$GITHUB_STEP_SUMMARY"
+          fi
