@@ -74,7 +74,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain lean/patches data/ledger)" ] || [ "$(git rev-list --count origin/${{ github.ref_name }}..HEAD)" != 0 ]; then
             b="contribute/${{ github.run_id }}"
-            git add lean/patches data/ledger docs/site/data 2>/dev/null || true
+            git add lean/patches data/ledger 2>/dev/null || true
             git commit -qm "Contribution from run ${{ github.run_id }}" || true
             git push -q origin "HEAD:refs/heads/$b"
             echo "Result pushed to [$b](https://github.com/${{ github.repository }}/tree/$b). [Open a pull request](https://github.com/hora-algebra/concept-mining/compare/main...${{ github.repository_owner }}:concept-mining:$b?expand=1)" >> "$GITHUB_STEP_SUMMARY"

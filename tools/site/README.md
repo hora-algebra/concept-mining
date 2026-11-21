@@ -2,7 +2,9 @@
 
 The progress page lives in [`docs/site/`](../../docs/site). It is static (no
 build step): `index.html`, `app.js` and `style.css` read one data file,
-`docs/site/data/site.json`, which this folder's script writes.
+`docs/site/data/site.json`, which this folder's script writes. The file is
+generated, not committed (it is in `.gitignore`): the Pages deployment
+rebuilds it from the data, and so does a local preview.
 
 ```
 data/map/blocks.json   ─┐  stage 1 map, one entry per part   (aggregate_blocks.py)
@@ -16,8 +18,8 @@ data/ledger/contributions.tsv ─┘ (points, via scoring.py)
 ## Commands
 
 ```bash
-python3 tools/site/build_site.py              # check the ledger, rewrite site.json
-python3 tools/site/build_site.py --check      # check only; fail if site.json is stale
+python3 tools/site/build_site.py              # check the ledger, write site.json (for a preview)
+python3 tools/site/build_site.py --check      # check only, as CI does on pull requests
 python3 tools/site/test_build_site.py         # tests of the checks
 python3 -m http.server -d docs/site 8000      # then open http://localhost:8000
 ```
@@ -48,7 +50,7 @@ Run on every pull request that touches `data/`, `tools/site/` or `docs/site/`
 | `lines_saved = lines_before - lines_after` | error |
 | `commit` is a git hash | error |
 | `target` is a folder of the map (`CFSG/FeitThompson`, `CFSG.FeitThompson.Local`, ...) | error |
-| `site.json` is what the script produces from the current data | error |
+| `site.json` can be built from the current data | error |
 | a concept has no `meaning` | warning |
 | consecutive concepts in one target do not chain (`lines_after` ≠ next `lines_before`) | warning |
 | the drop of `lines_total` in `history.tsv` differs from the sum of `lines_saved` over the same period | warning |
