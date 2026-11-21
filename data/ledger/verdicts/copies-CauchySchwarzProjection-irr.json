@@ -1,0 +1,27 @@
+{
+  "target": "FeitThompson",
+  "base": "7ce0351e6a64fd5de582c4599985593917200a71",
+  "head": "worktree",
+  "verdict": "accept",
+  "phase": "done",
+  "reason": "",
+  "files_changed": 6,
+  "tokens_before": 2861748,
+  "tokens_after": 2861184,
+  "tokens_saved": 564,
+  "code_lines_before": 240176,
+  "code_lines_after": 240136,
+  "code_lines_saved": 40,
+  "build_seconds": 5,
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "candidate": "copies-CauchySchwarzProjection-irr",
+  "agent": "claude",
+  "model": "claude-opus-5-5",
+  "concept": "Irr",
+  "meaning": "Irr G is the set of irreducible complex characters of a group G: the functions G → ℂ that are characters of some finite-dimensional irreducible complex representation of G.",
+  "date": "2026-11-21"
+}

@@ -9,8 +9,8 @@ A reply passes when, after writing its files into the checkout,
      and `#print axioms name` print exactly what they printed before;
   3. the new files contain no `sorry`, `admit`, `native_decide` or `axiom`.
 
-Shrinkage is measured on the changed files as code lines (non-blank, outside
-comments) and bytes. The original files are restored after every reply, so
+Shrinkage is measured on the changed files in Lean tokens (tools/size.py; the
+measure formatting cannot change), code lines and bytes. The original files are restored after every reply, so
 replies are judged one at a time.
 
     python3 tools/trials/judge.py --root ~/Codes/upstream/cfsg --tasks tasks.jsonl --runs out/trials
@@ -23,7 +23,11 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tempfile
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from size import tokens  # noqa: E402
 
 BLOCK = re.compile(r"^=== FILE: (?P<path>\S+) ===\n(?P<body>.*?)^=== END ===", re.M | re.S)
 FORBIDDEN = re.compile(r"\b(sorry|admit|native_decide)\b|^\s*axiom\s", re.M)
@@ -88,14 +92,16 @@ def main() -> None:
         else:
             saved = {}
             try:
-                before_lines = before_bytes = after_lines = after_bytes = 0
+                before_lines = before_bytes = after_lines = after_bytes = before_tok = after_tok = 0
                 for p, body in files.items():
                     full = os.path.join(root, p)
                     old = open(full, encoding="utf-8").read() if os.path.exists(full) else ""
                     saved[full] = old if os.path.exists(full) else None
                     before_lines += code_lines(old)
+                    before_tok += tokens(old)
                     before_bytes += len(old.encode())
                     after_lines += code_lines(body)
+                    after_tok += tokens(body)
                     after_bytes += len(body.encode())
                     with open(full, "w", encoding="utf-8") as f:
                         f.write(body)
@@ -110,7 +116,7 @@ def main() -> None:
                     res["passed"] = True
                 res.update(code_lines_before=before_lines, code_lines_after=after_lines,
                            bytes_before=before_bytes, bytes_after=after_bytes,
-                           shrink_lines=before_lines - after_lines)
+                           shrink_lines=before_lines - after_lines, shrink_tokens=before_tok - after_tok)
                 if res["passed"] and res["shrink_lines"] > 0:
                     res["usd_per_100_lines"] = round(100 * run["cost_usd"] / res["shrink_lines"], 4)
             except subprocess.TimeoutExpired:

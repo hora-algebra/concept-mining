@@ -1,0 +1,28 @@
+members	saved_estimate	uses	names
+5	8	409	CFSG.FeitThompson.mixedFitting ; CFSG.FeitThompson.Prep05.fittingOf ; CFSG.FeitThompson.Prep08.fittingOf ; CFSG.FeitThompson.Prep03.fittingIn ; CFSG.FeitThompson.fittingIn
+4	6	766	CFSG.FeitThompson.Prep03.hallCoreIn ; CFSG.FeitThompson.Prep05.hallCoreOf ; CFSG.FeitThompson.hallCoreIn ; CFSG.FeitThompson.Prep09.hallCoreIn
+4	6	144	CFSG.FeitThompson.conjSet ; CFSG.FeitThompson.Prep05.conjSet ; CFSG.FeitThompson.Prep08.conjSet ; CFSG.FeitThompson.Prep03.conjSet
+3	6	45	CFSG.FeitThompson.instFintypeSemidirectProduct ; CFSG.FeitThompson.FixedFreeImage.instFintypeSemidirectProduct ; CFSG.FeitThompson.FrobeniusInduction.instFintypeSemidirectProduct
+3	6	81	CFSG.FeitThompson.IsSylowSubgroupOf ; CFSG.FeitThompson.Prep05.IsSylowSubgroupIn ; CFSG.FeitThompson.Prep03.IsSylowOf
+4	6	62	CFSG.FeitThompson.alphaCoreIn ; CFSG.FeitThompson.Prep05.alphaCoreOf ; CFSG.FeitThompson.Prep09.alphaCoreIn ; CFSG.FeitThompson.Prep08.alphaCoreOf
+3	4	82	CFSG.FeitThompson.maximals ; CFSG.FeitThompson.maximalSubgroups ; CFSG.FeitThompson.Prep03.maximalFamily
+3	4	163	CFSG.FeitThompson.pCoreIn ; CFSG.FeitThompson.pCoreOf ; CFSG.FeitThompson.Prep08.pCoreOfSubgroup
+2	4	60	CFSG.FeitThompson.cfInnerFin ; CFSG.FeitThompson.Prep05.cfIP
+2	3	92	CFSG.FeitThompson.pComplCoreIn ; CFSG.FeitThompson.Prep09.pComplCoreIn
+2	3	211	CFSG.FeitThompson.IsHallPiSubgroupOf ; CFSG.FeitThompson.Prep08.IsHallOf
+2	3	79	CFSG.FeitThompson.sigmaSignalizer ; CFSG.FeitThompson.sigCoreSignalizer
+2	3	68	CFSG.FeitThompson.Prep03.IsPlane ; CFSG.FeitThompson.IsElementaryAbelianPlane
+2	3	7	CFSG.FeitThompson.fittingEquiv ; CFSG.FeitThompson.Proofs.NoFittingInducedWitness.fittingEquiv
+2	3	153	CFSG.FeitThompson.dadeMapFun ; CFSG.FeitThompson.dadeExtend
+2	3	58	CFSG.FeitThompson.fittingOfNormal ; CFSG.FeitThompson.Prep06.fittingIn
+2	2	35	CFSG.FeitThompson.puncturedCoreSet ; CFSG.FeitThompson.ambientPuncturedCore
+2	2	123	CFSG.FeitThompson.conjBy ; CFSG.FeitThompson.Prep08.conjSubgroup
+2	2	83	CFSG.FeitThompson.irrTrivialOn ; CFSG.FeitThompson.OneBlockRestriction.irrTrivialOn
+2	2	45	CFSG.FeitThompson.indFamDetectFinset ; CFSG.FeitThompson.centralLayerFinset
+2	2	65	CFSG.FeitThompson.sharp ; CFSG.FeitThompson.Prep03.sharp
+2	2	96	CFSG.FeitThompson.centralizerWithinElem ; CFSG.FeitThompson.Prep03.cent1
+2	2	290	CFSG.FeitThompson.Prep05.centralizerIn ; CFSG.FeitThompson.centralizerWithin
+2	2	25	CFSG.FeitThompson.sat ; CFSG.FeitThompson.satSet
+2	2	217	CFSG.FeitThompson.Prep03.cent ; CFSG.FeitThompson.Prep09.centIn
+2	2	102	CFSG.FeitThompson.CauchySchwarzProjection.classFunInner ; CFSG.FeitThompson.charInner
+2	1	16	CFSG.FeitThompson.NormalInducedFamily.pairOf ; CFSG.FeitThompson.starPair

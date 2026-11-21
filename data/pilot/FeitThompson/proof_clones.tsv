@@ -1,0 +1,78 @@
+declarations	first_line	example
+24	(hstab : {g : G | (fun x => g⁻¹ * x * g) ''	CFSG.FeitThompson.IsPrimeCyclicTIHyp.dadeMap_primeTIirr_sub_eq
+23	= cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}	CFSG.FeitThompson.IsPrimeCyclicTIHyp.dadeMap_primeTIirr_sub_eq
+22	(hD : IsDadeData L A₀ T)	CFSG.FeitThompson.IsPrimeCyclicTIHyp.dadeMap_primeTIirr_sub_eq
+18	= (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))	CFSG.FeitThompson.IsPrimeCyclicTIHyp.dadeMap_primeTIirr_sub_eq
+12	(hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)	CFSG.FeitThompson.PrimeDadeColumnGluing.cfInner_nu_primeTIrow_prodCharEtaColSum_eq
+8	(hB : h.IsUniformBridgeData σ ζ d n 1)	CFSG.FeitThompson.PrimeDadeColumnGluing.coe_nu_primeTIrow_eq_or
+7	(h₁ : _root_.CFSG.FeitThompson.Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FBG_sigma_prime_normalizer_narrow_rank_bound
+7	(hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)	CFSG.FeitThompson.IsPrimeCyclicTIHyp.dadeMap_primeTIirr_sub_eq
+6	(S L U W₁ W₂ : Subgroup G) (I J : Type u) [Fintype I] [Fintype J]	CFSG.FeitThompson.Proofs.bridge_decomposition
+6	∃ a' ∈ Irr ((↥(((hallCore M).map M.subtype).subgroupOf (⁅M, M⁆ : Subgroup G)) ⧸	CFSG.FeitThompson.exists_modelPair_of_actsReducibly
+6	(h₂ : Statements.FBG_local_inertia_and_exponent_complement.{u})	CFSG.FeitThompson.Proofs.FBG_five_type_local_classification
+5	(hS : (S : Set (L → ℂ)) = scalarEqualityFamily K H H0 U Eline)	CFSG.FeitThompson.ScalarCoreCoherence.IsScalarCoreConfig.card_largeLayer_count
+5	(G : Type u) [Group G] [Fintype G] (hG : IsOddOrderMinimalSimple G)	CFSG.FeitThompson.Proofs.bridge_decomposition
+5	letI := hc.normal_subgroupOf_hallCore	CFSG.FeitThompson.exists_modelPair_of_actsReducibly
+5	(((hallCore M).map M.subtype).subgroupOf (⁅M, M⁆ : Subgroup G)))	CFSG.FeitThompson.exists_modelPair_of_actsReducibly
+5	(h₁ : Statements.FBG_kappa_complement_structure.{u})	CFSG.FeitThompson.Proofs.FBG_five_type_local_classification
+5	(hsolv : ∀ X : Subgroup G, X ≠ ⊤ → Group.IsSolvable ↥X)	CFSG.FeitThompson.commutator_pComplCoreIn_mixedFitting_eq_bot
+5	∃ a ∈ Irr (⁅M, M⁆ : Subgroup G), ∃ b ∈ Irr (⁅M, M⁆ : Subgroup G),	CFSG.FeitThompson.exists_weakEqualDegreeCharacterPair_of_forall_apply_eq_zero
+5	have hvL : (v : G) ∈ L := Subgroup.map_subtype_le _ v.2	CFSG.FeitThompson.IsUniformBridgeCoherenceData.tauBridgeCorrected_apply_of_mem_cyclicTIDiff
+4	(α : I → (↥W₁ → ℂ)) (β : J → (↥W₂ → ℂ)) (i₀ : I) (j₀ : J)	CFSG.FeitThompson.Proofs.bridge_decomposition
+4	a' 1 = b' 1 ∧	CFSG.FeitThompson.exists_modelPair_of_actsReducibly
+4	(h₃ : Statements.FBG_local_nilpotent_hall_core.{u})	CFSG.FeitThompson.Proofs.FBG_five_type_local_classification
+4	(Ue w : G)⁻¹ * (Pe (ofAdd z) : G) * (Ue w : G) = (Pe (ofAdd (z * ((w : Fˣ) : F))) : G))	CFSG.FeitThompson.comparison_units_eq_one_and_word_eq
+4	(hα : ∀ i, α i ∈ Irr ↥W₁) (hβ : ∀ j, β j ∈ Irr ↥W₂)	CFSG.FeitThompson.OrientedCoreFamily.prodCharEtaColSum_eq_sum_eta
+4	(hXne : X.Nonempty) (hYne : Y.Nonempty)	CFSG.FeitThompson.SibleyCentralAlignment.exists_isCoherentWith_apply_eq_of_bridge
+4	(h₃ : _root_.CFSG.FeitThompson.Statements.FNI_outside_sigma_plane_core_disjoint.{u})	CFSG.FeitThompson.Proofs.elementaryAbelianPRank_inf_normalizer_le_one
+4	(h : IsPrimeCyclicTIHyp K W₁ W₂) (hσ : IsCyclicTIIsometry (W₁ ⊔ W₂) W₁ W₂ σ)	CFSG.FeitThompson.PrimeDadeSubcoherence.blockMap_subset_span_Irr
+4	(hna : ¬ IsMulCommutative G) (hodd : Odd (Nat.card G))	CFSG.FeitThompson.commutator_pComplCoreIn_mixedFitting_eq_bot
+4	have humem : (⟨(v : G), hvL⟩ : ↥L) ∈ W₁ ⊔ W₂ := by	CFSG.FeitThompson.LargeLinearLayer.IsLargeLinearLayerData.tauBridgeCorrected_apply_of_mem_cyclicTIDiff
+4	{ isCoatom_M := hP.config.isCoatom	CFSG.FeitThompson.Proofs.FTS_kappa_residual_contained_opposite_sigma_core
+3	[MulDistribMulAction M N] : DistribMulAction M (Additive N) where	CFSG.FeitThompson.distribMulActionAdditive
+3	{τT : charSpanZero (T : Set (L → ℂ)) →+ virtualChars G}	CFSG.FeitThompson.WeightedFeitExtension.exists_int_coeff_and_proj_sub_eq
+3	(hDN : D ≤ Subgroup.normalizer (N : Set G))	CFSG.FeitThompson.conjChar_fixed_of_mem
+3	(hTI : IsTIWithNormalizer (mixedSupport S W₁ W₂) S)	CFSG.FeitThompson.IsTypePBridgeSetup.indG_b_eq_of_remainder
+3	∃ α ∈ Irr (⁅M, M⁆ : Subgroup G), ∃ β ∈ Irr (⁅M, M⁆ : Subgroup G),	CFSG.FeitThompson.HasEqualDegreeCharacterPair
+3	(h₃ : Statements.FCH_type_p_actual_bridge_remainder.{u})	CFSG.FeitThompson.Proofs.bridge_decomposition
+3	(hsemi : FreeCore.IsInternalSemidirectProduct N (hallCoreOf N) E)	CFSG.FeitThompson.Proofs.cfIP_coherentImage_eq_zero_of_mem_block
+3	(hprime : (Nat.card W₁).Prime)	CFSG.FeitThompson.exists_modelPairM_of_isIrreducible
+3	(hm : m = (p ^ q - 1) / (p - 1)) (hcop : Nat.Coprime m (p - 1))	CFSG.FeitThompson.inv_mem_normOneShiftSet_of_mem
+3	(h₁ : _root_.CFSG.FeitThompson.Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FTS_admissible_tau_one_displacement_contradiction
+3	∀ (I J : Type) (_ : Fintype I) (_ : Fintype J) (i0 : I) (j0' : J)	CFSG.FeitThompson.Statements.FCH_type_p_actual_bridge_remainder
+3	∀ (G : Type u) [Group G] [Fintype G], IsOddOrderMinimalSimple G →	CFSG.FeitThompson.Statements.FCH_actual_paired_support_saturation
+3	obtain ⟨m, hm⟩ := MulAction.exists_smul_eq (M : Type _) S S'	CFSG.FeitThompson.mem_kappaPrimes_iff_forall
+3	admissible : IsAdmissibleCoprimeActionQuadruple G H R R0	CFSG.FeitThompson.IsPrimeCentralizerComplementSetup
+3	(h₃ : _root_.CFSG.FeitThompson.Statements.FNI_outside_sigma_plane_core_disjoint.{u})	CFSG.FeitThompson.Proofs.FBG_sigma_prime_normalizer_narrow_rank_bound
+3	(Pe : Multiplicative F ≃* P) (Ue : normOneUnits F ≃* U) (hPU : P ⊓ U = ⊥)	CFSG.FeitThompson.comparison_word_and_pow
+3	∀ w : I → J → ↥(W₁ ⊔ W₂) → ℂ,	CFSG.FeitThompson.Statements.FCH_type_p_complementary_fitting_norm
+3	have hqprime : (Nat.card ↥W₁).Prime := by	CFSG.FeitThompson.Proofs.row_kernel_and_degree
+3	(h : IsPrimeCyclicTIHyp K W₁ W₂) (hσ : IsCyclicTIIsometry (W₁ ⊔ W₂) W₁ W₂ σ)	CFSG.FeitThompson.IsPrimeCyclicTIHyp.dadeMap_primeTIirr_sub_eq
+3	(h₁ : Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FNI_kappa_candidate_family_common_factors
+3	(h₁ : CFSG.FeitThompson.Statements.FPF_type_iii_iv_core_elementary_chief_kernel_trivial.{u})	CFSG.FeitThompson.exists_isUniformBridgeData_of_isRowSetup
+3	have hfin :	CFSG.FeitThompson.Proofs.FPF_type_iii_iv_proper_coherent_index_bound
+3	(h₁ : _root_.CFSG.FeitThompson.Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FNI_tau13_commuting_prime_fixed_equality
+3	(hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,	CFSG.FeitThompson.PrimeDadeColumnGluing.dadeZMap_primeTIrow_sub_smul_eq
+3	(hτ₁ : ∀ (f : charSpanZero S₁) (F : dadeDomain L A₀), (f : ↥L → ℂ) = (F : ↥L → ℂ) →	CFSG.FeitThompson.PrimeDadeColumnGluing.isCoherent_union
+3	have hcoatom : ∀ V ∈ I, IsCoatom V := by	CFSG.FeitThompson.Proofs.FNI_kappa_candidate_has_nontrivial_residual
+3	refine { toIsRowData := hrowD, sign := ?_, mu_zero_mem := ?_, mu_eq := ?_ }	CFSG.FeitThompson.RealBridgeLowFamily.exists_low_family_of_typeIII
+3	(hQU : Q ≤ normalizer (U : Set L))	CFSG.FeitThompson.apply_one_eq_relIndex_coreCentralizer
+3	(hZcent : Z ≤ Subgroup.centralizer (P : Set L))	CFSG.FeitThompson.CentralSectionFullExtension.isCoherentExtensionOf_fullFamily
+3	(h₁ : _root_.CFSG.FeitThompson.Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FNI_plane_normalizer_action_prime_transfer
+3	(hW : IsCyclicTIPair (W₁ ⊔ W₂) W₁ W₂)	CFSG.FeitThompson.eta_apply_mul
+3	(hX : X ⊆ Irr L) (hY : Y ⊆ Irr L) (hXY : Disjoint X Y)	CFSG.FeitThompson.cfInner_apply_apply_eq_zero_of_disjoint
+3	have hSeq : kerLayerIndFam ((H₀ ⊔ centralizerIn U (hallCoreOf M)).subgroupOf M)	CFSG.FeitThompson.Proofs.FPF_type_iii_iv_proper_coherent_index_bound
+3	have hAne : A ≠ ⊥ := by	CFSG.FeitThompson.exists_isUniqueMaximalOvergroup_of_scn_three_le_elementaryAbelianPRank
+3	obtain ⟨W, hW, rfl⟩ := mem_Irr.1 hθ	CFSG.FeitThompson.FixedFreeCoreDegree.exists_monoidHom_units_of_apply_one_eq_one
+3	∃ (E : Type) (_ : Field E) (_ : Fintype E) (ι : ↥(hallCoreIn M) → E),	CFSG.FeitThompson.Statements.FCH_type_p_no_fitting_induced_witness
+3	(h₁ : _root_.CFSG.FeitThompson.Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FTS_core_centralizing_external_element_dichotomy
+3	(hB : h.IsUniformBridgeData σ ζ d n 1)	CFSG.FeitThompson.PrimeDadeCommonError.isOrthogonal_bridgeError_one
+3	(h₁ : _root_.CFSG.FeitThompson.Statements.FBG_sigma_core_normal_hall.{u})	CFSG.FeitThompson.Proofs.FPF_all_type_I_kernel_partition
+3	(hB : h.IsUniformBridgeData σ ζ d n δ)	CFSG.FeitThompson.TypeVTwoFamilyJoining.exists_virtualChar_norm_one_dadeMap_primeTIrow_sub
+3	(hEL : E ≤ L) (hcompl : (H.subgroupOf L).IsComplement' (E.subgroupOf L))	CFSG.FeitThompson.frobenius_complement_isCyclic_and_two_mul_natCard_le
+3	(h₁ : CFSG.FeitThompson.Statements.FNI_p_configuration_kappa_factors.{u})	CFSG.FeitThompson.OrientedCoreFamily.eq_zero_of_mem_charSpanZero_detectInd_commutator_typeIII
+3	{H : Subgroup ↥L} [H.Normal]	CFSG.FeitThompson.PrimeDadeSubcoherence.blockMap_subset_span_Irr
+3	⟨hG.odd_natCard, hG.isSimpleGroup, hG.not_isMulCommutative, hG.forall_isSolvable⟩	CFSG.FeitThompson.Proofs.FNI_abelian_normal_hall_full_exponent_cycle
+3	∀ (G : Type u) [Group G] [Finite G], IsMinimalSimpleOddOrder G →	CFSG.FeitThompson.Statements.FTS_tau_one_displacement_normalizer_reflection
+3	∀ (G : Type*) [Group G] [Fintype G], IsOddSimpleMinimal G →	CFSG.FeitThompson.Statements.FNI_paired_supporting_crossed_alternatives
+3	((principalIrr ↥(W₂.map L.subtype) : Irr ↥(W₂.map L.subtype)) : _ → ℂ) v) := by	CFSG.FeitThompson.IsUniformBridgeCoherenceData.tauBridgeCorrected_apply_of_mem_cyclicTIDiff
