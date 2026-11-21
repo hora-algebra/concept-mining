@@ -36,6 +36,7 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          AUTO_MERGE: ${{ vars.AUTO_MERGE_ENABLED }}
           TARGET: ${{ inputs.requeue_target }}
         run: |
           set -eu

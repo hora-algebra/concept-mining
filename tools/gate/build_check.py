@@ -55,6 +55,9 @@ AUX = re.compile(r"(^|\.)(_|match_\d|proof_\d|eq_\d|inst[A-Z])|\.(rec|recOn|case
                  r"below|brecOn|binductionOn|ibelow|inj|injEq|sizeOf_spec|ext_iff|mk\.inj\w*)$")
 
 
+PLAIN_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_'!?]*(?:\.[A-Za-z_][A-Za-z0-9_'!?]*)*")
+
+
 class Stop(Exception):
     """The verdict is decided (a check failed); facts are complete."""
 
@@ -112,6 +115,26 @@ def export_tree(root: str, rev: str, folder: str, dest: str) -> None:
     if tar.returncode:
         raise Setup("git archive failed: " + tar.stderr.decode(errors="replace")[-300:])
     subprocess.run(["tar", "-x", "-C", dest], input=tar.stdout, check=True)
+
+
+def outputs_digest(root: str, target: str) -> str:
+    """Digest of the build outputs outside the target (names, sizes, mtimes)."""
+    import hashlib
+    h = hashlib.sha256()
+    base = os.path.join(root, ".lake", "build")
+    skip = os.path.join(base, "lib", "lean", "CFSG", *target.split("/"))
+    skip_ir = os.path.join(base, "ir", "CFSG", *target.split("/"))
+    stem = target.split("/")[-1]
+    for d, dirs, fs in os.walk(base):
+        dirs.sort()
+        if d.startswith(skip) or d.startswith(skip_ir):
+            continue
+        for fn in sorted(fs):
+            if os.path.dirname(skip) == d and fn.split(".")[0] == stem:
+                continue
+            st = os.stat(os.path.join(d, fn))
+            h.update(f"{os.path.join(d, fn)}\0{st.st_size}\0{st.st_mtime_ns}\n".encode())
+    return h.hexdigest()
 
 
 IMPORT = re.compile(r"^\s*(?:public\s+)?(?:meta\s+)?import\s+(?:all\s+)?([A-Za-z0-9_.'«»]+)", re.M)
@@ -176,6 +199,9 @@ def main() -> None:
     ap.add_argument("--out", required=True)
     ap.add_argument("--build-timeout", type=int, default=150 * 60)
     ap.add_argument("--replay", action="store_true", help="kernel-replay the head environment")
+    ap.add_argument("--no-lean", action="store_true",
+                    help="stop before anything is built: paths, applies, guard, size and the source diff only "
+                         "(the review job recomputes these independently of the build job)")
     a = ap.parse_args()
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
@@ -224,7 +250,10 @@ def main() -> None:
                 raise Setup("cannot clone upstream: " + r.stderr[-300:])
             # all of CFSG: a patch may import modules outside its target (they
             # are built from source as dependencies); certificate data is not needed
-            git(up, "sparse-checkout", "set", "--no-cone", "/*", "!/CFSG/Certificates/", "!/Certificates/")
+            if a.no_lean:
+                git(up, "sparse-checkout", "set", "--no-cone", "/lean-toolchain", f"/{folder}/", f"/{folder}.lean")
+            else:
+                git(up, "sparse-checkout", "set", "--no-cone", "/*", "!/CFSG/Certificates/", "!/Certificates/")
         git(up, "checkout", "-q", "--force", upstream["commit"])
         git(up, "checkout", "-q", "-B", "gate-base")
         bad = am(up, [os.path.join(base_dir, n) for n in sorted(os.listdir(base_dir))])
@@ -233,8 +262,10 @@ def main() -> None:
         git(up, "checkout", "-q", "-B", "gate-head", upstream["commit"])
         bad = am(up, [os.path.join(head_dir, n) for n in sorted(os.listdir(head_dir))])
         if bad:
+            last = max([int(m.group(1)) for m in (re.match(r"(\d+)-", x) for x in main_series) if m] or [0])
             fail("applies", [f"the series no longer applies at {bad} once your patch is inserted in file-name "
-                             "order; regenerate the patch on top of the current main branch"])
+                             f"order; regenerate the patch on top of the current main branch and name it "
+                             f"{last + 1:04d}-{common.candidate_of(a.patch_name)}.patch, so that it applies last"])
         # what `git am` actually did, over the whole tree: only Lean files of
         # the target, only regular files
         raw = git(up, "diff", "--raw", "--no-renames", "-z", "gate-base", "gate-head").stdout.split("\0")
@@ -275,6 +306,8 @@ def main() -> None:
             fail("saves_tokens", [f"the change saves {saved} Lean tokens; at least {common.MIN_TOKENS} are "
                                   "required (comments, whitespace and name lengths do not count)"])
         f["checks"]["saves_tokens"] = True
+        if a.no_lean:
+            raise Stop
 
         # build (sandboxed), base then head
         elan = os.environ.get("ELAN_HOME") or os.path.expanduser("~/.elan")
@@ -333,15 +366,23 @@ def main() -> None:
         if base_env is None:
             raise Setup("could not inspect the base environment")
         git(up, "checkout", "-q", "gate-head")
-        # oleans of modules the patch deleted must not satisfy imports
-        head_mods = set(modules(up, target))
-        lib = os.path.join(up, ".lake", "build", "lib", "lean")
-        for m in set(mods) - head_mods:
-            stem = os.path.join(lib, *m.split("."))
-            for ext in (".olean", ".olean.private", ".olean.server", ".ilean", ".trace", ".hash", ".c", ".ir"):
-                if os.path.exists(stem + ext):
-                    os.unlink(stem + ext)
+        # Remove every build output of the target before the head build, so
+        # that nothing of the base (or of a deleted module) can stand in for
+        # it; then record the outputs outside the target, which the head
+        # build must not touch.
+        lib = os.path.join(up, ".lake", "build")
+        for sub in ("lib/lean", "ir"):
+            d = os.path.join(lib, sub, "CFSG", *target.split("/"))
+            if os.path.isdir(d):
+                shutil.rmtree(d)
+            for ext in (".olean", ".olean.private", ".olean.server", ".ilean", ".trace", ".hash", ".c"):
+                p_ = os.path.join(lib, sub, "CFSG", *target.split("/")[:-1], target.split("/")[-1] + ext)
+                if os.path.exists(p_):
+                    os.unlink(p_)
+        before = outputs_digest(up, target)
         r, mods = build("head")
+        if outputs_digest(up, target) != before:
+            raise Setup("the head build changed build outputs outside the target")
         if r.returncode:
             errs = [line for line in (r.stdout + r.stderr).splitlines() if "error" in line][:15]
             fail("build", ["Lean reports errors:"] + [e[:300] for e in errs])
@@ -354,7 +395,13 @@ def main() -> None:
                 raise Setup("the kernel re-check of the built environment did not finish")
         if head_env is None:
             fail("build", ["the built environment could not be loaded for inspection"])
-        problems = env_facts.compare(head_env, json.load(open(common.baseline_path(target))))
+        baseline = json.load(open(common.baseline_path(target)))
+        problems = env_facts.compare(head_env, baseline)
+        # modules that files outside the target import must keep existing
+        for m in baseline.get("imported_from_outside", []):
+            if not os.path.exists(os.path.join(up, *m.split(".")) + ".lean"):
+                problems.append(f"protected_unchanged: module {m} is imported by files outside the target; "
+                                "it must stay")
         for k in ("protected_unchanged", "axioms_unchanged", "no_metaprogramming"):
             mine = [p for p in problems if p.startswith(k)]
             f["checks"][k] = not mine if f["checks"].get(k) is not False else False
@@ -370,8 +417,10 @@ def main() -> None:
         # concepts: new user-facing declarations and how often the target uses them
         new = sorted(set(head_env.get("kinds", {})) - set(base_env.get("kinds", {})))
         uses = head_env.get("uses", {})
+        # only plain names count: «…» names could smuggle separators into the ledger
         f["concepts"] = [{"name": n, "uses": int(uses.get(n, 0))} for n in new
-                         if not AUX.search(n) and head_env["kinds"][n] in ("def", "theorem", "inductive", "structure")]
+                         if PLAIN_NAME.fullmatch(n) and not AUX.search(n)
+                         and head_env["kinds"][n] in ("def", "theorem", "inductive", "structure")]
     except Stop:
         pass
     except Setup as e:

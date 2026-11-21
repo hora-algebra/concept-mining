@@ -72,9 +72,28 @@ def strip_comments(src: str) -> str:
         return re.sub(r"--[^\n]*", "", src)
 
 
+def _adjacent(a, b) -> bool:
+    return a.line == b.line and a.col + len(a.text) == b.col
+
+
 def tokens(src: str) -> int:
-    """Number of Lean tokens outside comments. Raises LexError."""
-    return sum(1 for t in tokenize(src) if t.kind not in COMMENT_KINDS)
+    """Number of Lean tokens outside comments. Raises LexError.
+
+    A projection chain written with field indices counts like one written
+    with field names: `h.2.1` and `x.1.symm` are one token each, as
+    `h.right.left` is, so renaming between the two forms earns nothing."""
+    toks = [t for t in tokenize(src) if t.kind not in COMMENT_KINDS]
+    n = 0
+    i = 0
+    while i < len(toks):
+        n += 1
+        if toks[i].kind in ("ident", "field_idx"):
+            while (i + 2 < len(toks) and toks[i + 1].kind == "symbol" and toks[i + 1].text == "."
+                   and toks[i + 2].kind in ("field_idx", "ident")
+                   and _adjacent(toks[i], toks[i + 1]) and _adjacent(toks[i + 1], toks[i + 2])):
+                i += 2
+        i += 1
+    return n
 
 
 def code_lines(src: str) -> int:

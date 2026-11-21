@@ -110,11 +110,6 @@ jobs:
     if: needs.build.outputs.mechanical_ok == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    # one review at a time, so two cannot both read the day's spend before
-    # either records it; a review cancelled while queued is retried by the sweep
-    concurrency:
-      group: gate-review
-      cancel-in-progress: false
     permissions:
       contents: write   # appends to the review-spend record on the ci-state branch
     steps:
@@ -130,6 +125,16 @@ jobs:
         with:
           name: facts
           path: out
+      - name: Measure the patch again, without the build job (no Lean, no token)
+        env:
+          TARGET: ${{ needs.shape.outputs.target }}
+          PATCH_NAME: ${{ needs.shape.outputs.patch_name }}
+        run: |
+          set +e
+          python3 tools/gate/build_check.py --no-lean --target "$TARGET" --patch out/new.patch \
+            --patch-name "$PATCH_NAME" --upstream "$RUNNER_TEMP/cfsg-measure" --out out/measure
+          # the review reads this diff, not the build job's
+          cp out/measure/lean.diff out/lean.diff 2>/dev/null || : > out/lean.diff
       - name: AI review (three blocking points, one advisory), within the daily budget
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -141,7 +146,9 @@ jobs:
         if: always()
         with:
           name: review
-          path: out/review.json
+          path: |
+            out/review.json
+            out/measure/facts.json
           retention-days: 90
 
   act:
@@ -149,15 +156,13 @@ jobs:
     if: always() && needs.shape.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    concurrency:
-      group: gate-merge
-      cancel-in-progress: false
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       issues: write
       statuses: write
-      actions: write
+    outputs:
+      merge: ${{ steps.report.outputs.merge }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -177,13 +182,59 @@ jobs:
         with:
           name: review
           path: out
-      - name: Decide, report, merge
+      - name: Decide
+        run: |
+          python3 tools/gate/decide.py --shape out/shape.json --facts out/facts.json \
+            --review out/review.json --measure out/measure/facts.json --out out/decision.json
+      - id: report
+        name: Comment, status, labels
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           AUTO_MERGE: ${{ vars.AUTO_MERGE_ENABLED }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          python3 tools/gate/decide.py --shape out/shape.json --facts out/facts.json \
-            --review out/review.json --out out/decision.json
-          python3 tools/gate/act.py --shape out/shape.json --decision out/decision.json --review out/review.json
+        run: python3 tools/gate/act.py --shape out/shape.json --decision out/decision.json --review out/review.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: decision
+          path: out/decision.json
+          retention-days: 90
+
+  merge:
+    needs: [shape, act]
+    if: needs.act.outputs.merge == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # one merge at a time: each re-checks main's fingerprint right before merging
+    concurrency:
+      group: gate-merge
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: shape
+          path: out
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: decision
+          path: out
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        continue-on-error: true
+        with:
+          name: review
+          path: out
+      - name: Re-check and merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          AUTO_MERGE: ${{ vars.AUTO_MERGE_ENABLED }}
+        run: python3 tools/gate/act.py --merge --shape out/shape.json --decision out/decision.json --review out/review.json

@@ -30,7 +30,7 @@ A target is open for contributions when it has a baseline
 | Guard | no new compile-time code (`#eval`, `macro`, `elab`, `syntax`, `initialize`, attributes that register elaborators or printers, `Lean.*`/`IO` code), no shortcuts (`sorry`, `axiom`, `native_decide`, `implemented_by`, …), no new `set_option`; new imports only from Mathlib and CFSG | a count of any of these grows in some file |
 | Size | the target shrinks by at least 50 Lean tokens | it does not; comments, whitespace and name lengths never count |
 | Build | the target builds, first without and then with your patch | Lean reports an error |
-| Inspect | on the built environment: the protected statements are structurally identical, their axioms are within `propext`, `Classical.choice`, `Quot.sound`, and no new declaration is metaprogramming, unsafe, partial, extern or `implemented_by` | anything differs |
+| Inspect | on the built environment: the protected statements are structurally identical and in the same modules, the modules that files outside the target import still exist, the axioms are within `propext`, `Classical.choice`, `Quot.sound`, no new declaration is metaprogramming, unsafe, partial, extern or `implemented_by`, and the kernel accepts every declaration of the target again | anything differs |
 | AI review | value, on three points that block: new definitions and lemmas are natural notions of group theory, not bundles packed only to save tokens; nothing duplicates Mathlib; proofs stay readable. Robustness, naming and documentation get advice that does not block | a blocking point is not met |
 | Merge | the checked commit is still the head, and main has not changed since the check | main changed: the check starts again by itself |
 
@@ -54,8 +54,12 @@ definition it mentions.
   of outside contributors that see no change for 14 days are closed, and so
   are pull requests that stay not accepted for 14 days. The label `keep`
   stops both.
-- Every 3 hours a sweep restarts checks that did not finish, and after each
-  merge it re-checks the other open contributions to the same target.
+- Every 3 hours a sweep restarts checks that did not finish (a pull request
+  the gate could not decide three times in a row gets the label
+  `needs-maintainer` instead), and after each merge it re-checks the other
+  open contributions to the same target whose verdict could change.
+- Only pull requests the gate recognised as adding a patch claim their
+  candidate, and the candidate is read from the patch's file name.
 
 ## Why it is safe to merge without a person
 
@@ -74,10 +78,20 @@ definition it mentions.
 - The jobs that can comment, label and merge run none of your content. The
   ledger and the points are rebuilt from the gate's own comments, so a pull
   request cannot write its own score.
+- The review job measures the patch again from scratch (paths, guard,
+  tokens, the source diff the AI reads) without any output of the build job;
+  if the two disagree, nothing is merged. Before the build, every build output
+  of the target is deleted, and the outputs outside it must be unchanged
+  afterwards; the checker loads the toolchain and Mathlib before anything the
+  build wrote, and the build job's runner gives up `sudo` before Lean runs.
 - What remains: the AI review can be wrong (it blocks only with a concrete
-  reason, and its results are kept for audit); and a compile-time payload
-  that got past the guard could, inside the sandbox, falsify its own pull
-  request's measurements, though nothing else.
+  reason, and its results are kept for audit). Code that got past the guard
+  could, inside the sandbox, try to make its own build look like a different
+  one; the kernel re-check of every declaration of the target and the
+  independent measurement make that hard, not impossible. Files outside the
+  target are not rebuilt: the protected statements, their modules, and the
+  modules that outside files import are kept unchanged instead, which keeps
+  what the rest of CFSG relies on by name, though not, say, notation.
 
 ## For maintainers
 

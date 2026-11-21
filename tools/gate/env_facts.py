@@ -150,9 +150,11 @@ def toolchain_dir(root: str) -> str:
 def lean_path(root: str) -> str:
     """LEAN_PATH for a built checkout, without running lake."""
     root = os.path.abspath(root)
-    parts = sorted(glob.glob(os.path.join(root, ".lake", "packages", "*", ".lake", "build", "lib", "lean")))
+    # the toolchain first and the packages next: the build directory, which
+    # the pull request's build could write, can never shadow `Lean` or Mathlib
+    parts = [os.path.join(toolchain_dir(root), "lib", "lean")]
+    parts += sorted(glob.glob(os.path.join(root, ".lake", "packages", "*", ".lake", "build", "lib", "lean")))
     parts.append(os.path.join(root, ".lake", "build", "lib", "lean"))
-    parts.append(os.path.join(toolchain_dir(root), "lib", "lean"))
     return os.pathsep.join(parts)
 
 
@@ -321,6 +323,9 @@ def compare(facts: dict, baseline: dict, max_meta: int = 30) -> list[str]:
         if not f.get("exists"):
             problems.append(f"protected_unchanged: {name} no longer exists")
             continue
+        if b.get("module") and f.get("module") != b["module"]:
+            problems.append(f"protected_unchanged: {name} moved from module {b['module']} to {f.get('module')}; "
+                            "modules outside the target import it from there")
         if f.get("closure_error"):
             problems.append(f"protected_unchanged: the statement of {name} could not be read: {f['closure_error']}")
         elif f.get("closure_sha256") != b.get("closure_sha256"):

@@ -198,7 +198,11 @@ class Counter(unittest.TestCase):
 
     def test_grouping_matches_old_counter(self):
         self.assertEqual(tokens("x ≠ y ∧ a ≤ b || c && d :: e .. f -> g <- h"), 19)
-        self.assertEqual(tokens("Finset.sum_comm' h.1"), 4)
+        # a projection chain is one token whether written with indices or names
+        self.assertEqual(tokens("Finset.sum_comm' h.1"), 2)
+        self.assertEqual(tokens("h.2.1 x.1.symm"), tokens("h.right.left x.fst.symm"))
+        self.assertEqual(tokens("(f x).1"), tokens("(f x).fst"))
+        self.assertEqual(tokens("h . 2"), 3)
         self.assertEqual(tokens('"a string -- with stuff"'), 1)
 
     def test_code_lines(self):

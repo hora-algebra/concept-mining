@@ -82,24 +82,27 @@ FACTS = {"fingerprint": "fp", "checks": CHECKS_OK, "reasons": [], "setup_error":
          "tokens_after": 9000, "cleanup_tokens": 0, "lines_saved": 40, "concepts": [{"name": "K", "uses": 3}],
          "upstream_commit": "u"}
 REVIEW_OK = {"approved": True, "deferred": False, "results": {"concept": {"verdict": "approve"}}}
+MEASURE = {"checks": {c: True for c in ("paths_allowed", "applies", "no_metaprogramming", "no_shortcuts",
+                                        "saves_tokens")}, "tokens_before": 10000, "tokens_after": 9000,
+           "setup_error": None, "reasons": []}
 
 
 class Decide(unittest.TestCase):
     def test_accept(self):
-        d = decide.decide(SHAPE, FACTS, REVIEW_OK)
+        d = decide.decide(SHAPE, FACTS, REVIEW_OK, MEASURE)
         self.assertEqual(d["state"], "accepted")
         self.assertEqual(d["points"], 11.5)  # 10 shrink + min(1.5, 10)
 
     def test_review_blocks(self):
         rv = {"approved": False, "results": {"readability": {"verdict": "block", "summary": "golfed"},
                                              "advisory": {"verdict": "block", "summary": "ignored"}}}
-        d = decide.decide(SHAPE, FACTS, rv)
+        d = decide.decide(SHAPE, FACTS, rv, MEASURE)
         self.assertEqual(d["state"], "rejected")
         self.assertTrue(any("readability" in r for r in d["reasons"]))
         self.assertFalse(any("advisory" in r for r in d["reasons"]))
 
     def test_budget_waits(self):
-        d = decide.decide(SHAPE, FACTS, {"approved": False, "deferred": True, "results": {}})
+        d = decide.decide(SHAPE, FACTS, {"approved": False, "deferred": True, "results": {}}, MEASURE)
         self.assertEqual(d["state"], "waiting")
 
     def test_mechanical_failure_rejects_without_review(self):
@@ -112,11 +115,19 @@ class Decide(unittest.TestCase):
         self.assertEqual(decide.decide(SHAPE, None, None)["state"], "error")
         self.assertEqual(decide.decide(SHAPE, {**FACTS, "fingerprint": "old"}, REVIEW_OK)["state"], "error")
         self.assertEqual(decide.decide(SHAPE, {**FACTS, "setup_error": "x"}, REVIEW_OK)["state"], "error")
-        self.assertEqual(decide.decide(SHAPE, FACTS, None)["state"], "error")
+        self.assertEqual(decide.decide(SHAPE, FACTS, None, MEASURE)["state"], "error")
+        self.assertEqual(decide.decide(SHAPE, FACTS, REVIEW_OK, None)["state"], "error")
+
+    def test_build_report_must_match_independent_measurement(self):
+        forged = {**MEASURE, "tokens_after": 9990}
+        d = decide.decide(SHAPE, FACTS, REVIEW_OK, forged)
+        self.assertEqual((d["state"], d["checks"]["build"]), ("rejected", False))
+        bad = {**MEASURE, "checks": {**MEASURE["checks"], "no_metaprogramming": False}}
+        self.assertEqual(decide.decide(SHAPE, FACTS, REVIEW_OK, bad)["state"], "rejected")
 
     def test_unknown_check_value_is_not_a_pass(self):
         facts = {**FACTS, "checks": {**CHECKS_OK, "build": None}}
-        self.assertEqual(decide.decide(SHAPE, facts, REVIEW_OK)["state"], "rejected")
+        self.assertEqual(decide.decide(SHAPE, facts, REVIEW_OK, MEASURE)["state"], "rejected")
 
     def test_shapes(self):
         self.assertEqual(decide.decide({**SHAPE, "kind": "other"}, None, None)["state"], "not_contribution")
@@ -161,7 +172,7 @@ class Records(unittest.TestCase):
             self.assertEqual(common.supported_targets(d), ["T"])
 
     def test_comment_renders(self):
-        d = decide.decide(SHAPE, FACTS, REVIEW_OK)
+        d = decide.decide(SHAPE, FACTS, REVIEW_OK, MEASURE)
         text = act.body(d, "", "", True, {"x": 1}, "o/r")
         self.assertIn("Accepted: 11.5 points", text)
         self.assertIn("Merged automatically", text)

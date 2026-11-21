@@ -87,7 +87,8 @@ def series(target: str, root: str = ROOT) -> list[str]:
 def fingerprint(target: str, root: str = ROOT) -> str:
     """What a verdict for `target` depends on, besides the pull request itself."""
     h = hashlib.sha256()
-    files = list(GATE_FILES) + [os.path.relpath(baseline_path(target, root), root)]
+    files = list(GATE_FILES) + [os.path.relpath(baseline_path(target, root), root),
+                                os.path.join("data", "protected", target + ".txt")]
     for d in GATE_DIRS:
         for dd, _, fs in os.walk(os.path.join(root, d)):
             for f in fs:

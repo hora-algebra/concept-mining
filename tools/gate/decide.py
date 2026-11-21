@@ -38,7 +38,7 @@ def load(path):
     return None
 
 
-def decide(shape: dict, facts: dict | None, review: dict | None) -> dict:
+def decide(shape: dict, facts: dict | None, review: dict | None, measure: dict | None = None) -> dict:
     d = {"schema": "concept-mining-decision/v2", "scoring": scoring.VERSION, "pr": shape.get("pr"),
          "head_sha": shape.get("head_sha"), "contributor": shape.get("author"),
          "agent": (shape.get("marker") or {}).get("agent", ""), "target": None, "candidate": shape.get("candidate"),
@@ -78,6 +78,19 @@ def decide(shape: dict, facts: dict | None, review: dict | None) -> dict:
     if not all(d["checks"][c] is True for c in MECHANICAL):
         d["state"] = "rejected"
         d["reasons"] = reasons or ["a machine check failed"]
+        return d
+    # The review job measured the source again, without the build job's
+    # help; the two must agree, or the build job's report is not trusted.
+    if measure is None or measure.get("setup_error"):
+        d["reasons"] = ["setup: the independent measurement did not finish; it is retried automatically"]
+        return d
+    pre = ("paths_allowed", "applies", "no_metaprogramming", "no_shortcuts", "saves_tokens")
+    if any(measure.get("checks", {}).get(c) is not True for c in pre) or \
+            (measure.get("tokens_before"), measure.get("tokens_after")) != (d["tokens_before"], d["tokens_after"]):
+        d["state"] = "rejected"
+        d["checks"]["build"] = False
+        d["reasons"] = ["build: the build job's report does not match an independent measurement of the same "
+                        "patch; the result cannot be trusted"] + list(measure.get("reasons", []))[:5]
         return d
     # the AI review (only reached when every machine check passed)
     if review is None:
@@ -122,12 +135,13 @@ def main() -> None:
     ap.add_argument("--shape", required=True)
     ap.add_argument("--facts")
     ap.add_argument("--review")
+    ap.add_argument("--measure", help="facts.json of the review job's own measurement (build_check --no-lean)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     shape = load(a.shape)
     if shape is None:
         sys.exit("no shape.json")
-    d = decide(shape, load(a.facts), load(a.review))
+    d = decide(shape, load(a.facts), load(a.review), load(a.measure))
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     json.dump(d, open(a.out, "w"), indent=1, ensure_ascii=False)
     print(json.dumps({k: d[k] for k in ("state", "points", "reasons")}, ensure_ascii=False))

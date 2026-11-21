@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -35,10 +36,12 @@ def gh_json(*args):
 
 
 def rows(repo: str) -> list[list[str]]:
-    found = gh_json("api", "--paginate", "--slurp",
-                    f"search/issues?q=repo:{repo}+is:pr+is:merged+label:contribution&per_page=100")
+    # the pull list itself, not the search index (which lags and caps results)
+    pages = gh_json("api", "--paginate", "--slurp", f"repos/{repo}/pulls?state=closed&per_page=100")
+    merged = sorted((p for page in pages for p in page if p.get("merged_at")
+                     and any(l["name"] == "contribution" for l in p.get("labels", []))), key=lambda p: p["number"])
     out = []
-    for item in sorted((i for page in found for i in page.get("items", [])), key=lambda i: i["number"]):
+    for item in merged:
         n = item["number"]
         pr = gh_json("api", f"repos/{repo}/pulls/{n}")
         pages = gh_json("api", "--paginate", "--slurp", f"repos/{repo}/issues/{n}/comments?per_page=100")
@@ -48,7 +51,8 @@ def rows(repo: str) -> list[list[str]]:
                 meta = common.read_meta(c["body"])
         if not meta or meta.get("state") != "accepted" or meta.get("head_sha") != pr["head"]["sha"]:
             continue
-        concepts = ";".join(f"{c['name']}:{int(c.get('uses', 0))}" for c in meta.get("concepts") or [])
+        concepts = ";".join(f"{re.sub(r'[^A-Za-z0-9_.!?]', '', str(c['name']))}:{int(c.get('uses', 0))}"
+                            for c in meta.get("concepts") or [])
         out.append([pr["merged_at"][:10], str(n), pr["user"]["login"], meta.get("agent") or "",
                     meta.get("target") or "", meta.get("candidate") or "", str(meta["tokens_before"]),
                     str(meta["tokens_after"]), str(meta.get("cleanup_tokens") or 0), str(meta.get("lines_saved") or 0),

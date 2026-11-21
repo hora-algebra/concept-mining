@@ -8,13 +8,16 @@ Needs GH_TOKEN (pull-requests, issues and actions: write) and REPO.
   requeue   after a merge into target T, every other open contribution to T
             was checked against an older main: check them again
   retry     open pull requests whose current head has no final verdict
-            (cancelled or failed runs, `error`), and those that waited for
-            the AI-review budget on an earlier day
+            (cancelled or failed runs, `error` at most three times per
+            head), those that waited for the AI-review budget on an earlier
+            day, and accepted ones that were not merged
   close     not accepted and unchanged for STALE_DAYS; out of AI reviews;
             drafts of contributors without write access untouched for
             STALE_DAYS (a draft is a claim; it expires)
 
-At most MAX_DISPATCH checks are started per run, oldest pull request first.
+At most MAX_DISPATCH checks are started per run, least recently checked
+first. After a merge, only verdicts that main's change can alter are
+re-checked (a rejection waits for its author's next commit).
 Pull requests with the label `keep` are never closed.
 """
 
@@ -82,55 +85,69 @@ def patch_target(repo, n):
     return None
 
 
+def head_date(repo, sha):
+    return api(f"repos/{repo}/commits/{sha}")["commit"]["committer"]["date"]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--requeue-target")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     repo = os.environ["REPO"]
+    auto_merge = os.environ.get("AUTO_MERGE") == "true"
     prs = sorted(api_all(f"repos/{repo}/pulls?state=open&per_page=100"), key=lambda p: p["number"])
-    dispatch, close = [], []
+    dispatch, close = [], []   # dispatch: (last checked, number)
     today = dt.datetime.now(dt.timezone.utc).date().isoformat()
     for p in prs:
         n, labels = p["number"], {l["name"] for l in p["labels"]}
         if p["base"]["ref"] != "main":
             continue
+        meta = gate_meta(repo, n) if "contribution" in labels else None
+        last = (meta or {}).get("checked_at") or ""
+        state = (meta or {}).get("state")
         if a.requeue_target:
-            if not p["draft"] and patch_target(repo, n) == a.requeue_target:
-                dispatch.append(n)
+            # a verdict that main's change can alter; a rejection waits for the author
+            if not p["draft"] and state != "rejected" and patch_target(repo, n) == a.requeue_target:
+                dispatch.append((last, n))
             continue
         if "keep" in labels:
             continue
-        meta = gate_meta(repo, n) if "contribution" in labels else None
         if "review-budget-spent" in labels:
             close.append((n, f"This pull request used its {common.MAX_REVIEW_ROUNDS} AI reviews without being "
                              "accepted. Please open a new pull request with a different approach."))
             continue
-        if "not-accepted" in labels and age_days(p["updated_at"]) > STALE_DAYS:
-            close.append((n, f"Closed after {STALE_DAYS} days without a change. Push a fix and reopen it, "
+        if "not-accepted" in labels and age_days(head_date(repo, p["head"]["sha"])) > STALE_DAYS:
+            close.append((n, f"Closed after {STALE_DAYS} days without a new commit. Push a fix and reopen it, "
                              "or open a new pull request."))
             continue
         if p["draft"]:
-            if age_days(p["updated_at"]) > STALE_DAYS and patch_target(repo, n) \
+            if age_days(head_date(repo, p["head"]["sha"])) > STALE_DAYS and patch_target(repo, n) \
                     and p.get("author_association") not in ("OWNER", "MEMBER", "COLLABORATOR"):
-                close.append((n, f"This draft (a claim on its candidate) had no change for {STALE_DAYS} days, so "
-                                 "the candidate is free again. Reopen it to continue."))
+                close.append((n, f"This draft (a claim on its candidate) had no new commit for {STALE_DAYS} days, "
+                                 "so the candidate is free again. Reopen it to continue."))
             continue
         if "contribution" not in labels and not patch_target(repo, n):
             continue
+        if "needs-maintainer" in labels:
+            continue   # failed to decide three times; a person looks first
         st = gate_status(repo, p["head"]["sha"])
         if st is None:
             if age_days(p["updated_at"]) > 2 / 24:
-                dispatch.append(n)
-        elif st["state"] == "error" or (st["state"] == "pending" and age_days(st["updated_at"]) > 8 / 24):
-            dispatch.append(n)
-        elif st["state"] == "pending" and meta and meta.get("state") == "waiting" \
-                and (meta.get("checked_at") or "")[:10] < today:
-            dispatch.append(n)
-    print(json.dumps({"dispatch": dispatch[:MAX_DISPATCH], "close": [n for n, _ in close]}))
+                dispatch.append((last, n))
+        elif st["state"] == "error" and int((meta or {}).get("error_attempts", 0)) < 3:
+            dispatch.append((last, n))
+        elif st["state"] == "pending" and age_days(st["updated_at"]) > 8 / 24:
+            dispatch.append((last, n))
+        elif st["state"] == "pending" and state == "waiting" and last[:10] < today:
+            dispatch.append((last, n))
+        elif st["state"] == "success" and auto_merge and age_days(st["updated_at"]) > 2 / 24:
+            dispatch.append((last, n))   # accepted but not merged (merge failed or was dropped)
+    chosen = [n for _, n in sorted(dispatch)[:MAX_DISPATCH]]   # least recently checked first
+    print(json.dumps({"dispatch": chosen, "close": [n for n, _ in close]}))
     if a.dry_run:
         return
-    for n in dispatch[:MAX_DISPATCH]:
+    for n in chosen:
         gh("workflow", "run", "contribution-gate.yml", "--repo", repo, "-f", f"pr={n}", check=False)
     for n, why in close:
         gh("pr", "close", str(n), "--repo", repo, "--comment", why, check=False)

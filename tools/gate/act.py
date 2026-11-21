@@ -128,21 +128,67 @@ def set_labels(repo: str, pr: int, add: list[str], current: list[str]):
         api(f"repos/{repo}/issues/{pr}/labels", "POST", {"labels": add})
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--shape", required=True)
-    ap.add_argument("--decision", required=True)
-    ap.add_argument("--review")
-    ap.add_argument("--dry-run", action="store_true", help="print the comment, change nothing")
-    a = ap.parse_args()
-    repo = os.environ["REPO"]
-    shape = json.load(open(a.shape))
-    d = json.load(open(a.decision))
+BLOCKING = ("concept", "reuse", "readability")
+SUBJECT_SAFE = re.compile(r"[^A-Za-z0-9_./ -]")
+
+
+def load_review(path):
+    if path and os.path.exists(path):
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    return None
+
+
+def review_counts(review: dict | None) -> bool:
+    """A review round is used only when every blocking rubric answered."""
+    if not review or review.get("reused"):
+        return False
+    res = review.get("results") or {}
+    return all((res.get(r) or {}).get("verdict") in ("approve", "block") for r in BLOCKING)
+
+
+def make_meta(shape, d, prev_meta, review):
+    meta = {k: d.get(k) for k in ("pr", "head_sha", "state", "points", "shrink_points", "concept_points",
+                                  "target", "candidate", "patch_name", "tokens_before", "tokens_after",
+                                  "cleanup_tokens", "lines_saved", "concepts", "upstream_commit", "fingerprint",
+                                  "scoring", "review")}
+    prev_meta = prev_meta or {}
+    rounds = int(prev_meta.get("review_rounds", 0)) + (1 if review_counts(review) else 0)
+    same_head = prev_meta.get("head_sha") == d.get("head_sha")
+    attempts = (int(prev_meta.get("error_attempts", 0)) if same_head else 0) + (1 if d["state"] == "error" else 0)
+    meta.update(kind=shape.get("kind"), contributor=shape.get("author"),
+                agent=(shape.get("marker") or {}).get("agent", ""),
+                review_rounds=rounds, error_attempts=attempts if d["state"] == "error" else 0,
+                merged_by_gate=False,
+                checked_at=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    return meta
+
+
+def review_section(review):
+    if not review:
+        return ""
+    try:
+        import review as review_mod  # tools/gate/review.py
+        return review_mod.render_comment(review)
+    except Exception as e:  # noqa: BLE001  (the comment must still be posted)
+        return f"(The AI review result could not be shown: {type(e).__name__}.)"
+
+
+def write_output(**kv):
+    path = os.environ.get("GITHUB_OUTPUT")
+    if path:
+        with open(path, "a") as fh:
+            for k, v in kv.items():
+                fh.write(f"{k}={v}\n")
+
+
+def exact_files(repo: str, base: str, head: str) -> list[dict]:
+    """The pull request's files at exactly this head commit."""
+    return api(f"repos/{repo}/compare/{base}...{head}").get("files", [])
+
+
+def report(a, repo, shape, d, cur) -> None:
     pr = int(shape["pr"])
-    cur = api(f"repos/{repo}/pulls/{pr}")
-    if cur["head"]["sha"] != d["head_sha"]:
-        print("the pull request has a newer head; its own run reports")
-        return
     if d["state"] == "not_contribution":
         if shape.get("kind") == "other" and not shape.get("author_can_push") and cur["state"] == "open" \
                 and not sticky_comment(repo, pr) and not a.dry_run:
@@ -152,47 +198,22 @@ def main() -> None:
                "are checked and merged automatically. A maintainer will look at this pull request.")
             set_labels(repo, pr, ["needs-maintainer"], [l["name"] for l in cur["labels"]])
         return
-
     prev = sticky_comment(repo, pr)
-    prev_meta = common.read_meta(prev["body"]) if prev else None
-    rounds = int((prev_meta or {}).get("review_rounds", 0))
-    if (d.get("review") or {}).get("approved") is not None and not (d["review"] or {}).get("reused"):
-        rounds += 1
-    review_md = ""
-    if a.review and os.path.exists(a.review) and d.get("review"):
-        try:
-            import review as review_mod  # tools/gate/review.py
-            review_md = review_mod.render_comment(json.load(open(a.review)))
-        except Exception as e:  # noqa: BLE001  (the comment must still be posted)
-            review_md = f"(The AI review result could not be shown: {type(e).__name__}.)"
-    meta = {k: d.get(k) for k in ("pr", "head_sha", "state", "points", "shrink_points", "concept_points",
-                                  "target", "candidate", "patch_name", "tokens_before", "tokens_after",
-                                  "cleanup_tokens", "lines_saved", "concepts", "upstream_commit", "fingerprint",
-                                  "scoring", "review")}
-    meta.update(contributor=shape.get("author"), agent=(shape.get("marker") or {}).get("agent", ""),
-                review_rounds=rounds, checked_at=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
-
-    merged, note = False, ""
-    run_url = os.environ.get("RUN_URL", "")
+    review = load_review(a.review) if d.get("review") else None
+    meta = make_meta(shape, d, common.read_meta(prev["body"]) if prev else None, review)
+    rounds = meta["review_rounds"]
+    note = ""
     if rounds >= common.MAX_REVIEW_ROUNDS and d["state"] == "rejected" and d["checks"].get("value_review") is False:
         note = (f"This pull request has used its {common.MAX_REVIEW_ROUNDS} AI reviews. Please open a new pull "
                 "request with a different approach; this one will be closed.")
-    want_merge = d["state"] == "accepted" and d.get("points", 0) > 0 and cur["state"] == "open" \
+    if d["state"] == "error" and meta["error_attempts"] >= 3:
+        note = "The gate could not decide three times in a row; a maintainer will look at it."
+    mergeable = d["state"] == "accepted" and d.get("points", 0) > 0 and cur["state"] == "open" \
         and not cur.get("draft")
-    if want_merge and os.environ.get("AUTO_MERGE") != "true":
-        note = "Merging is switched off for now; a maintainer will merge it."
-        want_merge = False
-    if want_merge and not a.dry_run:
-        # main as it is now, not as it was when this job started
-        subprocess.run(["git", "-C", common.ROOT, "fetch", "-q", "origin", shape.get("default_branch", "main")],
-                       check=True)
-        subprocess.run(["git", "-C", common.ROOT, "checkout", "-q", "--detach", "FETCH_HEAD"], check=True)
-        if common.fingerprint(shape["target"]) != d["fingerprint"]:
-            want_merge = False
-            note = "Main changed since this check (another patch or new rules); checking again now."
-            gh("workflow", "run", "contribution-gate.yml", "--repo", repo, "-f", f"pr={pr}", check=False)
-    meta["merged_by_gate"] = False
-    text = body(d, review_md, note, False, meta, repo)
+    if mergeable:
+        note = ("Merging now." if os.environ.get("AUTO_MERGE") == "true"
+                else "Merging is switched off for now; a maintainer will merge it.")
+    text = body(d, review_section(review), note, False, meta, repo)
     if a.dry_run:
         print(text)
         return
@@ -205,28 +226,78 @@ def main() -> None:
     desc = {"accepted": f"Accepted: {d['points']} points", "rejected": "Not accepted: see the comment",
             "waiting": "Waiting: see the comment", "error": "Could not decide; retried automatically"}[d["state"]]
     api(f"repos/{repo}/statuses/{d['head_sha']}", "POST",
-        {"state": state, "context": common.STATUS_CONTEXT, "description": desc[:140], "target_url": run_url or None})
+        {"state": state, "context": common.STATUS_CONTEXT, "description": desc[:140],
+         "target_url": os.environ.get("RUN_URL") or None})
     labels = ["contribution", STATE_LABELS[d["state"]]]
     if rounds >= common.MAX_REVIEW_ROUNDS and d["state"] == "rejected":
         labels.append("review-budget-spent")
+    if d["state"] == "error" and meta["error_attempts"] >= 3:
+        labels.append("needs-maintainer")
     set_labels(repo, pr, labels, [l["name"] for l in cur["labels"]])
+    write_output(merge="true" if mergeable and os.environ.get("AUTO_MERGE") == "true" else "false")
+    print(json.dumps({"state": d["state"], "note": note}))
 
-    if want_merge:
-        subject = f"{cur['title'][:200]} (#{pr})"
-        r = gh("pr", "merge", str(pr), "--repo", repo, "--squash", "--match-head-commit", d["head_sha"],
-               "--subject", subject, "--body", f"Accepted by the contribution gate: {d['points']} points.",
-               check=False)
-        if r.returncode == 0:
-            meta["merged_by_gate"] = True
-            api(f"repos/{repo}/issues/comments/{(prev or {}).get('id') or sticky_comment(repo, pr)['id']}", "PATCH",
-                {"body": body(d, review_md, "", True, meta, repo)})
-            # every other open contribution to this target was checked against the old main
-            gh("workflow", "run", "contribution-sweep.yml", "--repo", repo, "-f", f"requeue_target={shape['target']}",
-               check=False)
-            gh("workflow", "run", "site.yml", "--repo", repo, check=False)
-        else:
-            print("merge failed:", r.stderr.strip()[:500])
-    print(json.dumps({"state": d["state"], "merged": meta["merged_by_gate"], "note": note}))
+
+def merge(a, repo, shape, d, cur) -> None:
+    """Re-check everything that can change after the decision, then merge."""
+    pr = int(shape["pr"])
+    default = shape.get("default_branch", "main")
+    files = exact_files(repo, default, d["head_sha"])
+    ok = (d["state"] == "accepted" and d.get("points", 0) > 0 and os.environ.get("AUTO_MERGE") == "true"
+          and cur["state"] == "open" and not cur.get("draft") and cur["base"]["ref"] == default
+          and len(files) == 1 and files[0]["status"] == "added" and files[0]["filename"] == shape["patch_path"])
+    if not ok:
+        print("not merging: the pull request changed since the decision")
+        return
+    subprocess.run(["git", "-C", common.ROOT, "fetch", "-q", "origin", default], check=True)
+    subprocess.run(["git", "-C", common.ROOT, "checkout", "-q", "--detach", "FETCH_HEAD"], check=True)
+    prev = sticky_comment(repo, pr)
+    meta = common.read_meta(prev["body"]) if prev else None
+    review = load_review(a.review) if d.get("review") else None
+    if common.fingerprint(shape["target"]) != d["fingerprint"]:
+        if prev and meta:
+            api(f"repos/{repo}/issues/comments/{prev['id']}", "PATCH", {"body": body(
+                d, review_section(review), "Main changed since this check (another patch or new rules); "
+                "checking again now.", False, meta, repo)})
+        gh("workflow", "run", "contribution-gate.yml", "--repo", repo, "-f", f"pr={pr}", check=False)
+        return
+    subject = SUBJECT_SAFE.sub("", f"Contribution {d.get('candidate')} to {d.get('target')}")[:150] + f" (#{pr})"
+    r = gh("pr", "merge", str(pr), "--repo", repo, "--squash", "--match-head-commit", d["head_sha"],
+           "--subject", subject, "--body", f"Accepted by the contribution gate: {d['points']} points.",
+           check=False)
+    if r.returncode:
+        print("merge failed:", r.stderr.strip()[:500])
+        sys.exit(1)
+    if prev and meta:
+        meta["merged_by_gate"] = True
+        api(f"repos/{repo}/issues/comments/{prev['id']}", "PATCH",
+            {"body": body(d, review_section(review), "", True, meta, repo)})
+    # every other open contribution to this target was checked against the old main
+    gh("workflow", "run", "contribution-sweep.yml", "--repo", repo, "-f", f"requeue_target={shape['target']}",
+       check=False)
+    gh("workflow", "run", "site.yml", "--repo", repo, check=False)
+    print("merged")
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--shape", required=True)
+    ap.add_argument("--decision", required=True)
+    ap.add_argument("--review")
+    ap.add_argument("--merge", action="store_true", help="the merge step (its own job, one at a time)")
+    ap.add_argument("--dry-run", action="store_true", help="print the comment, change nothing")
+    a = ap.parse_args()
+    repo = os.environ["REPO"]
+    shape = json.load(open(a.shape))
+    d = json.load(open(a.decision))
+    cur = api(f"repos/{repo}/pulls/{int(shape['pr'])}")
+    if cur["head"]["sha"] != d["head_sha"]:
+        print("the pull request has a newer head; its own run reports")
+        return
+    if cur["base"]["ref"] != shape.get("default_branch", "main"):
+        print("the pull request no longer targets the default branch")
+        return
+    (merge if a.merge else report)(a, repo, shape, d, cur)
 
 
 if __name__ == "__main__":

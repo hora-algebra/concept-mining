@@ -160,8 +160,19 @@ def marker(cid: str, target: str, agent: str) -> str:
         {"candidate": cid, "target": f"CFSG/{target}", "agent": agent}) + "-->"
 
 
+GATE_MARK = "<!--concept-mining-gate-->"
+GATE_META = "<!--concept-mining-verdict:v2 "
+
+
 def pr_candidate(pr: dict, target: str) -> str | None:
-    """The candidate of `target` that a pull request works on (its marker, else its title)."""
+    """The candidate of `target` that a pull request claims: the gate's record
+    of it, when the gate has seen it (see Run.open_prs); else its marker or
+    title, which count only for the caller's own pull requests."""
+    if "gate" in pr:
+        g = pr["gate"] or {}
+        if g.get("kind") in ("draft", "contribution") and g.get("target") == f"CFSG/{target}":
+            return g.get("candidate") or None
+        return None
     m = MARKER_RE.search(pr.get("body") or "")
     if m:
         try:
@@ -174,10 +185,15 @@ def pr_candidate(pr: dict, target: str) -> str | None:
     return m.group(1) if m else None
 
 
-def taken(prs: list[dict], target: str, exclude: int | None = None) -> dict[str, dict]:
-    """candidate -> the oldest open pull request working on it."""
+def taken(prs: list[dict], target: str, exclude: int | None = None, login: str | None = None) -> dict[str, dict]:
+    """candidate -> the oldest open pull request working on it. A pull request
+    the gate has not recognised as a patch claims nothing, unless it is the
+    caller's own (just opened, before the gate's first comment)."""
     out: dict[str, dict] = {}
     for pr in sorted(prs, key=lambda p: p.get("number") or 0):
+        mine = bool(login) and ((pr.get("author") or {}).get("login") or "").lower() == (login or "").lower()
+        if "gate" not in pr and pr.get("labels") is not None and not mine:
+            continue
         cid = pr_candidate(pr, target)
         if cid and pr.get("number") != exclude and cid not in out:
             out[cid] = pr
@@ -516,12 +532,38 @@ class Contribution:
         if not self.gh_ok:
             return []
         r = run(["gh", "pr", "list", "--repo", UPSTREAM, "--state", "open", "--limit", "500",
-                 "--json", "number,title,body,url,isDraft,author,headRefName"], cwd=REPO, env=self.env)
+                 "--json", "number,title,body,url,isDraft,author,headRefName,labels"], cwd=REPO, env=self.env)
         if r.returncode:
             if required:
                 raise Stop(explain(r.stderr, "list the open pull requests"))
             return []
-        return json.loads(r.stdout or "[]")
+        prs = json.loads(r.stdout or "[]")
+        # Only pull requests the gate recognised as adding a patch (it labels
+        # them `contribution`) claim a candidate, and the candidate is the one
+        # the gate read from the patch's file name, not from the title or body.
+        for pr in prs:
+            if any(l.get("name") == "contribution" for l in pr.get("labels") or []):
+                pr["gate"] = self.gate_record(pr["number"])
+        return prs
+
+    def gate_record(self, number: int) -> dict:
+        r = run(["gh", "api", "--paginate", "--slurp", f"repos/{UPSTREAM}/issues/{number}/comments?per_page=100"],
+                cwd=REPO, env=self.env)
+        if r.returncode:
+            return {}
+        meta = {}
+        for page in json.loads(r.stdout or "[]"):
+            for c in page:
+                body = c.get("body") or ""
+                if (c.get("user") or {}).get("login") == "github-actions[bot]" and GATE_MARK in body:
+                    i = body.rfind(GATE_META)
+                    j = body.find("-->", i)
+                    if i >= 0 and j > i:
+                        try:
+                            meta = json.loads(body[i + len(GATE_META):j])
+                        except ValueError:
+                            pass
+        return meta if isinstance(meta, dict) else {}
 
     def candidates(self) -> list[dict]:
         path = os.path.join(REPO, "data", "pilot", self.target, "candidates.jsonl")

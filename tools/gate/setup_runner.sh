@@ -23,3 +23,8 @@ echo "$ELAN_SHA256  $tmp/elan.tar.gz" | sha256sum -c -
 tar -xzf "$tmp/elan.tar.gz" -C "$tmp"
 "$tmp/elan-init" -y --default-toolchain none >/dev/null
 echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+# Nothing after this needs root: remove this user's sudo rights, so that code
+# that escaped the sandbox could not use them either.
+sudo rm -f /etc/sudoers.d/runner /etc/sudoers.d/90-cloud-init-users 2>/dev/null || true
+sudo -n true 2>/dev/null && echo "warning: sudo still available" || echo "sudo removed"

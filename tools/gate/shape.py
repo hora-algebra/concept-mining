@@ -106,7 +106,9 @@ def main() -> None:
     try:
         repo = gh_api(f"repos/{a.repo}")
         pr = gh_api(f"repos/{a.repo}/pulls/{a.pr}")
-        files = gh_api(f"repos/{a.repo}/pulls/{a.pr}/files?per_page=100", paginate=True)
+        # the files at exactly this head commit (a push in between cannot mix
+        # one head's file list with another head's content)
+        files = gh_api(f"repos/{a.repo}/compare/{repo['default_branch']}...{pr['head']['sha']}").get("files", [])
     except RuntimeError as e:
         print(e, file=sys.stderr)
         sys.exit(75)
@@ -153,20 +155,22 @@ def main() -> None:
         except RuntimeError as e:
             print(e, file=sys.stderr)
             sys.exit(75)
-    # Rate limit for authors without write access: their oldest open
-    # contributions are checked; later ones wait.
-    if s["kind"] == "contribution" and not s["author_can_push"]:
+    # Rate limit for authors without write access: their oldest open pull
+    # requests are checked (and claim candidates); later ones wait. Counted from the
+    # pull request list itself (the search index lags); fails closed.
+    if s["kind"] in ("contribution", "draft") and not s["author_can_push"]:
         try:
-            q = f"repo:{a.repo} is:pr is:open draft:false author:{author}"
-            found = gh_api(f"search/issues?q={q.replace(' ', '+')}&sort=created&order=asc&per_page=100")
-            nums = [i["number"] for i in found.get("items", [])]
-            if a.pr in nums and nums.index(a.pr) >= common.MAX_OPEN_PER_AUTHOR:
-                s["kind"] = "limited"
-                s["reasons"].append(f"limit: you have {len(nums)} open pull requests; at most "
-                                    f"{common.MAX_OPEN_PER_AUTHOR} are checked at a time. This one is checked "
-                                    "automatically once some of the older ones are merged or closed")
+            # drafts count too: a draft is a claim on a candidate
+            mine = sorted(p["number"] for p in gh_api(f"repos/{a.repo}/pulls?state=open&per_page=100", paginate=True)
+                          if p["user"]["login"] == author)
         except RuntimeError as e:
-            print(f"warning: {e}", file=sys.stderr)
+            print(e, file=sys.stderr)
+            sys.exit(75)
+        if a.pr in mine and mine.index(a.pr) >= common.MAX_OPEN_PER_AUTHOR:
+            s["kind"] = "limited"
+            s["reasons"].append(f"limit: you have {len(mine)} open pull requests; at most "
+                                f"{common.MAX_OPEN_PER_AUTHOR} are checked at a time. This one is checked "
+                                "automatically once some of the older ones are merged or closed")
     json.dump(s, open(os.path.join(a.out, "shape.json"), "w"), indent=1)
     print(json.dumps({k: s[k] for k in ("kind", "target", "candidate", "head_sha", "reasons")}))
 

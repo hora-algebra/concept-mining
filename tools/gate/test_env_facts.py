@@ -75,8 +75,10 @@ class Locate(unittest.TestCase):
                     del os.environ["ELAN_HOME"]
                 else:
                     os.environ["ELAN_HOME"] = old
-            self.assertEqual(lp, [os.path.join(root, ".lake", "packages", "mathlib", ".lake", "build", "lib", "lean"),
-                                  os.path.join(root, ".lake", "build", "lib", "lean"), os.path.join(tc, "lib", "lean")])
+            # toolchain first: the writable build directory can never shadow `Lean`
+            self.assertEqual(lp, [os.path.join(tc, "lib", "lean"),
+                                  os.path.join(root, ".lake", "packages", "mathlib", ".lake", "build", "lib", "lean"),
+                                  os.path.join(root, ".lake", "build", "lib", "lean")])
             self.assertEqual(cmd[:3], [os.path.join(tc, "bin", "lean"), "--run", ef.CHECKER])
             self.assertTrue(os.path.isabs(cmd[3]) and os.path.isabs(cmd[4]))
 
