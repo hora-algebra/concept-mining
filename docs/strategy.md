@@ -69,7 +69,7 @@ The full list of declarations with a price of at least 3,000 lines is in
 |  |  | literature classification theorems applied to sections where `KProper` is available (GH74, Gorenstein–Walter, Bender–Suzuki, ...) | 0 | 0 % | **refuted**: every one of them is also applied to the simple group of its branch; see below |
 |  |  | basic group-theory layer re-proved per region | 130,000 | 0.4 % | measured earlier; needs a full build |
 | 2 | **One general theorem plus checks per case** | families of independent subtrees whose statements differ only in numbers or type names | 994,793 | 2.8 % | identifier multiset of the statement, so some families may join different statements; sampled families are real (e.g. `GGResIDisp.{A6,A7,B7,C7,D4..D7,E6}.ggResI_type_*`, `ggResQTwoFinite_{A7,B7,C7,D7,E6}`) |
-| 3 | **The same skeleton per sporadic or Lie-type group** | files whose paths differ only in a group or Lie-type name | 790,123 | 2.3 % | noisy: section numbers like `F134` match the pattern; overlaps rank 2 |
+| 3 | **The same skeleton per sporadic or Lie-type group** | declarations that name a group (21 % of the library), clustered by name and by proof skeleton | 60,000–195,000 | 0.2–0.6 % | measured by miner-b: about 120,000 lines of repeated argument at most (0.3 %), the rest data tables; 4,688 of 4,800 clusters are under 100 lines each. A first count by file names (790,123 lines) was mostly section numbers |
 
 Rank 2 and 3 overlap each other and the proof-shape families of
 [compression-map.md](compression-map.md) (866,990 lines). Together they are of
