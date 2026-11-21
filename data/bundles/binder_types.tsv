@@ -1,0 +1,301 @@
+theorems_assuming	binder_type	(of 1656408 theorems)
+313333	ℕ
+220461	Subgroup G
+184872	G
+75170	Group G
+66318	Finite G
+41834	p.Prime
+40677	Field K
+38991	Finite K
+38184	K
+30895	Group X
+28665	Subgroup X
+28418	Nat
+27918	p ≠ 2
+25636	X
+21045	V
+20669	Field F
+19774	Fact p.Prime
+17435	Finite X
+16875	Type u
+16773	CharP K 2
+16196	F
+14579	Finite F
+14421	Group Y
+12833	Fin n
+12452	Subgroup Y
+12380	ℤ
+12017	List ℕ
+11924	K ≃+* K
+11106	Group H
+10604	Kˣ
+9854	Subgroup H
+9775	1 ≤ f
+9502	Group K
+9420	Group S
+9408	AddCommGroup V
+9243	H
+9197	Data G
+8813	Y
+8671	Bool
+8590	Fin 3
+8260	CharP F 2
+7940	Group Q
+7662	Subgroup (MulAut W)
+7620	i ≠ j
+7481	Subgroup Γ
+7414	2 ≤ n
+7259	3 ≤ n
+7157	Tag
+6906	Subgroup (MulAut V)
+6883	Finite Y
+6740	Fin 4
+6666	Nat → Nat
+6506	1 ≤ n
+6494	Group A
+6285	Field L
+6168	N.Normal
+6093	List Nat
+5865	Subgroup Q
+5682	a ≠ b
+5537	Γ
+5396	Fintype ι
+5371	ℕ → ℕ
+5358	Finite H
+5356	M
+5254	IsSimpleGroup G
+5228	orderOf t = 2
+5225	MulAut W
+5181	Fin τ.rank → ℤ
+5133	Array ℕ
+5120	Sylow 2 G
+5059	A
+5047	Subgroup K
+4963	Finite S
+4929	W
+4884	E
+4864	DecidableEq ι
+4835	Group L
+4825	Subgroup W
+4788	Q
+4775	Fin m
+4725	Finite V
+4695	Group M
+4661	4 ≤ n
+4579	Field k
+4578	Set G
+4557	Subgroup A
+4502	5 ≤ p
+4499	Fˣ
+4494	x ≠ 1
+4475	Subgroup M
+4422	IsElemAbelian 2 V
+4415	Fin 6
+4359	MulAut V
+4350	L
+4188	r.Prime
+4164	Nat.card K = 2
+4111	F ≃+* F
+4077	Finite Q
+3955	Nat.card K = 2 ^ f
+3952	Finite W
+3947	t * t = 1
+3930	StatedLieTag
+3929	Ω
+3909	(2 : K) ≠ 0
+3900	Group R
+3826	J
+3825	Fin r
+3755	Function.Surjective π
+3749	2 ≤ f
+3723	Group Γ
+3722	Fin 2
+3692	z ≠ 1
+3646	Equiv.Perm (Fin n)
+3577	a ≠ 1
+3576	LargeEvenLabel
+3532	Finite A
+3521	Subgroup V
+3434	ι
+3420	Set (Subgroup G)
+3419	Group T
+3327	Finite L
+3310	2 ≤ m
+3308	Group B
+3259	Ctx M Q Z B
+3245	CommGroup W
+3224	q.Prime
+3211	Subgroup S
+3183	S
+3182	Group P
+3162	Fin 5
+3134	a ∈ A
+3045	ZMod 2
+3010	4 ≤ Nat.card K
+2980	1 ≤ m
+2945	(2 : F) ≠ 0
+2938	a * a = 1
+2934	Fin τ.rank
+2903	P
+2880	orderOf z = 2
+2880	ZMod 3
+2869	R
+2868	Matrix (Fin 2) (Fin 2) K
+2854	x * x = 1
+2841	IsAlgClosed L
+2839	3 ≤ m
+2834	Group E
+2833	α
+2822	∃ a b : G, a * b ≠ b * a
+2820	IsPGroup 2 P
+2788	x ^ 3 = 1
+2769	Subgroup L
+2753	5 ≤ n
+2744	GL (Fin n) K
+2728	IsPGroup 2 T
+2714	Finite E
+2689	K →+* K
+2673	C
+2669	5 ≤ p ^ f
+2647	d.Hyp
+2583	V ≃ₗ[K] V
+2580	c ≠ 0
+2571	UnitaryFieldData p f K
+2554	∀ v : V, v ^ 2 = 1
+2553	Finset (Fin n)
+2529	K.Normal
+2505	FiniteDimensional K V
+2502	MulAut X
+2483	z * z = 1
+2481	U
+2474	t ≠ 1
+2464	Setup G L f t
+2462	Fintype F
+2454	Fin n → K
+2441	AddCommGroup W
+2439	k
+2437	(polarBilin Q).Nondegenerate
+2417	S.O
+2408	MulAut S
+2406	Odd p
+2403	IsPGroup 2 S
+2400	Finite Γ
+2382	GL (Fin 3) K
+2365	ℓ.Prime
+2362	Module K V
+2354	1 ≤ a
+2351	Nat.card K = 4
+2303	Submodule K V
+2294	TauCeti.PrimePower
+2286	List (List ℕ)
+2278	ZMod p
+2264	D
+2264	Fintype X
+2263	a ≠ 0
+2249	Stmt12_2_2
+2219	Finite k
+2217	X ≃* Y
+2214	hp : Fact p.Prime
+2190	Fin 8
+2177	Subgroup P
+2174	Function.Injective f
+2173	Subgroup Ω
+2161	Nat.card K = 2 ^ (2 * a + 1)
+2143	Finite M
+2139	3 < p
+2103	∀ w : W, w ^ 2 = 1
+2080	Group C
+2068	Fin Tag.E6.rank → ℤ
+2064	1 ≤ e
+2057	QuadraticForm K V
+2047	Submodule (ZMod 2) V
+2030	b ≠ 1
+2015	r ≠ 2
+2015	WeylGroup τ
+2000	Function.Surjective φ
+1997	Subgroup E
+1986	IsElemAbelian p E
+1967	Function.Surjective ψ
+1962	v ≠ 0
+1954	CommGroup V
+1952	∀ s : K, s ^ 2 + b * s + c ≠ 0
+1950	Sylow p G
+1934	Group J
+1933	u ≠ 1
+1929	t ∈ T
+1925	Matrix (Fin n) (Fin n) K
+1914	Module (ZMod p) V
+1897	MulAut G
+1889	Choice2011 G
+1884	Function.Surjective f
+1880	Odd m
+1878	UnitaryFieldData 2 f K
+1871	IsPGroup 2 Q
+1866	DecidableEq X
+1862	Lˣ
+1862	y ≠ 1
+1854	N
+1846	Finite P
+1824	Odd n
+1818	↥L
+1802	Fintype G
+1800	IsSimpleGroup S
+1797	b * b = 1
+1782	ι → K
+1767	K ∈ Ω
+1760	s * s = 1
+1758	u * u = 1
+1746	L.Normal
+1733	Fin 3 → K
+1732	SL(2, F)
+1729	Array Nat
+1726	A37ForSQTK
+1709	Function.Injective ι
+1709	Setting G
+1703	A38ForSQTK
+1702	Type v
+1695	Nat.card K = 2 ^ n
+1688	MulAut K
+1682	I
+1677	Set X
+1674	L →+* L
+1674	ℕ → Bool
+1669	G →* H
+1669	Field E
+1669	Function.Injective ρ
+1668	IsPGroup 2 R
+1660	Geo H M
+1637	y * y = 1
+1635	Subgroup (Equiv.Perm X)
+1630	TauCeti.ValidLieTypeIndex
+1625	Perm (Fin n)
+1623	IsPGroup p P
+1613	Nat.card K = (2 ^ f) ^ 2
+1607	Nat.card K = (2 ^ n) ^ 2
+1597	orderOf x = 2
+1592	a * b = b * a
+1562	Array (Array ℕ)
+1555	q ≠ 2
+1548	V ≃ₗ[ZMod 2] V
+1546	Function.Injective φ
+1542	c ≠ 1
+1536	Subgroup C
+1531	Fin k
+1524	Odd (Nat.card F)
+1523	MulAut Y
+1522	2 ≤ k
+1520	x ∈ X
+1511	Group G'
+1503	Finite Ω
+1498	Nat → Bool
+1482	d ∈ D
+1479	IsElemAbelian 3 E
+1467	GGLabelRigidInput
+1462	4 ≤ m
+1450	Matrix (Fin 2) (Fin 2) F
+1448	Fin 2 → K
+1447	p ≠ 3
+1445	Module (ZMod 2) V
+1444	(QuadraticMap.polarBilin Q).Nondegenerate
+1440	Odd (Nat.card K)
+1436	A ≃* B
