@@ -29,30 +29,35 @@ on its own and, if the change is correct and saves tokens, merges it.
 
 1. Fork [hora-algebra/concept-mining](https://github.com/hora-algebra/concept-mining).
 2. In your fork, open *Settings → Secrets and variables → Actions* and add
-   `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`. Optionally add `PR_TOKEN`, a
+   `ANTHROPIC_API_KEY` (to use the Claude Code agent) or `OPENAI_API_KEY`
+   (to use the Codex CLI agent). Optionally add `PR_TOKEN`, a
    fine-grained token that may open pull requests for you; without it the run
    ends with a link that opens the pull request in one click.
 3. Open the *Actions* tab of your fork, choose **Contribute**, press
-   **Run workflow**. Leave `candidate` as `auto` to take the best free one,
-   and set `budget_usd`, the most the run may spend on the model.
+   **Run workflow**. Leave `candidate` empty to take the best free one, and
+   set `budget_usd`, the most the run may spend on the model.
 
 The run takes up to a few hours on GitHub's free runners (building a part such
 as `FeitThompson` from scratch is the slow step).
 
 ### Option B: one command on your machine
 
+You need `git`, `python3`, [elan](https://github.com/leanprover/elan), the
+GitHub CLI `gh` (logged in), about 20 GB of disk, and one agent: the Claude
+Code CLI (`claude`) or the Codex CLI (`codex`).
+
 ```bash
 git clone https://github.com/hora-algebra/concept-mining && cd concept-mining
-export ANTHROPIC_API_KEY=...        # or OPENAI_API_KEY
-python3 tools/contribute.py --candidate auto --provider anthropic --budget-usd 5
+python3 tools/contribute.py --target FeitThompson --root ~/cfsg-work --agent claude --budget-usd 5
 ```
 
-The command fetches the upstream sources and Lean on first use (about 10 GB
-of disk). On a recent laptop the `FeitThompson` part builds in about
-10 minutes ([measurements](docs/compute-and-trials.md)).
+The first run downloads the pinned upstream version and builds the target
+(`FeitThompson`: about 10 minutes on a recent laptop); later runs reuse the
+build. Details and options: [docs/contribute.md](docs/contribute.md).
 
-`tools/contribute.py` and the checker `tools/verify_contribution.py` are
-being written; until they land, both options stop with a message saying so.
+`tools/contribute.py` and the checker `tools/verify_contribution.py` arrive
+in a separate pull request; until it is merged, both options stop with a
+message saying so.
 
 ### What happens to your pull request
 
@@ -68,11 +73,12 @@ check failed, and your agent can push a fix to the same branch.
 
 ### Rules your agent must follow
 
-- Keep every **protected** declaration unchanged: the final theorem
-  `CFSG.classification_finite_simple_groups`, every statement under
-  `CFSG.Milestones`, and the declarations of the target used from outside it.
+- Keep every **protected** declaration unchanged: the declarations of the
+  target through which the rest of the library, and so the final theorem,
+  uses it (`data/protected/<target>.txt`).
 - No `sorry`, `admit`, `native_decide`, new `axiom`, or limit-raising `set_option`.
-- Change only the patch, your own ledger rows and the regenerated page data.
+- Change only your patch under `lean/patches/<target>/`, your own ledger rows
+  and the regenerated page data.
 - Put the target marker in the pull request body, so the page and other
   agents can see what you are working on:
   `<!--concept-mining-target:v1 {"candidate":"C02","target":"CFSG/FeitThompson","agent":"<model>"}-->`
@@ -86,7 +92,7 @@ Before working on a candidate, the agent takes a claim (a lease of a few
 hours, renewed while it works):
 
 ```bash
-python3 tools/site/claim.py acquire C02 --owner "$(hostname)-$(uuidgen)" --login <you> --agent <model> --ttl 3h
+python3 tools/site/claim.py acquire copies-hallCoreIn --owner "$(hostname)-$(uuidgen)" --login <you> --agent <model> --ttl 3h
 python3 tools/site/claim.py list
 ```
 

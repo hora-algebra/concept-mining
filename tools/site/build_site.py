@@ -47,6 +47,7 @@ FIELDS = [
 ]
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 HEX_RE = re.compile(r"^[0-9a-f]{7,40}$")
+PATCH_RE = re.compile(r"^\d{4}-[A-Za-z0-9._-]+\.patch$")
 
 
 class Report:
@@ -220,8 +221,14 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
             rep.err(r["_where"], "concept name is empty"); ok = False
         if not r["meaning"]:
             rep.warn(r["_where"], "meaning is empty; the page will show no explanation")
-        if not HEX_RE.match(r["commit"]):
-            rep.err(r["_where"], f"commit {r['commit']!r} is not a git hash"); ok = False
+        if PATCH_RE.match(r["commit"]):
+            tgt = normalize_target(r["target"])
+            pdir = os.path.join(ROOT, "lean", "patches", tgt[0] if tgt else "")
+            if os.path.isdir(pdir) and not os.path.exists(os.path.join(pdir, r["commit"])):
+                rep.warn(r["_where"], f"patch {r['commit']} is not in lean/patches/{tgt[0]}/")
+        elif not HEX_RE.match(r["commit"]):
+            rep.err(r["_where"], f"commit {r['commit']!r} is neither a git hash nor a patch file name NNNN-name.patch")
+            ok = False
         loc = resolve(r["target"], folders)
         if loc is None:
             rep.err(r["_where"], f"target {r['target']!r} is not a folder of the map"); ok = False

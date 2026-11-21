@@ -1,7 +1,7 @@
 name: Verify contribution
 
 # Quick feedback on every pull request that adds a refactoring (a patch under
-# patches/). No secrets, no write access. Because a pull request can change
+# lean/patches/). No secrets, no write access. Because a pull request can change
 # this very file, its result is only a preview: the decision that counts is
 # made by "Contribution verdict", which re-checks with the default branch's
 # workflow and scripts.
@@ -9,7 +9,7 @@ name: Verify contribution
 on:
   pull_request:
     paths:
-      - "patches/**"
+      - "lean/patches/**"
       - "data/ledger/contributions.tsv"
 
 permissions:
@@ -52,7 +52,7 @@ jobs:
           fi
       - name: Refuse code that runs at compile time
         run: |
-          P=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- patches | tr '\n' ' ')
+          P=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- lean/patches | tr '\n' ' ')
           [ -z "$P" ] || python3 tools/site/scan_patch.py $P
       - name: Install Lean (elan)
         if: steps.have.outputs.ok == 'true'

@@ -261,21 +261,33 @@ function timeline() {
   const H = narrow ? 240 : 300, m = { t: 18, r: narrow ? 14 : 30, b: 30, l: narrow ? 52 : 64 };
   const svg = d3.select("#chart").append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
     .attr("aria-label", `Line count of ${s.target} over time`);
-  let [x0, x1] = d3.extent(pts, p => p.d);
-  if (+x0 === +x1) { x0 = d3.utcDay.offset(x0, -3); x1 = d3.utcDay.offset(x1, 3); }
-  const x = d3.scaleUtc().domain([x0, x1]).range([m.l, W - m.r]);
+  // When several changes share a date, space the points by order instead of by time.
+  const byStep = new Set(pts.map(p => p.date)).size < pts.length;
+  let x, X;
+  if (byStep) {
+    x = d3.scalePoint().domain(pts.map((p, i) => i)).range([m.l, W - m.r]).padding(0.3);
+    X = p => x(pts.indexOf(p));
+  } else {
+    let [x0, x1] = d3.extent(pts, p => p.d);
+    if (+x0 === +x1) { x0 = d3.utcDay.offset(x0, -3); x1 = d3.utcDay.offset(x1, 3); }
+    x = d3.scaleUtc().domain([x0, x1]).range([m.l, W - m.r]);
+    X = p => x(p.d);
+  }
   const [lo, hi] = d3.extent(pts, p => p.v), pad = (hi - lo) * 0.15 || hi * 0.03;
   const y = d3.scaleLinear().domain([lo - pad, hi + pad]).nice().range([H - m.b, m.t]);
   svg.append("g").attr("class", "grid").attr("transform", `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - m.l - m.r)).tickFormat("")).call(g => g.select(".domain").remove());
-  svg.append("g").attr("class", "axis").attr("transform", `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(narrow ? 3 : 6).tickFormat(d3.utcFormat("%b %d")));
+  svg.append("g").attr("class", "axis").attr("transform", `translate(0,${H - m.b})`).call(byStep ? d3.axisBottom(x).tickFormat(i => i === 0 ? "start" : (narrow ? "" : pts[i].date.slice(5) + " ") + "#" + i)
+      : d3.axisBottom(x).ticks(narrow ? 3 : 6).tickFormat(d3.utcFormat("%b %d")));
   svg.append("g").attr("class", "axis").attr("transform", `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(v => short(v))).call(g => g.select(".domain").remove());
-  svg.append("path").datum(pts).attr("class", "series").attr("d", d3.line().curve(d3.curveStepAfter).x(p => x(p.d)).y(p => y(p.v)));
-  svg.selectAll(".dot").data(pts).join("circle").attr("class", "dot").attr("r", 4).attr("cx", p => x(p.d)).attr("cy", p => y(p.v));
+  svg.append("path").datum(pts).attr("class", "series").attr("d", d3.line().curve(d3.curveStepAfter).x(X).y(p => y(p.v)));
+  svg.selectAll(".dot").data(pts).join("circle").attr("class", "dot").attr("r", 4).attr("cx", X).attr("cy", p => y(p.v));
   // number each concept at the point where its step lands
   const valueAt = d => { let v = pts[0].v; pts.forEach(p => { if (p.d <= d) v = p.v; }); return v; };
   const ann = svg.append("g").attr("class", "ann");
   s.steps.forEach((c, i) => {
-    const d = parse(c.date), cx = x(d), cy = y(valueAt(d));
+    let cx, cy;
+    if (byStep) { const p = pts[Math.min(i + 1, pts.length - 1)]; cx = X(p); cy = y(p.v); }
+    else { const d = parse(c.date); cx = x(d); cy = y(valueAt(d)); }
     const g = ann.append("g").attr("transform", `translate(${cx},${cy})`);
     g.append("circle").attr("r", 9).attr("cy", -16).attr("fill", "var(--fg)");
     g.append("text").attr("class", "num").attr("y", -12).attr("text-anchor", "middle").text(i + 1);
@@ -297,14 +309,19 @@ function ranking() {
   const g = d3.groups(D.ledger.concepts, c => c.concept).map(([name, rows]) => ({
     name, saved: d3.sum(rows, r => r.lines_saved), uses: d3.sum(rows, r => r.uses),
     meaning: (rows.find(r => r.meaning) || {}).meaning || "", targets: [...new Set(rows.map(r => r.target))], date: d3.min(rows, r => r.date)
-  })).sort((a, b) => b.saved - a.saved);
+  }));
+  const tok = Object.fromEntries(((D.scores || {}).concepts || []).map(c => [c.concept, c.tokens_saved]));
+  g.forEach(c => { c.tokens = tok[c.name]; });
+  const useTok = g.some(c => c.tokens != null);
+  g.sort((a, b) => useTok ? (b.tokens || 0) - (a.tokens || 0) : b.saved - a.saved);
   if (!g.length) {
     box.innerHTML = `<div class="empty"><b>No concepts yet.</b>The first concepts will come from the trial refactoring now under way. Each will be listed here with the lines it saved and a sentence on what it means mathematically.</div>`;
     return;
   }
-  const max = g[0].saved || 1;
+  const val = c => useTok ? (c.tokens || 0) : c.saved;
+  const max = val(g[0]) || 1;
   box.innerHTML = `<div class="panel"><ol class="rank">${g.map((c, i) => `<li><span class="no">${i + 1}</span><span class="nm">${esc(c.name)}</span>
-    <div class="track"><div class="fill" style="width:${Math.max(0.5, 78 * c.saved / max)}%"></div><span class="val">−${fmt(c.saved)} lines</span></div>
+    <div class="track"><div class="fill" style="width:${Math.max(0.5, 78 * val(c) / max)}%"></div><span class="val">${useTok ? `−${fmt(c.tokens || 0)} tokens · ` : ""}−${fmt(c.saved)} lines</span></div>
     ${c.meaning ? `<div class="mean">${esc(c.meaning)}</div>` : ""}
     <div class="meta">${c.targets.map(esc).join(", ")} · used ${fmt(c.uses)} times · first recorded ${esc(c.date)}</div></li>`).join("")}</ol></div>`;
 }

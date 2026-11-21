@@ -62,6 +62,10 @@ class LedgerChecks(unittest.TestCase):
         self.assertTrue(any("future" in e for e in rep.errors))
         self.assertTrue(any("git hash" in e for e in rep.errors))
 
+    def test_patch_name_is_accepted_as_commit(self):
+        _, rep = run(["2026-11-22\tFeitThompson\tX\tm\t100\t90\t10\t3\t0001-copies-x.patch"], [])
+        self.assertEqual(rep.errors, [])
+
     def test_history_mismatch_is_a_warning(self):
         _, rep = run(["2026-11-22\tCFSG/FeitThompson\tX\tm\t100\t90\t10\t3\tabc1234"],
                      ["2026-11-21\tCFSG/FeitThompson\t100\t5\tbase", "2026-11-22\tCFSG/FeitThompson\t80\t5\t"])

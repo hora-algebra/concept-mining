@@ -56,7 +56,7 @@ jobs:
           # copy only data files; nothing from the pull request is executed
           while read -r f; do
             case "$f" in
-              patches/*|data/ledger/*) mkdir -p "pr-data/$(dirname "$f")"; git show "$HEAD_SHA:$f" > "pr-data/$f" 2>/dev/null || true ;;
+              lean/patches/*|data/ledger/*) mkdir -p "pr-data/$(dirname "$f")"; git show "$HEAD_SHA:$f" > "pr-data/$f" 2>/dev/null || true ;;
             esac
           done < out/changed.txt
           printf '{"pr": %s, "head_sha": "%s", "contributor": "%s"}\n' "$PR" "$HEAD_SHA" "$LOGIN" > out/pr.json
@@ -64,11 +64,11 @@ jobs:
       - name: Refuse code that runs at compile time
         id: scan
         run: |
-          find pr-data/patches -type f 2>/dev/null | sort > out/patches.txt || true
+          find pr-data/lean/patches -type f -name '*.patch' 2>/dev/null | sort > out/patches.txt || true
           if [ -s out/patches.txt ]; then
             python3 tools/site/scan_patch.py $(cat out/patches.txt) --json out/scan.json && echo "ok=true" >> "$GITHUB_OUTPUT" || echo "ok=false" >> "$GITHUB_OUTPUT"
           else
-            echo '{"ok": false, "reasons": ["paths_allowed: the pull request adds no patch under patches/"]}' > out/scan.json
+            echo '{"ok": false, "reasons": ["paths_allowed: the pull request adds no patch under lean/patches/"]}' > out/scan.json
             echo "ok=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Install Lean (elan)

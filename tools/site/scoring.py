@@ -105,7 +105,7 @@ def read_contributions(path: str) -> tuple[list[dict], list[str]]:
         try:
             for k in ("tokens_before", "tokens_after", "cleanup_tokens", "lines_saved"):
                 d[k] = int(d[k])
-            d["pr"] = int(d["pr"])
+            d["pr"] = int(d["pr"]) if d["pr"] else None   # empty for rows recorded before a pull request
             d["concepts"] = parse_list(d["concepts"])
             d["reused"] = parse_list(d["reused"])
         except ValueError:
@@ -120,7 +120,7 @@ def read_contributions(path: str) -> tuple[list[dict], list[str]]:
 
 def board(rows: list[dict]) -> dict:
     """Scores per contribution, contributor and concept."""
-    rows = sorted(rows, key=lambda d: (d["date"], d["pr"]))
+    rows = sorted(rows, key=lambda d: (d["date"], d["pr"] or 0))
     author: dict[str, str] = {}
     concept = defaultdict(lambda: {"author": "", "agent": "", "first_pr": None, "uses": 0, "tokens_saved": 0,
                                    "reuse_points": 0.0, "reused_by": set()})
