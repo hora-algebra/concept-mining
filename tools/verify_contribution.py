@@ -8,6 +8,8 @@
 nothing in it is executed). This script, the judge and the protected lists
 come from the checkout this file lives in, i.e. the default branch.
 
+  0. scan      the added lines of the new patches contain no compile-time
+               code (tools/site/scan_patch.py, before any build)
   1. paths     every changed path (changed.txt) is a new patch under
                lean/patches/<target>/, a verdict under data/ledger/verdicts/,
                a claim under data/claims/, or an appended ledger table
@@ -62,7 +64,8 @@ def main() -> None:
          "contributor": pr.get("contributor"), "agent": None, "target": None, "candidate": None,
          "upstream_commit": None,
          "checks": {"build": None, "protected_unchanged": None, "axioms_unchanged": None,
-                    "no_shortcuts": None, "paths_allowed": None, "ledger_matches": None},
+                    "no_shortcuts": None, "no_metaprogramming": None, "paths_allowed": None,
+                    "ledger_matches": None},
          "tokens_before": None, "tokens_after": None, "cleanup_tokens": 0, "lines_saved": None,
          "concepts": [], "reused": [], "reasons": []}
     code = 75
@@ -114,6 +117,18 @@ def main() -> None:
                     v["checks"]["paths_allowed"] = False
                     v["reasons"].append(f"paths_allowed: {f} may only be appended to")
                     finish(1)
+        # no_metaprogramming (docs/scoring.md): the added lines of every new
+        # patch are scanned before anything is built, with the default
+        # branch's scanner, so that compile-time code cannot touch the verdict
+        sys.path.insert(0, os.path.join(HERE, "site"))
+        from scan_patch import scan
+        problems = []
+        for p in new:
+            problems += scan(open(os.path.join(prdir, p), encoding="utf-8", errors="replace").read(), p)
+        v["checks"]["no_metaprogramming"] = not problems
+        if problems:
+            v["reasons"] += problems[:20]
+            finish(1)
         target = targets.pop()
         v["target"] = f"CFSG/{target}"
         cand = re.sub(r"^\d+-", "", os.path.basename(new[-1])[:-6])
