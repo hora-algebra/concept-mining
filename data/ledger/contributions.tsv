@@ -2,4 +2,3 @@ date	pr	contributor	agent	target	candidate	tokens_before	tokens_after	cleanup_to
 2026-11-21		hora-algebra	recipe/claude-opus-5-5	CFSG/FeitThompson	copies-hallCoreIn	2868073	2867352	0	72	hallCoreIn:716		965a0775e82217494217503621b843e1b0e1e337	
 2026-11-21		hora-algebra	claude/claude-opus-5-5	CFSG/FeitThompson	bundle-dd790378	2867352	2861748	0	319	IsTIDiff:64		965a0775e82217494217503621b843e1b0e1e337	
 2026-11-21		hora-algebra	claude/claude-opus-5-5	CFSG/FeitThompson	copies-CauchySchwarzProjection-irr	2861748	2861184	0	40	Irr:2650		965a0775e82217494217503621b843e1b0e1e337	
-2026-11-21			claude/claude-opus-5-5	CFSG/FeitThompson	altitude-statement-stages	2861184	2844621	0	1663	StageK:913		965a0775e82217494217503621b843e1b0e1e337	

@@ -58,7 +58,35 @@ def split_decls(src: str):
         yield src[s:m.start() if m else e]
 
 
-def fingerprint(text: str):
+NS = re.compile(r"^(namespace\s+(\S+)|section\b[^\n]*|end\b[^\n]*)", re.M)
+
+
+def split_decls_ns(src: str):
+    """(text, enclosing namespace) for every top-level declaration."""
+    src = strip_comments(src)
+    events = [(m.start(), m.group(0)) for m in NS.finditer(src)]
+    stack, k = [], 0
+    starts = [m.start() for m in DECL.finditer(src)]
+    for i, s in enumerate(starts):
+        while k < len(events) and events[k][0] < s:
+            ev = events[k][1]
+            if ev.startswith("namespace"):
+                stack.append(ev.split()[1])
+            elif ev.startswith("section"):
+                stack.append(None)
+            elif stack:
+                stack.pop()
+            k += 1
+        e = starts[i + 1] if i + 1 < len(starts) else len(src)
+        m = re.compile(r"\n(?=(?:end|namespace|section|open|variable|universe|set_option|attribute|#)\b)").search(src, s, e)
+        yield src[s:m.start() if m else e], ".".join(x for x in stack if x)
+
+
+def fingerprint(text: str, qualify: dict | None = None):
+    """qualify maps names declared in the same file to their full names, so
+    that two files whose statements mention different local definitions of the
+    same short name do not fingerprint alike."""
+    qualify = qualify or {}
     toks = TOKEN.findall(text)
     if len(toks) < 25:
         return None
@@ -74,7 +102,7 @@ def fingerprint(text: str):
     first = m.group(1) if m else ""
     k = next((i for i, t in enumerate(toks) if t == first), 1)
     body = toks[k + 1:]  # drop modifiers, keyword and the declaration's own name
-    copy = " ".join(local.get(t, t) for t in body)
+    copy = " ".join(local.get(t, qualify.get(t, t)) for t in body)
     shape = " ".join(t if (t in KEYWORDS or not (t[0].isalpha() or t[0] == "_" or t[0].isdigit())) else
                      ("n" if t[0].isdigit() else "x") for t in body)
     # loose: only the sequence of tactic names, i.e. the outline of the argument
@@ -90,7 +118,7 @@ def fingerprint(text: str):
         elif t == ":=" and depth == 0:
             cut = i
             break
-    stmt_toks = [local.get(t, t) for t in body[:cut]]
+    stmt_toks = [local.get(t, qualify.get(t, t)) for t in body[:cut]]
     stmt = " ".join(stmt_toks) if len(stmt_toks) >= 15 and re.search(r"\b(theorem|lemma)\b", text[:200]) else None
     proof = text.split(":=", 1)[1] if ":=" in text else ""
     plines = sum(1 for l in proof.splitlines() if l.strip())
@@ -109,11 +137,20 @@ def scan_file(args):
         src = open(path, encoding="utf-8", errors="replace").read()
     except OSError:
         return out
-    for text in split_decls(src):
-        f = fingerprint(text)
+    decls = list(split_decls_ns(src))
+    qualify = {}
+    for text, ns in decls:
+        m = re.search(r"\b(?:theorem|lemma|def|abbrev|instance|structure|class|inductive)\s+([^\s:(\[{]+)", text)
+        if m and ns:
+            name = m.group(1)
+            qualify[name] = f"{ns}.{name}"
+            qualify[name.split(".")[-1]] = f"{ns}.{name}"
+    for text, ns in decls:
+        f = fingerprint(text, qualify)
         if f:
             f["region"] = region
             f["file"] = rel
+            f["name"] = f"{ns}.{f['name']}" if ns and not f["name"].startswith("_root_.") else f["name"].removeprefix("_root_.")
             out.append(f)
     return out
 
@@ -139,6 +176,7 @@ def main() -> None:
                 print(f"{i}/{len(files)} files", file=sys.stderr)
     os.makedirs(a.out, exist_ok=True)
     import gzip
+    os.makedirs(os.path.dirname(os.path.abspath(a.decls_out)), exist_ok=True)
     with gzip.open(a.decls_out, "wt", encoding="utf-8") as w:
         w.write("region\tfile\tname\tlines\tproof_lines\ttokens\tcopy\tshape\tloose\tstmt\n")
         for d in decls:

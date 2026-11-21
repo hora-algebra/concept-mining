@@ -52,11 +52,11 @@ ClassicalInvolution.RouteD	120856	4123	0.034
 GH74.Uniqueness	117166	19286	0.165
 LocalAnalysis.AGL81TheoremCD	109809	3619	0.033
 HardMathSupport.Cooperstein	105944	5554	0.052
-FeitThompson.Representations	100797	1355	0.013
+FeitThompson.Representations	100335	1355	0.014
 GroupTheory	96895	3654	0.038
 ClassicalInvolution.Phan	89848	3190	0.036
 ClassicalInvolution.ModelFacts	87238	2783	0.032
-FeitThompson.Local	81218	2634	0.032
+FeitThompson.Local	79930	2634	0.033
 LocalAnalysis	78907	7620	0.097
 ClassicalGroups.Orthogonal	78660	1569	0.020
 HardMathSupport.Curtis	70186	3433	0.049
@@ -143,7 +143,7 @@ Adapters.TauCetiExceptional	12228	822	0.067
 CharacterTheory.BrauerLinearThree	12211	316	0.026
 LinearAlgebra.RootGroupSL	11949	216	0.018
 Combinatorics	11817	352	0.030
-FeitThompson.OddOrder	11785	387	0.033
+FeitThompson.OddOrder	11804	387	0.033
 CGT.Hall82	11590	1201	0.104
 LieType	11380	946	0.083
 Sporadic.HNSchreier	11140	399	0.036
@@ -519,6 +519,7 @@ Yardstones.M67c2c3e09a6b	135	0	0.000
 GroupTheory.LocalLift	127	16	0.127
 Algebra	124	0	-0.001
 Holt.NotStar	123	13	0.110
+FeitThompson	122	0	0.000
 Yardstones.M19b85589cdfc	118	0	0.000
 LieType.Classical	115	6	0.057
 ClassicalInvolution.PerfectCase	115	0	0.000
@@ -557,5 +558,4 @@ Statement	14	0	0.000
 LieType.Seitz	11	1	0.127
 YardstoneContract	9	0	0.000
 GroupTheory.ABGQGroups	7	0	0.000
-FeitThompson	3	0	0.000
 Sporadic.Catalog	2	0	0.000

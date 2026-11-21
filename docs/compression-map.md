@@ -10,10 +10,10 @@ where marked.
 | Signal | What it assumes can be removed | Removable lines | Share | How real |
 |---|---|---|---|---|
 | Unreachable code (stage 1) | declarations the final theorem does not need | 1,897,095 | 5.4% | exact; deletion, not a concept |
-| Same proof up to renaming | all but one copy | 308,925 | 1.0% | exact |
-| Same proof shape (identifiers abstracted) | one general proof per family; one-line instance per member | 866,983 | 2.7% | an upper bound; the large families are mostly data tables |
+| Same proof up to renaming | all but one copy | 258,792 | 0.8% | exact up to renaming; names declared in the same file are qualified by their namespace |
+| Same proof shape (identifiers abstracted) | one general proof per family; one-line instance per member | 866,990 | 2.7% | an upper bound; the large families are mostly data tables |
 | Same tactic outline (≥ 8 steps) | the same, at the level of the outline only | 727,782 | 2.3% | loose; same outline does not mean same mathematics |
-| Same statement proved again elsewhere | the proof subtree that only the second proof needs | 749,486 | 2.3% | exact statements; removal needs the copies to be reachable from one place |
+| Same statement proved again elsewhere | the proof subtree that only the second proof needs | 671,460 | 1.9% | same statement text, with file-local names qualified; not checked by elaboration, so a few groups may differ in meaning through `variable` or `open` context |
 | Same name pattern (case index in the name) | one general theorem per family | 2,197,975 | 6.8% | **mostly not real**: sampled families are numbered book statements or certificate text |
 | Statements (text before `:=`) | everything a perfect bundling of hypotheses could remove | at most 4.2M | 13.1% | a ceiling, not an estimate |
 | Data tables (≥ 60% literal tokens) | not removable by concepts; a matter of encoding | 624,333 | 1.9% | reported separately |

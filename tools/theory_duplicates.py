@@ -46,9 +46,7 @@ def main():
         region[u] += lines[u]
         if u != final and idom[u] >= 0:
             region[idom[u]] += region[u]
-    index = {}
-    for p in range(n):
-        index[(mods[module[p]], names[p].split(".")[-1])] = p
+    index = {names[p]: p for p in range(n)}
     groups = defaultdict(list)
     with gzip.open(a.decls, "rt", encoding="utf-8") as f:
         next(f)
@@ -56,8 +54,7 @@ def main():
             c = l.rstrip("\n").split("\t")
             if len(c) < 10 or not c[9]:
                 continue
-            mod = "CFSG." + c[1][:-5].replace("/", ".")
-            p = index.get((mod, c[2].split(".")[-1]))
+            p = index.get(c[2])  # fully qualified (tools/skeletons.py tracks namespaces)
             if p is not None:
                 groups[c[9]].append(p)
     rows, total = [], 0
