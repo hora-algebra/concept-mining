@@ -173,3 +173,8 @@ footer a { color: inherit; }
 .funnel .n { font-variant-numeric: tabular-nums; text-align: right; }
 .hyp td:first-child { min-width: 12em; }
 .hyp .mean { color: var(--fg2); font-size: 13px; }
+
+/* headline: share of the whole proof removed */
+.headline { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin: 8px 0 14px; }
+.headline .big { font-size: clamp(56px, 12vw, 104px); font-weight: 700; line-height: 1; color: var(--c2); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.headline .cap { flex: 1 1 260px; font-size: 18px; max-width: 34em; }

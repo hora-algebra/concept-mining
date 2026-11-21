@@ -65,7 +65,7 @@ does not have.
 
 ## Upper bounds and search results
 
-`data/potential/blocks.tsv` (upper bound per part and method) and
+`data/potential/blocks.tsv` and `data/map/potential_rows.tsv` (upper bound per part and method) and
 `data/search/hypotheses.jsonl` (two-layer search) are described in
 [docs/potential-and-search.md](../../docs/potential-and-search.md);
 `potential.py` reads and checks them, `potential_dead_code.py` writes the
