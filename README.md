@@ -45,7 +45,9 @@ terms) is an open design question. See [Open questions](#open-questions).
 Status: **stage 1 done**. The dependency graph of all 2.2 million
 declarations has been extracted without a build; see
 [Stage 1: Map](docs/stage1-map.md) for the layout of the formalization, the
-most used declarations, and candidate ranges for stages 2 and 3.
+most used declarations, and candidate ranges for stages 2 and 3, and
+[Compute plan and model trials](docs/compute-and-trials.md) for what runs on
+a laptop and how refactorings will be tried with several model providers.
 
 ## How to contribute
 
