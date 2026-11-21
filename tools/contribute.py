@@ -180,6 +180,7 @@ def main() -> None:
     pilot = os.path.join(REPO, "data", "pilot", target)
     verdicts = os.path.join(REPO, "data", "ledger", "verdicts")
     os.makedirs(verdicts, exist_ok=True)
+    os.makedirs(os.path.join(REPO, "out"), exist_ok=True)  # logs and measurements (ignored by git)
 
     # 1. prepare
     if not a.skip_prepare:
