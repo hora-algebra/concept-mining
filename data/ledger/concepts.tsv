@@ -1,0 +1,2 @@
+date	target	concept	meaning	lines_before	lines_after	lines_saved	uses	commit
+2026-11-21	FeitThompson	hallCoreIn	The Hall core of a subgroup M (the product of its normal Sylow subgroups), seen as a subgroup of the ambient group; previously defined five times under different names.	189217	189160	57	2459	0001-copies-hallCoreIn.patch

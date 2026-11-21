@@ -1,0 +1,3 @@
+date	target	lines_total	declarations	note
+2026-11-21	FeitThompson	189217	16446	baseline: upstream 965a077, declarations needed by isSolvable_of_odd_natCard
+2026-11-21	FeitThompson	189160	16425	after hallCoreIn

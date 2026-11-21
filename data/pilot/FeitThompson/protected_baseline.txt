@@ -1,0 +1,3 @@
+CFSG.FeitThompson.isSolvable_of_odd_natCard : ∀ (G : Type u_1) [inst : Group G] [Finite G],
+  Odd (Nat.card G) → Group.IsSolvable G
+'CFSG.FeitThompson.isSolvable_of_odd_natCard' depends on axioms: [propext, Classical.choice, Quot.sound]
