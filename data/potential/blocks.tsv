@@ -268,3 +268,431 @@ Yardstones	M0362f3a873a3	dead-code	37		2 declarations not needed by CFSG.classif
 Yardstones	M1442643da6f2	dead-code	38		1 declarations not needed by CFSG.classification_finite_simple_groups
 Yardstones	Md0ec50421ce4	dead-code	36		7 declarations not needed by CFSG.classification_finite_simple_groups
 Yardstones	Md42047359a2a	dead-code	1		1 declarations not needed by CFSG.classification_finite_simple_groups
+Adapters		same-shape	117		proofs with the same token shape (identifiers abstracted); one general proof per family
+Adapters	CatalogueFieldBridges	same-shape	1		proofs with the same token shape (identifiers abstracted); one general proof per family
+Adapters	QiuzhenLegacy	same-shape	538		proofs with the same token shape (identifiers abstracted); one general proof per family
+Adapters	TauCetiExceptional	same-shape	508		proofs with the same token shape (identifiers abstracted); one general proof per family
+Algebra		same-shape	14		proofs with the same token shape (identifiers abstracted); one general proof per family
+Alternating	Multipliers	same-shape	12		proofs with the same token shape (identifiers abstracted); one general proof per family
+Assembly		same-shape	108		proofs with the same token shape (identifiers abstracted); one general proof per family
+Assembly	OddCoreElimination	same-shape	55		proofs with the same token shape (identifiers abstracted); one general proof per family
+Assembly	OrderReductions	same-shape	36		proofs with the same token shape (identifiers abstracted); one general proof per family
+Blueprint		same-shape	156		proofs with the same token shape (identifiers abstracted); one general proof per family
+Blueprint	(33 other parts)	same-shape	4369		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	(27 other parts)	same-shape	1991		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	Foote81L6	same-shape	173		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	Foote82	same-shape	840		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	Hall82	same-shape	65		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	PushingUpLit	same-shape	2857		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	Stroth77	same-shape	6120		proofs with the same token shape (identifiers abstracted); one general proof per family
+CGT	Timmesfeld75	same-shape	304		proofs with the same token shape (identifiers abstracted); one general proof per family
+CharacterTheory		same-shape	38		proofs with the same token shape (identifiers abstracted); one general proof per family
+CharacterTheory	(34 other parts)	same-shape	103		proofs with the same token shape (identifiers abstracted); one general proof per family
+CharacterTheory	Semidihedral	same-shape	891		proofs with the same token shape (identifiers abstracted); one general proof per family
+CharacterTheory	TwoRankLowerBound	same-shape	13		proofs with the same token shape (identifiers abstracted); one general proof per family
+CharacterTheory	Wreathed	same-shape	296		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalGroups	(12 other parts)	same-shape	93		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalGroups	Orthogonal	same-shape	964		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalGroups	SpecialLinear	same-shape	57		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalGroups	Symplectic	same-shape	119		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalGroups	Unitary	same-shape	22		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalGroups	UnitaryFlag	same-shape	17		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution		same-shape	59		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	(40 other parts)	same-shape	2412		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	Asc77	same-shape	5646		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	ModelFacts	same-shape	5325		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	Phan	same-shape	1144		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	Q3	same-shape	14762		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	RouteD	same-shape	3255		proofs with the same token shape (identifiers abstracted); one general proof per family
+ClassicalInvolution	SmallCases	same-shape	1600		proofs with the same token shape (identifiers abstracted); one general proof per family
+Combinatorics		same-shape	6		proofs with the same token shape (identifiers abstracted); one general proof per family
+Dihedral		same-shape	38		proofs with the same token shape (identifiers abstracted); one general proof per family
+Dihedral	(61 other parts)	same-shape	11		proofs with the same token shape (identifiers abstracted); one general proof per family
+Dihedral	Glauberman	same-shape	37		proofs with the same token shape (identifiers abstracted); one general proof per family
+Evidence		same-shape	2		proofs with the same token shape (identifiers abstracted); one general proof per family
+F3		same-shape	653		proofs with the same token shape (identifiers abstracted); one general proof per family
+FeitThompson	Local	same-shape	51		proofs with the same token shape (identifiers abstracted); one general proof per family
+FeitThompson	OddOrder	same-shape	11		proofs with the same token shape (identifiers abstracted); one general proof per family
+FeitThompson	Representations	same-shape	65		proofs with the same token shape (identifiers abstracted); one general proof per family
+Fischer		same-shape	66		proofs with the same token shape (identifiers abstracted); one general proof per family
+Fischer	(35 other parts)	same-shape	10		proofs with the same token shape (identifiers abstracted); one general proof per family
+Fischer	Classification	same-shape	154		proofs with the same token shape (identifiers abstracted); one general proof per family
+Fischer	Polar	same-shape	6		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type		same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type	(23 other parts)	same-shape	360		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type	Aschbacher1976Full	same-shape	114		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type	Smith1979	same-shape	637		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type	Smith1979W3	same-shape	164		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type	Smith1980Orth	same-shape	311		proofs with the same token shape (identifiers abstracted); one general proof per family
+GF2Type	SmithTypeE	same-shape	2441		proofs with the same token shape (identifiers abstracted); one general proof per family
+GH74		same-shape	31		proofs with the same token shape (identifiers abstracted); one general proof per family
+GH74	(36 other parts)	same-shape	2122		proofs with the same token shape (identifiers abstracted); one general proof per family
+GH74	GLS	same-shape	11880		proofs with the same token shape (identifiers abstracted); one general proof per family
+GH74	Generic	same-shape	2861		proofs with the same token shape (identifiers abstracted); one general proof per family
+GH74	QTGen4	same-shape	70609		proofs with the same token shape (identifiers abstracted); one general proof per family
+GH74	Uniqueness	same-shape	1592		proofs with the same token shape (identifiers abstracted); one general proof per family
+Geometry	GeneralizedQuadrangles	same-shape	37		proofs with the same token shape (identifiers abstracted); one general proof per family
+Goldschmidt		same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Goldschmidt	Steps	same-shape	440		proofs with the same token shape (identifiers abstracted); one general proof per family
+Goldschmidt75		same-shape	59		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupActions		same-shape	2		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory		same-shape	245		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	(748 other parts)	same-shape	73		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	ABGDGroups	same-shape	66		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	ABGLocalTools	same-shape	61		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	GL52	same-shape	89		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	QuasiDihedralFusion	same-shape	37		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	SylowIntersectionControl	same-shape	346		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	ThreeTranspositions	same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+GroupTheory	WeirSylow	same-shape	11		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport		same-shape	11		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	(58 other parts)	same-shape	1600		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Cooperstein	same-shape	2578		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Curtis	same-shape	973		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Dickson	same-shape	6068		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Foote	same-shape	2022		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Meierfrankenfeld	same-shape	956		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Solomon	same-shape	10612		proofs with the same token shape (identifiers abstracted); one general proof per family
+HardMathSupport	Timmesfeld	same-shape	8369		proofs with the same token shape (identifiers abstracted); one general proof per family
+Holt		same-shape	11		proofs with the same token shape (identifiers abstracted); one general proof per family
+Holt	(26 other parts)	same-shape	31		proofs with the same token shape (identifiers abstracted); one general proof per family
+Holt	H78	same-shape	191		proofs with the same token shape (identifiers abstracted); one general proof per family
+LargeExtraspecial		same-shape	2809		proofs with the same token shape (identifiers abstracted); one general proof per family
+LargeExtraspecial	(1890 other parts)	same-shape	6		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType		same-shape	170		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	(107 other parts)	same-shape	1448		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	AlgebraicGroups	same-shape	172		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	ChevTwo	same-shape	83		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	Chevalley	same-shape	5594		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	Ree	same-shape	294		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	SeitzGeneration	same-shape	3540		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	SpecialLinear	same-shape	290		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	Steinberg	same-shape	887		proofs with the same token shape (identifiers abstracted); one general proof per family
+LieType	Universal	same-shape	412		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra		same-shape	247		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra	CoprimeActions	same-shape	3		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra	DesarguesianPlanes	same-shape	131		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra	LinearGroups	same-shape	66		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra	OddSolvableUnitary	same-shape	20		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra	RootGroupSL	same-shape	229		proofs with the same token shape (identifiers abstracted); one general proof per family
+LinearAlgebra	UnitaryInvolutionIndex	same-shape	4		proofs with the same token shape (identifiers abstracted); one general proof per family
+Literature		same-shape	183		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis		same-shape	418		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	(306 other parts)	same-shape	31974		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	AGLEmbedding	same-shape	4722		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	AGLEmbeddingD2	same-shape	3976		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	ComponentClassification	same-shape	33755		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	EvenBN	same-shape	3877		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	EvenSporadicStandard	same-shape	14826		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	GLTheoremA	same-shape	24909		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	GLTheoremB	same-shape	5914		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	OddStandard	same-shape	23629		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	QuasithinUnique	same-shape	8276		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	RankThreeTheoremC	same-shape	10904		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	SeitzReduction	same-shape	12207		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	StandardType	same-shape	126577		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	UniquenessCase	same-shape	40408		proofs with the same token shape (identifiers abstracted); one general proof per family
+LocalAnalysis	WeakClosure81	same-shape	8071		proofs with the same token shape (identifiers abstracted); one general proof per family
+Mathlib	(9 other parts)	same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Mathlib	GroupTheory	same-shape	47		proofs with the same token shape (identifiers abstracted); one general proof per family
+Mathlib	LinearAlgebra	same-shape	32		proofs with the same token shape (identifiers abstracted); one general proof per family
+Milestones	ASVolI	same-shape	13912		proofs with the same token shape (identifiers abstracted); one general proof per family
+Models		same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster		same-shape	14		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster	(45 other parts)	same-shape	318		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster	AxisCount	same-shape	1727		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster	B	same-shape	7866		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster	Existence	same-shape	466		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster	GMS	same-shape	581		proofs with the same token shape (identifiers abstracted); one general proof per family
+Monster	Griess	same-shape	76		proofs with the same token shape (identifiers abstracted); one general proof per family
+OddTranspositions		same-shape	224		proofs with the same token shape (identifiers abstracted); one general proof per family
+OddTranspositions	(139 other parts)	same-shape	4		proofs with the same token shape (identifiers abstracted); one general proof per family
+OddTranspositions	PartFour	same-shape	362		proofs with the same token shape (identifiers abstracted); one general proof per family
+OddTranspositions	PartThree	same-shape	2167		proofs with the same token shape (identifiers abstracted); one general proof per family
+OddTranspositions	TheoremTwo	same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Open		same-shape	42		proofs with the same token shape (identifiers abstracted); one general proof per family
+Permutation		same-shape	25		proofs with the same token shape (identifiers abstracted); one general proof per family
+Permutation	(31 other parts)	same-shape	13		proofs with the same token shape (identifiers abstracted); one general proof per family
+Permutation	FiveTransitive	same-shape	24213		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin		same-shape	212		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin	(222 other parts)	same-shape	3154		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin	Background	same-shape	19385		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin	EmptyFaithful	same-shape	15855		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin	H13	same-shape	48405		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin	Recognition	same-shape	9311		proofs with the same token shape (identifiers abstracted); one general proof per family
+Quasithin	Vol2	same-shape	43131		proofs with the same token shape (identifiers abstracted); one general proof per family
+RankThree		same-shape	164		proofs with the same token shape (identifiers abstracted); one general proof per family
+RankThree	(78 other parts)	same-shape	5153		proofs with the same token shape (identifiers abstracted); one general proof per family
+RankThree	GF2n	same-shape	5071		proofs with the same token shape (identifiers abstracted); one general proof per family
+RankThree	PartOne	same-shape	21109		proofs with the same token shape (identifiers abstracted); one general proof per family
+RankThree	PartTwo	same-shape	31128		proofs with the same token shape (identifiers abstracted); one general proof per family
+RepresentationTheory	SL2NatSum	same-shape	28		proofs with the same token shape (identifiers abstracted); one general proof per family
+RepresentationTheory	SzMartineau	same-shape	116		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem		same-shape	2		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem	(13 other parts)	same-shape	78		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem	CatalogBridge	same-shape	190		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem	Glauberman	same-shape	3		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem	McBride	same-shape	535		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem	NonLocal	same-shape	89		proofs with the same token shape (identifiers abstracted); one general proof per family
+SignalizerFunctorTheorem	Quadratic	same-shape	18		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic		same-shape	39		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	(50 other parts)	same-shape	3263		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Bridge	same-shape	1076		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Co1	same-shape	402		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Co1Patterson	same-shape	349		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Co2Cert	same-shape	4671		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Co2Jc	same-shape	440		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Co2Schreier	same-shape	421		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Co2Smith	same-shape	351		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Fi24	same-shape	292		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	FischerOddCore	same-shape	152		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	HNOddCore	same-shape	133		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	HNSchreier	same-shape	564		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	J4	same-shape	498		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Recognition	same-shape	1139		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Schreier	same-shape	2803		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	SuzOddCore	same-shape	233		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	SuzRecog	same-shape	186		proofs with the same token shape (identifiers abstracted); one general proof per family
+Sporadic	Th	same-shape	303		proofs with the same token shape (identifiers abstracted); one general proof per family
+StandardComponent	AschbacherSeitz	same-shape	482		proofs with the same token shape (identifiers abstracted); one general proof per family
+StronglyEmbedded		same-shape	37		proofs with the same token shape (identifiers abstracted); one general proof per family
+StronglyEmbedded	MatrixGroups	same-shape	86		proofs with the same token shape (identifiers abstracted); one general proof per family
+ThirdParty	(4 other parts)	same-shape	51		proofs with the same token shape (identifiers abstracted); one general proof per family
+ThirdParty	QiuzhenCFSG	same-shape	17135		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld		same-shape	2		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld	(43 other parts)	same-shape	547		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld	ARS	same-shape	586		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld	Bridge	same-shape	317		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld	Exceptional	same-shape	164		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld	RankTwo	same-shape	128		proofs with the same token shape (identifiers abstracted); one general proof per family
+Timmesfeld	Transvection	same-shape	185		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter		same-shape	63		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter	(19 other parts)	same-shape	198		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter	Bender1970	same-shape	254		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter	J1	same-shape	183		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter	Ree	same-shape	17912		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter	ReeOrder	same-shape	303		proofs with the same token shape (identifiers abstracted); one general proof per family
+Walter	W67	same-shape	117		proofs with the same token shape (identifiers abstracted); one general proof per family
+YGroups		same-shape	13		proofs with the same token shape (identifiers abstracted); one general proof per family
+YGroups	DCE	same-shape	29		proofs with the same token shape (identifiers abstracted); one general proof per family
+YGroups	Exact	same-shape	7		proofs with the same token shape (identifiers abstracted); one general proof per family
+YGroups	Y433	same-shape	31		proofs with the same token shape (identifiers abstracted); one general proof per family
+YGroups	Y443	same-shape	107		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	(17 other parts)	same-shape	2		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	M0362f3a873a3	same-shape	2		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	M0ff270807621	same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	M1442643da6f2	same-shape	22		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	M41b0c98b3153	same-shape	18		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	Md0ec50421ce4	same-shape	3		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	Md42047359a2a	same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	Mdac756b924db	same-shape	7		proofs with the same token shape (identifiers abstracted); one general proof per family
+Yardstones	Mf4cdcdf2e013	same-shape	5		proofs with the same token shape (identifiers abstracted); one general proof per family
+Adapters	(40 other parts)	same-statement	79		statement proved again in another file; lines only that proof needs
+Adapters	CatalogueFieldBridges	same-statement	15		statement proved again in another file; lines only that proof needs
+Adapters	LieModelL4U4Sp4Torus	same-statement	3		statement proved again in another file; lines only that proof needs
+Adapters	QiuzhenLegacy	same-statement	196		statement proved again in another file; lines only that proof needs
+Adapters	TauCetiExceptional	same-statement	291		statement proved again in another file; lines only that proof needs
+Alternating	Multipliers	same-statement	8		statement proved again in another file; lines only that proof needs
+Assembly	(78 other parts)	same-statement	181		statement proved again in another file; lines only that proof needs
+Assembly	OddCoreElimination	same-statement	128		statement proved again in another file; lines only that proof needs
+Assembly	OrderReductions	same-statement	62		statement proved again in another file; lines only that proof needs
+Blueprint	(33 other parts)	same-statement	45		statement proved again in another file; lines only that proof needs
+Blueprint	ChevalleyRootGroupsTorus	same-statement	3		statement proved again in another file; lines only that proof needs
+Blueprint	ChevalleyRootGroupsTriangular	same-statement	3		statement proved again in another file; lines only that proof needs
+Blueprint	ChevalleyStringsInputs	same-statement	23		statement proved again in another file; lines only that proof needs
+Blueprint	ChevalleyWeyl	same-statement	21		statement proved again in another file; lines only that proof needs
+CGT	(27 other parts)	same-statement	1164		statement proved again in another file; lines only that proof needs
+CGT	Foote81L6	same-statement	245		statement proved again in another file; lines only that proof needs
+CGT	Foote82	same-statement	1576		statement proved again in another file; lines only that proof needs
+CGT	Hall82	same-statement	47		statement proved again in another file; lines only that proof needs
+CGT	PushingUpLit	same-statement	4803		statement proved again in another file; lines only that proof needs
+CGT	Stroth77	same-statement	1302		statement proved again in another file; lines only that proof needs
+CGT	Timmesfeld75	same-statement	386		statement proved again in another file; lines only that proof needs
+CharacterTheory	(34 other parts)	same-statement	469		statement proved again in another file; lines only that proof needs
+CharacterTheory	Semidihedral	same-statement	1727		statement proved again in another file; lines only that proof needs
+CharacterTheory	TwoRankLowerBound	same-statement	89		statement proved again in another file; lines only that proof needs
+CharacterTheory	Wreathed	same-statement	896		statement proved again in another file; lines only that proof needs
+ClassicalGroups	(12 other parts)	same-statement	80		statement proved again in another file; lines only that proof needs
+ClassicalGroups	Orthogonal	same-statement	493		statement proved again in another file; lines only that proof needs
+ClassicalGroups	SpecialLinear	same-statement	88		statement proved again in another file; lines only that proof needs
+ClassicalGroups	Symplectic	same-statement	12		statement proved again in another file; lines only that proof needs
+ClassicalGroups	Unitary	same-statement	13		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	(40 other parts)	same-statement	2355		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	Asc77	same-statement	6341		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	ModelFacts	same-statement	1535		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	Phan	same-statement	300		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	Q3	same-statement	20880		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	RouteD	same-statement	1943		statement proved again in another file; lines only that proof needs
+ClassicalInvolution	SmallCases	same-statement	1637		statement proved again in another file; lines only that proof needs
+Combinatorics	(44 other parts)	same-statement	126		statement proved again in another file; lines only that proof needs
+Combinatorics	AperiodicCentralInvolutionSupport	same-statement	17		statement proved again in another file; lines only that proof needs
+Combinatorics	AperiodicSixteenRecognitionSupport	same-statement	12		statement proved again in another file; lines only that proof needs
+Dihedral	(61 other parts)	same-statement	16		statement proved again in another file; lines only that proof needs
+Dihedral	DisconnectedInvolutionGraph	same-statement	4		statement proved again in another file; lines only that proof needs
+Dihedral	Glauberman	same-statement	70		statement proved again in another file; lines only that proof needs
+Dihedral	GorensteinWalter	same-statement	12		statement proved again in another file; lines only that proof needs
+F3	ConjBFSW	same-statement	253		statement proved again in another file; lines only that proof needs
+F3	ConjBFSWSuz	same-statement	753		statement proved again in another file; lines only that proof needs
+F3	SepSpec	same-statement	2		statement proved again in another file; lines only that proof needs
+FeitThompson	(4 other parts)	same-statement	56		statement proved again in another file; lines only that proof needs
+FeitThompson	Local	same-statement	450		statement proved again in another file; lines only that proof needs
+FeitThompson	OddOrder	same-statement	89		statement proved again in another file; lines only that proof needs
+FeitThompson	Representations	same-statement	555		statement proved again in another file; lines only that proof needs
+Fischer	(35 other parts)	same-statement	30		statement proved again in another file; lines only that proof needs
+Fischer	Classification	same-statement	111		statement proved again in another file; lines only that proof needs
+Fischer	Polar	same-statement	4		statement proved again in another file; lines only that proof needs
+Fischer	Uniq	same-statement	229		statement proved again in another file; lines only that proof needs
+Foundations	KCore	same-statement	5		statement proved again in another file; lines only that proof needs
+Foundations	MaxCardThompson	same-statement	21		statement proved again in another file; lines only that proof needs
+Foundations	MaxOrderThompson	same-statement	6		statement proved again in another file; lines only that proof needs
+GF2Type	(23 other parts)	same-statement	94		statement proved again in another file; lines only that proof needs
+GF2Type	Aschbacher1976Full	same-statement	257		statement proved again in another file; lines only that proof needs
+GF2Type	Smith1979	same-statement	549		statement proved again in another file; lines only that proof needs
+GF2Type	Smith1979W3	same-statement	116		statement proved again in another file; lines only that proof needs
+GF2Type	Smith1980Orth	same-statement	101		statement proved again in another file; lines only that proof needs
+GF2Type	SmithTypeE	same-statement	960		statement proved again in another file; lines only that proof needs
+GH74	(36 other parts)	same-statement	1273		statement proved again in another file; lines only that proof needs
+GH74	GLS	same-statement	15032		statement proved again in another file; lines only that proof needs
+GH74	Generic	same-statement	3887		statement proved again in another file; lines only that proof needs
+GH74	QTGen4	same-statement	1769		statement proved again in another file; lines only that proof needs
+GH74	Uniqueness	same-statement	1870		statement proved again in another file; lines only that proof needs
+Goldschmidt	(18 other parts)	same-statement	9		statement proved again in another file; lines only that proof needs
+Goldschmidt	Steps	same-statement	1212		statement proved again in another file; lines only that proof needs
+Goldschmidt75	(52 other parts)	same-statement	219		statement proved again in another file; lines only that proof needs
+Goldschmidt75	Sec27	same-statement	3		statement proved again in another file; lines only that proof needs
+Goldschmidt75	Sec43a	same-statement	7		statement proved again in another file; lines only that proof needs
+Goldschmidt75	Sig3Four	same-statement	9		statement proved again in another file; lines only that proof needs
+Goldschmidt75	TheoremBa	same-statement	6		statement proved again in another file; lines only that proof needs
+Goldschmidt75	TheoremBcBasic	same-statement	26		statement proved again in another file; lines only that proof needs
+GroupActions	(8 other parts)	same-statement	9		statement proved again in another file; lines only that proof needs
+GroupTheory	(748 other parts)	same-statement	808		statement proved again in another file; lines only that proof needs
+GroupTheory	ABGDGroups	same-statement	50		statement proved again in another file; lines only that proof needs
+GroupTheory	ABGLocalTools	same-statement	133		statement proved again in another file; lines only that proof needs
+GroupTheory	CoprimeActionSupport	same-statement	19		statement proved again in another file; lines only that proof needs
+GroupTheory	GL52	same-statement	23		statement proved again in another file; lines only that proof needs
+GroupTheory	QuasiDihedralFusion	same-statement	11		statement proved again in another file; lines only that proof needs
+GroupTheory	SylowIntersectionControl	same-statement	415		statement proved again in another file; lines only that proof needs
+GroupTheory	WeirSylow	same-statement	10		statement proved again in another file; lines only that proof needs
+HardMathSupport	(58 other parts)	same-statement	991		statement proved again in another file; lines only that proof needs
+HardMathSupport	Cooperstein	same-statement	1656		statement proved again in another file; lines only that proof needs
+HardMathSupport	Curtis	same-statement	1014		statement proved again in another file; lines only that proof needs
+HardMathSupport	Dickson	same-statement	5260		statement proved again in another file; lines only that proof needs
+HardMathSupport	Foote	same-statement	1806		statement proved again in another file; lines only that proof needs
+HardMathSupport	Meierfrankenfeld	same-statement	293		statement proved again in another file; lines only that proof needs
+HardMathSupport	Solomon	same-statement	12368		statement proved again in another file; lines only that proof needs
+HardMathSupport	Timmesfeld	same-statement	3240		statement proved again in another file; lines only that proof needs
+Holt	(26 other parts)	same-statement	51		statement proved again in another file; lines only that proof needs
+Holt	H78	same-statement	466		statement proved again in another file; lines only that proof needs
+LargeExtraspecial	(1890 other parts)	same-statement	3636		statement proved again in another file; lines only that proof needs
+LieType	(107 other parts)	same-statement	572		statement proved again in another file; lines only that proof needs
+LieType	AlgebraicGroups	same-statement	70		statement proved again in another file; lines only that proof needs
+LieType	ChevTwo	same-statement	254		statement proved again in another file; lines only that proof needs
+LieType	Chevalley	same-statement	1701		statement proved again in another file; lines only that proof needs
+LieType	Ree	same-statement	271		statement proved again in another file; lines only that proof needs
+LieType	SeitzGeneration	same-statement	2027		statement proved again in another file; lines only that proof needs
+LieType	Steinberg	same-statement	1113		statement proved again in another file; lines only that proof needs
+LieType	Universal	same-statement	137		statement proved again in another file; lines only that proof needs
+LinearAlgebra	(149 other parts)	same-statement	47		statement proved again in another file; lines only that proof needs
+LinearAlgebra	DesarguesianPlanes	same-statement	59		statement proved again in another file; lines only that proof needs
+LinearAlgebra	LinearGroups	same-statement	37		statement proved again in another file; lines only that proof needs
+LinearAlgebra	OddSolvableUnitary	same-statement	3		statement proved again in another file; lines only that proof needs
+LinearAlgebra	RootGroupSL	same-statement	55		statement proved again in another file; lines only that proof needs
+LinearAlgebra	SteinbergBQKernelBlocks	same-statement	18		statement proved again in another file; lines only that proof needs
+Literature	(16 other parts)	same-statement	2		statement proved again in another file; lines only that proof needs
+Literature	GL52Group	same-statement	16		statement proved again in another file; lines only that proof needs
+LocalAnalysis	(306 other parts)	same-statement	25939		statement proved again in another file; lines only that proof needs
+LocalAnalysis	AGLEmbedding	same-statement	3431		statement proved again in another file; lines only that proof needs
+LocalAnalysis	AGLEmbeddingD2	same-statement	3521		statement proved again in another file; lines only that proof needs
+LocalAnalysis	ComponentClassification	same-statement	66648		statement proved again in another file; lines only that proof needs
+LocalAnalysis	EvenBN	same-statement	8365		statement proved again in another file; lines only that proof needs
+LocalAnalysis	EvenSporadicStandard	same-statement	14974		statement proved again in another file; lines only that proof needs
+LocalAnalysis	GLTheoremA	same-statement	20848		statement proved again in another file; lines only that proof needs
+LocalAnalysis	GLTheoremB	same-statement	8106		statement proved again in another file; lines only that proof needs
+LocalAnalysis	OddStandard	same-statement	24057		statement proved again in another file; lines only that proof needs
+LocalAnalysis	QuasithinUnique	same-statement	11413		statement proved again in another file; lines only that proof needs
+LocalAnalysis	RankThreeTheoremC	same-statement	10558		statement proved again in another file; lines only that proof needs
+LocalAnalysis	SeitzReduction	same-statement	7135		statement proved again in another file; lines only that proof needs
+LocalAnalysis	StandardType	same-statement	80558		statement proved again in another file; lines only that proof needs
+LocalAnalysis	UniquenessCase	same-statement	45529		statement proved again in another file; lines only that proof needs
+LocalAnalysis	WeakClosure81	same-statement	10067		statement proved again in another file; lines only that proof needs
+Mathlib	(9 other parts)	same-statement	59		statement proved again in another file; lines only that proof needs
+Mathlib	GroupTheory	same-statement	117		statement proved again in another file; lines only that proof needs
+Milestones	(110 other parts)	same-statement	144		statement proved again in another file; lines only that proof needs
+Milestones	ASVolI	same-statement	7939		statement proved again in another file; lines only that proof needs
+Monster	(45 other parts)	same-statement	170		statement proved again in another file; lines only that proof needs
+Monster	AxisCount	same-statement	116		statement proved again in another file; lines only that proof needs
+Monster	B	same-statement	876		statement proved again in another file; lines only that proof needs
+Monster	Existence	same-statement	351		statement proved again in another file; lines only that proof needs
+Monster	GMS	same-statement	438		statement proved again in another file; lines only that proof needs
+Monster	Griess	same-statement	132		statement proved again in another file; lines only that proof needs
+OddTranspositions	(139 other parts)	same-statement	107		statement proved again in another file; lines only that proof needs
+OddTranspositions	PartFour	same-statement	275		statement proved again in another file; lines only that proof needs
+OddTranspositions	PartThree	same-statement	658		statement proved again in another file; lines only that proof needs
+OddTranspositions	TheoremTwo	same-statement	19		statement proved again in another file; lines only that proof needs
+Open	(50 other parts)	same-statement	9		statement proved again in another file; lines only that proof needs
+Open	GilmanSolomonDefs	same-statement	6		statement proved again in another file; lines only that proof needs
+Open	StatedAPI	same-statement	31		statement proved again in another file; lines only that proof needs
+Permutation	(31 other parts)	same-statement	1613		statement proved again in another file; lines only that proof needs
+Permutation	FiveTransitive	same-statement	1784		statement proved again in another file; lines only that proof needs
+Quasithin	(222 other parts)	same-statement	6861		statement proved again in another file; lines only that proof needs
+Quasithin	Background	same-statement	16084		statement proved again in another file; lines only that proof needs
+Quasithin	EmptyFaithful	same-statement	17906		statement proved again in another file; lines only that proof needs
+Quasithin	H13	same-statement	36308		statement proved again in another file; lines only that proof needs
+Quasithin	Recognition	same-statement	4519		statement proved again in another file; lines only that proof needs
+Quasithin	Vol2	same-statement	26067		statement proved again in another file; lines only that proof needs
+RankThree	(78 other parts)	same-statement	5461		statement proved again in another file; lines only that proof needs
+RankThree	GF2n	same-statement	6100		statement proved again in another file; lines only that proof needs
+RankThree	PartOne	same-statement	9115		statement proved again in another file; lines only that proof needs
+RankThree	PartTwo	same-statement	33060		statement proved again in another file; lines only that proof needs
+RepresentationTheory	SL2NatSum	same-statement	7		statement proved again in another file; lines only that proof needs
+RepresentationTheory	SzMartineau	same-statement	26		statement proved again in another file; lines only that proof needs
+SignalizerFunctorTheorem	(13 other parts)	same-statement	150		statement proved again in another file; lines only that proof needs
+SignalizerFunctorTheorem	CatalogBridge	same-statement	91		statement proved again in another file; lines only that proof needs
+SignalizerFunctorTheorem	Glauberman	same-statement	226		statement proved again in another file; lines only that proof needs
+SignalizerFunctorTheorem	McBride	same-statement	940		statement proved again in another file; lines only that proof needs
+SignalizerFunctorTheorem	NonLocal	same-statement	10		statement proved again in another file; lines only that proof needs
+SignalizerFunctorTheorem	Quadratic	same-statement	139		statement proved again in another file; lines only that proof needs
+Sporadic	(50 other parts)	same-statement	930		statement proved again in another file; lines only that proof needs
+Sporadic	Bridge	same-statement	110		statement proved again in another file; lines only that proof needs
+Sporadic	Co1	same-statement	350		statement proved again in another file; lines only that proof needs
+Sporadic	Co1Patterson	same-statement	140		statement proved again in another file; lines only that proof needs
+Sporadic	Co2Cert	same-statement	3		statement proved again in another file; lines only that proof needs
+Sporadic	Co2Jc	same-statement	12		statement proved again in another file; lines only that proof needs
+Sporadic	Co2Schreier	same-statement	25		statement proved again in another file; lines only that proof needs
+Sporadic	Co2Smith	same-statement	72		statement proved again in another file; lines only that proof needs
+Sporadic	Fi24	same-statement	27		statement proved again in another file; lines only that proof needs
+Sporadic	FischerOddCore	same-statement	91		statement proved again in another file; lines only that proof needs
+Sporadic	HNOddCore	same-statement	52		statement proved again in another file; lines only that proof needs
+Sporadic	HNSchreier	same-statement	57		statement proved again in another file; lines only that proof needs
+Sporadic	J4	same-statement	96		statement proved again in another file; lines only that proof needs
+Sporadic	Recognition	same-statement	299		statement proved again in another file; lines only that proof needs
+Sporadic	Schreier	same-statement	452		statement proved again in another file; lines only that proof needs
+Sporadic	SuzOddCore	same-statement	125		statement proved again in another file; lines only that proof needs
+Sporadic	SuzRecog	same-statement	207		statement proved again in another file; lines only that proof needs
+Sporadic	Th	same-statement	46		statement proved again in another file; lines only that proof needs
+StandardComponent	AschbacherSeitz	same-statement	3		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	(15 other parts)	same-statement	24		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	BenderBorelTransport	same-statement	7		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	Catalog	same-statement	44		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	DihedralSylowNoStrongEmbedding	same-statement	6		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	TheoremSE	same-statement	6		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	UniqueCosetBasic	same-statement	5		statement proved again in another file; lines only that proof needs
+StronglyEmbedded	UniqueCosetEnd	same-statement	20		statement proved again in another file; lines only that proof needs
+ThirdParty	(4 other parts)	same-statement	19		statement proved again in another file; lines only that proof needs
+ThirdParty	QiuzhenCFSG	same-statement	26651		statement proved again in another file; lines only that proof needs
+Timmesfeld	(43 other parts)	same-statement	280		statement proved again in another file; lines only that proof needs
+Timmesfeld	ARS	same-statement	485		statement proved again in another file; lines only that proof needs
+Timmesfeld	Bridge	same-statement	378		statement proved again in another file; lines only that proof needs
+Timmesfeld	Exceptional	same-statement	31		statement proved again in another file; lines only that proof needs
+Timmesfeld	RankTwo	same-statement	146		statement proved again in another file; lines only that proof needs
+Timmesfeld	Transvection	same-statement	57		statement proved again in another file; lines only that proof needs
+Walter	(19 other parts)	same-statement	164		statement proved again in another file; lines only that proof needs
+Walter	Bender1970	same-statement	1232		statement proved again in another file; lines only that proof needs
+Walter	J1	same-statement	303		statement proved again in another file; lines only that proof needs
+Walter	Ree	same-statement	85		statement proved again in another file; lines only that proof needs
+Walter	ReeOrder	same-statement	494		statement proved again in another file; lines only that proof needs
+Walter	W67	same-statement	368		statement proved again in another file; lines only that proof needs
+YGroups	DCE	same-statement	30		statement proved again in another file; lines only that proof needs
+YGroups	Y433	same-statement	14		statement proved again in another file; lines only that proof needs
+YGroups	Y443	same-statement	115		statement proved again in another file; lines only that proof needs
+Yardstones	Md42047359a2a	same-statement	6		statement proved again in another file; lines only that proof needs

@@ -30,7 +30,7 @@ shape and 2–3% on duplicated statements. The single exception is
 Quasithin.H13, at 6.8% on shape. The tables are
 `data/map/skeletons/regions.tsv`, `data/map/theory_duplicates/regions.tsv`,
 `data/map/name_families/regions.tsv` and `data/map/data_share.tsv`, and in
-the page format `data/map/potential_rows.tsv`.
+the page format `data/potential/blocks.tsv` (methods `same-shape` and `same-statement`, written by `tools/potential_rows.py`).
 
 ## Where the larger reductions are
 
