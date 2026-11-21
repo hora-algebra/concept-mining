@@ -11,7 +11,9 @@ failure decides; every phase fails closed.
   scope      only .lean files under CFSG/<target>/ change, and imports stay
              inside Mathlib and CFSG.<target>
   guards     added lines contain no sorry, admit, native_decide, axiom,
-             unsafe, implemented_by, extern or kernel-check switches
+             unsafe, implemented_by, extern, kernel-check switches, and no
+             metaprogramming that runs code at compile time (#eval, run_cmd,
+             initialize, elab, macro, syntax, IO)
   size       the target's size in tokens (tools/size.py: whitespace, line
              breaks, comments and name lengths do not count) drops by at
              least --min-tokens
@@ -43,7 +45,10 @@ REPO = os.path.dirname(HERE)
 PERMITTED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 FORBIDDEN = re.compile(
     r"\bsorry\b|\badmit\b|\bnative_decide\b|^\s*(?:private\s+|protected\s+)?axiom\s|\bunsafe\b|implemented_by|"
-    r"\bextern\b|debug\.skipKernelTC|Lean\.ofReduceBool|trustCompiler|^\s*@\[csimp\]", re.M)
+    r"\bextern\b|debug\.skipKernelTC|Lean\.ofReduceBool|trustCompiler|^\s*@\[csimp\]|"
+    # metaprogramming runs code while compiling; a refactor has no need for it
+    r"#eval|#exit|\brun_cmd\b|\brun_tac\b|\b(?:builtin_)?initialize\b|^\s*(?:elab|macro|syntax|macro_rules|elab_rules)\b|"
+    r"declare_syntax_cat|\bIO\.|\bunsafeCast\b|@\[(?:command_)?elab", re.M)
 IMPORT = re.compile(r"^\s*(?:public\s+)?(?:meta\s+)?import\s+(?:all\s+)?(\S+)", re.M)
 
 

@@ -206,8 +206,9 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         concept_file = os.path.join(tmp, "concept.json")
         protected = ", ".join(l.strip() for l in open(os.path.join(pilot, "protected.txt")) if l.strip())
-        prompt = PROMPT.format(target=target, protected=protected, min_tokens=a.min_tokens, base=base,
-                               verify=os.path.join(HERE, "verify.py"), concept_file=concept_file, **c)
+        prompt = PROMPT.format(**{**c, "target": target, "protected": protected, "min_tokens": a.min_tokens,
+                                  "base": base, "verify": os.path.join(HERE, "verify.py"),
+                                  "concept_file": concept_file})
         agent_log = run_agent(a.agent, prompt, root, a.minutes, a.model)
         concept = {}
         if os.path.exists(concept_file):

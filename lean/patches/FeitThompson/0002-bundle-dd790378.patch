@@ -1,0 +1,1850 @@
+From 37384c8c23a50a52ee079fb24242580700a97331 Mon Sep 17 00:00:00 2001
+From: concept-mining <concept-mining@users.noreply.github.com>
+Date: Sat, 21 Nov 2026 15:49:38 +0900
+Subject: [PATCH] Concept: IsTIDiff
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For subgroups W, W1, W2 of G, the set D = W \ (W1 ∪ W2) has stabilizer exactly W under conjugation and is a TI set relative to W: every conjugate of D by an element outside W is disjoint from D. IsCyclicTIPair now extends this predicate.
+
+Candidate bundle-dd790378, saves 5604 tokens.
+---
+ ...CoherenceDeterminesUniformBridgeImage.lean |  12 +-
+ .../CoreDetectingFamilyAntirealBlocks.lean    |  49 ++----
+ .../DadeRowDifferenceTransfer.lean            |  15 +-
+ .../EqualDegreeRowsCoherentAmbientMap.lean    |  45 ++---
+ .../Representations/IndexCollapseSupport.lean |  13 +-
+ .../LowFamilyBridgesRealCorrection.lean       |  28 +--
+ .../OddCyclicFactorOrders.lean                |  14 +-
+ .../PSideBridgesCommonAmbientRemainder.lean   |  18 +-
+ .../PairedFittingWitnessExcludesPartner.lean  |   6 +-
+ .../PrimeCubeDivisorInducedCoherence.lean     |  12 +-
+ .../PrimeDadeFourFamilyAntirealBlocks.lean    |  21 +--
+ ...imeDadeFourFamilyCoherenceOrientation.lean |  23 +--
+ .../PrimeDadeLowFamilyBridgeRigidity.lean     |  19 +--
+ .../PrimeFixedTIPGroupCoherence.lean          |  12 +-
+ ...rincipalColumnProjectionGluesFamilies.lean | 161 ++++++------------
+ .../TypeIIIAndIVWeightedNormalFamily.lean     |  39 ++---
+ .../TypeIIIIVTwoCoherentLayers.lean           |   3 +-
+ .../TypeIIIVCoherentCrossedRowData.lean       |  37 ++--
+ .../TypeIINonfrobeniusCrossedColumnData.lean  |  49 ++----
+ .../TypeIPBridgeOrthogonality.lean            |   6 +-
+ .../TypePOrientedCoreFamily.lean              |  63 ++-----
+ ...hreeFiveFrobeniusPartnerContradiction.lean |   2 +-
+ .../TypeThreeFourPrincipalRowProjection.lean  |  15 +-
+ ...hreeFourScalarCoordinateIndexCollapse.lean |   4 +-
+ .../TypeVMaximalExclusion.lean                |  50 ++----
+ .../TypeVTwoFamilyCoherenceJoining.lean       |  45 ++---
+ 26 files changed, 220 insertions(+), 541 deletions(-)
+
+diff --git a/CFSG/FeitThompson/Representations/CoherenceDeterminesUniformBridgeImage.lean b/CFSG/FeitThompson/Representations/CoherenceDeterminesUniformBridgeImage.lean
+index 0a68267dd..98922e33b 100644
+--- a/CFSG/FeitThompson/Representations/CoherenceDeterminesUniformBridgeImage.lean
++++ b/CFSG/FeitThompson/Representations/CoherenceDeterminesUniformBridgeImage.lean
+@@ -102,14 +102,7 @@ theorem prodChar_irrMapSubtype (hL : IsCyclicTIPair (W₁ ⊔ W₂) W₁ W₂)
+     rw [h2, irrMapSubtype_apply]
+ 
+ theorem IsPrimeCyclicTIHyp.isCyclicTIPair_map_subtype (h : IsPrimeCyclicTIHyp K W₁ W₂)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅) :
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)) :
+     IsCyclicTIPair ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) where
+   left_ne_bot := fun hc =>
+     h.left_ne_bot ((Subgroup.map_eq_bot_iff_of_injective _ L.subtype_injective).1 hc)
+@@ -129,8 +122,7 @@ theorem IsPrimeCyclicTIHyp.isCyclicTIPair_map_subtype (h : IsPrimeCyclicTIHyp K
+     rw [← Nat.card_congr
+       (Subgroup.equivMapOfInjective (W₁ ⊔ W₂) L.subtype L.subtype_injective).toEquiv]
+     exact h.isCyclicTIPair.odd_natCard
+-  setOf_conj_eq_self := hstab
+-  inter_eq_empty := hdisj
++  toIsTIDiff := hTI
+ 
+ end Transport
+ 
+diff --git a/CFSG/FeitThompson/Representations/CoreDetectingFamilyAntirealBlocks.lean b/CFSG/FeitThompson/Representations/CoreDetectingFamilyAntirealBlocks.lean
+index 58015a48c..2c783f447 100644
+--- a/CFSG/FeitThompson/Representations/CoreDetectingFamilyAntirealBlocks.lean
++++ b/CFSG/FeitThompson/Representations/CoreDetectingFamilyAntirealBlocks.lean
+@@ -463,21 +463,14 @@ theorem dadeMapFun_primeTIrow_sub_starIrr
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     {j : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂) :
+     dadeMapFun L A₀ T (h.primeTIrow σ j - h.primeTIrow σ (starIrr j))
+       = h.primeTISign σ j • ∑ i : Irr ↥W₁,
+-          ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++          ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ j)
+-            - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++            - (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ (starIrr j))) := by
+   classical
+   have hjs : starIrr j ≠ principalIrr ↥W₂ := starIrr_ne_principalIrr hj
+@@ -491,7 +484,7 @@ theorem dadeMapFun_primeTIrow_sub_starIrr
+   refine Finset.sum_congr rfl fun i _ => ?_
+   have hmem := h.primeTIirr_sub_mem_dadeDomain hσ hWH hA hA₀ i hj hjs (hone i)
+   rw [← coe_dadeMap hD ⟨_, hmem⟩]
+-  exact h.dadeMap_primeTIirr_sub_eq hσ hWH hA hA₀ hD hstab hdisj hω i hj hjs (hone i)
++  exact h.dadeMap_primeTIirr_sub_eq hσ hWH hA hA₀ hD hTI hω i hj hjs (hone i)
+ 
+ open scoped Classical in
+ noncomputable def irrBlock (τ : (↥L → ℂ) → G → ℂ) (χ : ↥L → ℂ) : Finset (G → ℂ) :=
+@@ -917,20 +910,13 @@ theorem dadeMapFun_sub_star_eq_sum_blockMap [K.Normal] (hodd : Odd (Nat.card G))
+     {A : Set ↥L} (hAconj : ∀ t : ↥L, (fun a => t⁻¹ * a * t) '' A = A)
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀) (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     {χ : ↥L → ℂ} (hχ : χ ∈ indFamDetect K (H.subgroupOf K)) :
+     dadeMapFun L A₀ T (χ - star χ)
+-      = ∑ r ∈ blockMap h (h.isCyclicTIPair_map_subtype hstab hdisj) σ ω A₀ T χ, r := by
++      = ∑ r ∈ blockMap h (h.isCyclicTIPair_map_subtype hTI) σ ω A₀ T χ, r := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   have hAA₀ : (fun x : ↥L => (x : G)) '' A ⊆ A₀ :=
+     (Set.image_mono subset_bridgeSupport_left).trans hA₀
+   rcases blockMap_cases h hσ hW hχ (A₀ := A₀) (T := T) with ⟨hirr, heq⟩ | ⟨j, hj, hrow, heq⟩
+@@ -938,7 +924,7 @@ theorem dadeMapFun_sub_star_eq_sum_blockMap [K.Normal] (hodd : Odd (Nat.card G))
+       (exists_root_of_mem_indFamDetect_of_mem_Irr hodd hAconj hA hAA₀ hD hχ hirr)]
+   · subst hrow
+     rw [heq, sum_rowBlock h hW hω hj,
+-      ← dadeMapFun_primeTIrow_sub_starIrr h hσ hWH hA hA₀ hD hstab hdisj hω hj,
++      ← dadeMapFun_primeTIrow_sub_starIrr h hσ hWH hA hA₀ hD hTI hω hj,
+       h.primeTIrow_starIrr_eq_star hσ j]
+ 
+ theorem cfInner_blockMap_blockMap [K.Normal] (hodd : Odd (Nat.card G))
+@@ -1006,14 +992,7 @@ theorem exists_isSubcoherent_indFamDetect (hodd : Odd (Nat.card G))
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     {S : Finset (↥L → ℂ)} (hS : (S : Set (↥L → ℂ)) = indFamDetect K (H.subgroupOf K)) :
+     ∃ R : (↥L → ℂ) → Finset (G → ℂ),
+@@ -1021,19 +1000,19 @@ theorem exists_isSubcoherent_indFamDetect (hodd : Odd (Nat.card G))
+       (∀ χ ∈ S, (R (star χ) : Set (G → ℂ)) = (fun r => -r) '' (R χ : Set (G → ℂ))) ∧
+       (∀ χ ∈ S, χ ∈ Irr ↥L → ∀ r ∈ R χ, ∀ (i : Irr ↥(W₁.map L.subtype))
+         (j : Irr ↥(W₂.map L.subtype)),
+-          IsOrthogonal r ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω i j)) ∧
++          IsOrthogonal r ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω i j)) ∧
+       (∀ j : Irr ↥W₂, j ≠ principalIrr ↥W₂ →
+         h.primeTIrow σ j ∈ S ∧
+         (R (h.primeTIrow σ j) : Set (G → ℂ))
+           = Set.range (fun i : Irr ↥W₁ => h.primeTISign σ j •
+-              (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++              (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+                 (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ j))
+             ∪ Set.range (fun i : Irr ↥W₁ => -(h.primeTISign σ j •
+-              (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++              (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+                 (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ (starIrr j))))) := by
+   classical
+   have hKn : K.Normal := h.normal
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   have hmem : ∀ f : ↥L → ℂ, f ∈ S → f ∈ indFamDetect K (H.subgroupOf K) := by
+     intro f hf; rw [← Finset.mem_coe, hS] at hf; exact hf
+   have hAA₀ : (fun x : ↥L => (x : G)) '' A ⊆ A₀ :=
+@@ -1071,7 +1050,7 @@ theorem exists_isSubcoherent_indFamDetect (hodd : Odd (Nat.card G))
+           rw [charInner_eq_cfInner]
+           exact cfInner_blockMap_of_ne hodd h hσ hAconj hA hAA₀ hD hW hω (hmem χ hχ) hr hs hrs
+         tau_sub_star := fun χ hχ =>
+-          dadeMapFun_sub_star_eq_sum_blockMap hodd h hσ hWH hAconj hA hA₀ hD hstab hdisj hω
++          dadeMapFun_sub_star_eq_sum_blockMap hodd h hσ hWH hAconj hA hA₀ hD hTI hω
+             (hmem χ hχ)
+         charInner_R_R := fun χ hχ ψ hψ h1 h2 r hr s hs => by
+           rw [charInner_eq_cfInner]
+diff --git a/CFSG/FeitThompson/Representations/DadeRowDifferenceTransfer.lean b/CFSG/FeitThompson/Representations/DadeRowDifferenceTransfer.lean
+index 4222f6366..066161832 100644
+--- a/CFSG/FeitThompson/Representations/DadeRowDifferenceTransfer.lean
++++ b/CFSG/FeitThompson/Representations/DadeRowDifferenceTransfer.lean
+@@ -81,26 +81,19 @@ theorem dadeMap_primeTIirr_sub_eq {A₀ : Set G} {T : G → Subgroup G}
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (i : Irr ↥W₁) {j k : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂) (hk : k ≠ principalIrr ↥W₂)
+     (hone : h.primeTIirr σ i j 1 = h.primeTIirr σ i k 1) :
+     ((dadeMap hD ⟨h.primeTIirr σ i j - h.primeTIirr σ i k,
+           h.primeTIirr_sub_mem_dadeDomain hσ hWH hA hA₀ i hj hk hone⟩ : classFun G) : G → ℂ)
+       = h.primeTISign σ j •
+-          ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++          ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ j)
+-            - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++            - (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ k)) := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set hmem := h.primeTIirr_sub_mem_dadeDomain hσ hWH hA hA₀ i hj hk hone with hmemdef
+   rcases eq_or_ne j k with rfl | hjk
+   · have h0 : (⟨h.primeTIirr σ i j - h.primeTIirr σ i j, hmem⟩ : dadeDomain L A₀) = 0 :=
+diff --git a/CFSG/FeitThompson/Representations/EqualDegreeRowsCoherentAmbientMap.lean b/CFSG/FeitThompson/Representations/EqualDegreeRowsCoherentAmbientMap.lean
+index 5e1a5cb61..3f38df340 100644
+--- a/CFSG/FeitThompson/Representations/EqualDegreeRowsCoherentAmbientMap.lean
++++ b/CFSG/FeitThompson/Representations/EqualDegreeRowsCoherentAmbientMap.lean
+@@ -306,21 +306,14 @@ theorem dadeMap_primeTIrow_sub_eq [K.Normal]
+     (hB : h.IsUniformBridgeData σ ζ d n δ)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+       (W₂.map L.subtype) ω)
+     {j k : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂) (hk : k ≠ principalIrr ↥W₂)
+     (F : dadeDomain L A₀) (hF : (F : ↥L → ℂ) = h.primeTIrow σ j - h.primeTIrow σ k) :
+     ((dadeMap hD F : classFun G) : G → ℂ)
+-      = rowEtaSum (h.isCyclicTIPair_map_subtype hstab hdisj) ω δ j
+-        - rowEtaSum (h.isCyclicTIPair_map_subtype hstab hdisj) ω δ k := by
++      = rowEtaSum (h.isCyclicTIPair_map_subtype hTI) ω δ j
++        - rowEtaSum (h.isCyclicTIPair_map_subtype hTI) ω δ k := by
+   classical
+   have hA : ∀ y ∈ K, y ≠ (1 : ↥L) →
+       ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ (K : Set ↥L) \ {1} :=
+@@ -338,13 +331,13 @@ theorem dadeMap_primeTIrow_sub_eq [K.Normal]
+   rw [hsum, map_sum, AddSubmonoidClass.coe_finsetSum]
+   have hterm : ∀ i : ↑(Irr ↥W₁),
+       ((dadeMap hD ⟨h.primeTIirr σ i j - h.primeTIirr σ i k, hmemi i⟩ : classFun G) : G → ℂ)
+-        = (δ : ℂ) • ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++        = (δ : ℂ) • ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ j)
+-            - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++            - (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ k)) := by
+     intro i
+     rw [← hB.primeTISign_eq j hj]
+-    exact h.dadeMap_primeTIirr_sub_eq hB.isometry h.right_le hA hA₀ hD hstab hdisj hω i hj hk
++    exact h.dadeMap_primeTIirr_sub_eq hB.isometry h.right_le hA hA₀ hD hTI hω i hj hk
+       (hone i)
+   rw [Finset.sum_congr rfl fun i _ => hterm i, ← Finset.smul_sum, rowEtaSum_def, rowEtaSum_def,
+     ← smul_sub, Finset.sum_sub_distrib]
+@@ -353,14 +346,7 @@ theorem exists_isCoherentWith_primeTIrowFam [K.Normal]
+     (hB : h.IsUniformBridgeData σ ζ d n δ)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+       (W₂.map L.subtype) ω) :
+     ∃ ν₂ : Submodule.span ℤ (primeTIrowFam h σ) →+ virtualChars G,
+@@ -369,11 +355,11 @@ theorem exists_isCoherentWith_primeTIrowFam [K.Normal]
+       ∀ j : Irr ↥W₂, j ≠ principalIrr ↥W₂ →
+         ∀ w : Submodule.span ℤ (primeTIrowFam h σ), (w : ↥L → ℂ) = h.primeTIrow σ j →
+           ((ν₂ w : virtualChars G) : G → ℂ)
+-            = rowEtaSum (h.isCyclicTIPair_map_subtype hstab hdisj) ω δ j := by
++            = rowEtaSum (h.isCyclicTIPair_map_subtype hTI) ω δ j := by
+   classical
+   have hfin : Fintype {j : Irr ↥W₂ // j ≠ principalIrr ↥W₂} := Fintype.ofFinite _
+   have hcomm : IsMulCommutative ↥W₁ := h.isCyclicTIPair.isMulCommutative_left
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set u : {j : Irr ↥W₂ // j ≠ principalIrr ↥W₂} → ↥L → ℂ :=
+     fun j => h.primeTIrow σ (j : Irr ↥W₂) with hudef
+   set v : {j : Irr ↥W₂ // j ≠ principalIrr ↥W₂} → G → ℂ :=
+@@ -405,7 +391,7 @@ theorem exists_isCoherentWith_primeTIrowFam [K.Normal]
+       mem_dadeDomain_of_mem_dadeZDomain
+         (charSpanZero_primeTIrowFam_le_dadeZDomain hB hA₀ w.2)
+     rw [coe_rowDadeHom hD hB hA₀ w ⟨(w : ↥L → ℂ), hFmem⟩ rfl]
+-    exact dadeMap_primeTIrow_sub_eq hB hA₀ hD hstab hdisj hω j.2 k.2 _ hw
++    exact dadeMap_primeTIrow_sub_eq hB hA₀ hD hTI hω j.2 k.2 _ hw
+   obtain ⟨ν₂, hcoh, hval⟩ := exists_isCoherentWith_of_gram_eq (v := v) hSrange hgramu hgne hvmem
+     hgramv (τ := rowDadeHom hD hB hA₀)
+     (fun w c hwc => eq_sum_smul_of_eq_on_sub hSrange
+@@ -416,19 +402,12 @@ theorem isCoherent_primeTIrowFam [K.Normal]
+     (hB : h.IsUniformBridgeData σ ζ d n δ)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+       (W₂.map L.subtype) ω) :
+     IsCoherent (primeTIrowFam h σ)
+       ((spanIrrToVirtualChars G).comp (rowDadeHom hD hB hA₀)) := by
+-  obtain ⟨ν₂, hcoh, -⟩ := exists_isCoherentWith_primeTIrowFam hB hA₀ hD hstab hdisj hω
++  obtain ⟨ν₂, hcoh, -⟩ := exists_isCoherentWith_primeTIrowFam hB hA₀ hD hTI hω
+   exact IsCoherentWith.isCoherent hcoh
+ 
+ end Coherence
+diff --git a/CFSG/FeitThompson/Representations/IndexCollapseSupport.lean b/CFSG/FeitThompson/Representations/IndexCollapseSupport.lean
+index b966c0269..65104b70a 100644
+--- a/CFSG/FeitThompson/Representations/IndexCollapseSupport.lean
++++ b/CFSG/FeitThompson/Representations/IndexCollapseSupport.lean
+@@ -230,14 +230,7 @@ theorem exists_sign_col_of_isUniformBridgeData {G : Type*} [Group G] [Fintype G]
+     (hodd : Odd (Nat.card G)) (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hWpair : IsCyclicTIPair Wamb V₁ V₂) (hωa : IsCyclicTIIsometry Wamb V₁ V₂ ωa)
+     (hS₂ : S₂ ⊆ indFam K (Irr ↥K \ {1})) (hS₂star : ∀ χ ∈ S₂, star χ ∈ S₂)
+     {ν₂ : Submodule.span ℤ S₂ →+ virtualChars G} (hν₂ : IsCoherentWith S₂ τ₂ ν₂)
+@@ -250,9 +243,9 @@ theorem exists_sign_col_of_isUniformBridgeData {G : Type*} [Group G] [Fintype G]
+       (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ : G → ℂ)
+         = ε • hWpair.prodCharEtaColSum ωa j' := by
+   subst hmapW hmap1 hmap2
+-  rcases coe_nu_primeTIrow_eq_or hodd hB hA hD hstab hdisj hωa hS₂ hS₂star hν₂ hτ₂ hrows
++  rcases coe_nu_primeTIrow_eq_or hodd hB hA hD hTI hωa hS₂ hS₂star hν₂ hτ₂ hrows
+     hξS hξIrr hj
+-    (coe_nu_primeTIrow_sub hB hA hD hstab hdisj hωa hS₂ hν₂ hτ₂ hj (starIrr_ne_principalIrr hj)
++    (coe_nu_primeTIrow_sub hB hA hD hTI hωa hS₂ hν₂ hτ₂ hj (starIrr_ne_principalIrr hj)
+       (hrows j hj) (hrows _ (starIrr_ne_principalIrr hj))) with h1 | h1
+   · exact ⟨_, 1, Or.inl rfl, by rw [h1, one_smul]⟩
+   · exact ⟨_, -1, Or.inr rfl, h1⟩
+diff --git a/CFSG/FeitThompson/Representations/LowFamilyBridgesRealCorrection.lean b/CFSG/FeitThompson/Representations/LowFamilyBridgesRealCorrection.lean
+index 5ace39fe4..5e74c85df 100644
+--- a/CFSG/FeitThompson/Representations/LowFamilyBridgesRealCorrection.lean
++++ b/CFSG/FeitThompson/Representations/LowFamilyBridgesRealCorrection.lean
+@@ -196,28 +196,21 @@ theorem primeTIbridge_sub_eq_primeTIirr_sub (i : Irr ↥W₁) (j k : Irr ↥W₂
+ theorem bridgeError_eq_of_ne_principal_right (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     {H : Subgroup ↥L} [H.Normal] (hWH : W₂ ≤ H) {A : Set ↥L}
+     (hAA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hAsub : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hζS₁ : ζ ∈ S₁) (i : Irr ↥W₁) {j k : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂)
+     (hk : k ≠ principalIrr ↥W₂) :
+-    bridgeError hB hA hD (h.isCyclicTIPair_map_subtype hstab hdisj) ω ν₁ hζS₁ i hj
+-      = bridgeError hB hA hD (h.isCyclicTIPair_map_subtype hstab hdisj) ω ν₁ hζS₁ i hk := by
++    bridgeError hB hA hD (h.isCyclicTIPair_map_subtype hTI) ω ν₁ hζS₁ i hj
++      = bridgeError hB hA hD (h.isCyclicTIPair_map_subtype hTI) ω ν₁ hζS₁ i hk := by
+   have hone : h.primeTIirr σ i j 1 = h.primeTIirr σ i k 1 := by
+     rw [hB.primeTIirr_one i j hj, hB.primeTIirr_one i k hk]
+   have hsign : h.primeTISign σ j = (1 : ℂ) := by
+     have hs := hB.primeTISign_eq j hj
+     simpa using hs
+-  have htransfer := h.dadeMap_primeTIirr_sub_eq hB.isometry hWH hAA hAsub hD hstab hdisj hω
++  have htransfer := h.dadeMap_primeTIirr_sub_eq hB.isometry hWH hAA hAsub hD hTI hω
+     i hj hk hone
+   rw [hsign, one_smul] at htransfer
+   have hsplit : (⟨h.primeTIirr σ i j - h.primeTIirr σ i k,
+@@ -666,14 +659,7 @@ theorem exists_common_bridgeError (_hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (_hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (_hprime₁ : (Nat.card ↥W₁).Prime) (_hprime₂ : (Nat.card ↥W₂).Prime)
+     (_hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+@@ -685,11 +671,11 @@ theorem exists_common_bridgeError (_hodd : Odd (Nat.card G))
+       (ν₁ f : G → ℂ) = ((dadeMap hD F : classFun G) : G → ℂ)) :
+     ∃ β : G → ℂ,
+       (∀ (i : Irr ↥W₁) (j : Irr ↥W₂) (hj : j ≠ principalIrr ↥W₂),
+-          bridgeError hB hA hD (h.isCyclicTIPair_map_subtype hstab hdisj) ω ν₁ hζS₁ i hj = β) ∧
++          bridgeError hB hA hD (h.isCyclicTIPair_map_subtype hTI) ω ν₁ hζS₁ i hj = β) ∧
+         β ∈ virtualChars G ∧ (∀ g : G, (starRingEnd ℂ) (β g) = β g) ∧ IsOrthogonal β 1 := by
+   classical
+   have : Fintype ↑(Irr ↥W₁) := Fintype.ofFinite _
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   obtain ⟨j₀, -, hj₀⟩ := exists_ne_ne_of_isPrimeCyclicTIHyp h (principalIrr ↥W₂)
+   have hS₁' : S₁ ⊆ indFam K (Irr ↥K \ {1}) := _hS₁.trans Set.inter_subset_left
+   refine ⟨bridgeError hB hA hD hW ω ν₁ hζS₁ (principalIrr ↥W₁) hj₀, ?_, ?_, ?_, ?_⟩
+diff --git a/CFSG/FeitThompson/Representations/OddCyclicFactorOrders.lean b/CFSG/FeitThompson/Representations/OddCyclicFactorOrders.lean
+index f2ca55a9f..b2af00582 100644
+--- a/CFSG/FeitThompson/Representations/OddCyclicFactorOrders.lean
++++ b/CFSG/FeitThompson/Representations/OddCyclicFactorOrders.lean
+@@ -33,7 +33,15 @@ theorem setOf_conj_eq_self_eq_normalizer (D : Set G) :
+   exact ⟨fun hg => Eq.trans (Set.image_congr' fun x => by simp) hg,
+     fun hg => Eq.trans (Set.image_congr' fun x => by simp) hg⟩
+ 
+-structure IsCyclicTIPair (W W1 W2 : Subgroup G) : Prop where
++/-- The set `W ∖ (W1 ∪ W2)` has stabilizer exactly `W` under conjugation, and it is a TI set
++relative to `W`: its conjugates by elements outside `W` are disjoint from it. -/
++structure IsTIDiff (W W1 W2 : Subgroup G) : Prop where
++  setOf_conj_eq_self : {g : G | (fun x => g⁻¹ * x * g) '' cyclicTIDiff W W1 W2
++    = cyclicTIDiff W W1 W2} = (W : Set G)
++  inter_eq_empty : ∀ g ∉ W,
++    (fun x => g⁻¹ * x * g) '' cyclicTIDiff W W1 W2 ∩ cyclicTIDiff W W1 W2 = ∅
++
++structure IsCyclicTIPair (W W1 W2 : Subgroup G) : Prop extends IsTIDiff W W1 W2 where
+   left_ne_bot : W1 ≠ ⊥
+   right_ne_bot : W2 ≠ ⊥
+   mul_eq : (W1 : Set G) * (W2 : Set G) = (W : Set G)
+@@ -41,10 +49,6 @@ structure IsCyclicTIPair (W W1 W2 : Subgroup G) : Prop where
+   commute : ∀ x ∈ W1, ∀ y ∈ W2, x * y = y * x
+   isCyclic : IsCyclic ↥W
+   odd_natCard : Odd (Nat.card ↥W)
+-  setOf_conj_eq_self : {g : G | (fun x => g⁻¹ * x * g) '' cyclicTIDiff W W1 W2
+-    = cyclicTIDiff W W1 W2} = (W : Set G)
+-  inter_eq_empty : ∀ g ∉ W,
+-    (fun x => g⁻¹ * x * g) '' cyclicTIDiff W W1 W2 ∩ cyclicTIDiff W W1 W2 = ∅
+ 
+ namespace IsCyclicTIPair
+ 
+diff --git a/CFSG/FeitThompson/Representations/PSideBridgesCommonAmbientRemainder.lean b/CFSG/FeitThompson/Representations/PSideBridgesCommonAmbientRemainder.lean
+index c1ff558ce..71b128fc8 100644
+--- a/CFSG/FeitThompson/Representations/PSideBridgesCommonAmbientRemainder.lean
++++ b/CFSG/FeitThompson/Representations/PSideBridgesCommonAmbientRemainder.lean
+@@ -75,14 +75,7 @@ structure IsDadeBridgeData (hc : IsPrimeTIBridgeConfig K W₁ W₂ H U A)
+     hc.primeCyclicTI.primeTIres σ j k = 0
+   image_subset : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀
+   isDadeData : IsDadeData L A₀ T
+-  setOf_conj_eq : {g : G | (fun x => g⁻¹ * x * g) ''
+-      cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-    = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-    = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G)
+-  inter_eq_empty : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-    (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅
++  isTIDiff : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+   omega_isometry : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+     (W₂.map L.subtype) ω
+ 
+@@ -105,7 +98,7 @@ noncomputable def tauBridge (hB : IsDadeBridgeData hc σ A₀ T ω) {j : Irr ↥
+       ⟨hc.bridgeChar (σ := σ) (j := j), hB.bridgeChar_mem_dadeDomain hj⟩ : classFun G) : G → ℂ)
+ 
+ noncomputable def ambientEta (hB : IsDadeBridgeData hc σ A₀ T ω) (j : Irr ↥W₂) : G → ℂ :=
+-  (hc.primeCyclicTI.isCyclicTIPair_map_subtype hB.setOf_conj_eq hB.inter_eq_empty).prodCharEta ω
++  (hc.primeCyclicTI.isCyclicTIPair_map_subtype hB.isTIDiff).prodCharEta ω
+     (principalIrr ↥(W₁.map L.subtype)) (irrMapSubtype L W₂ j)
+ 
+ noncomputable def bridgeRemainder (hB : IsDadeBridgeData hc σ A₀ T ω) {j₀ : Irr ↥W₂}
+@@ -133,7 +126,7 @@ theorem cfInner_tauBridge_one (hB : IsDadeBridgeData hc σ A₀ T ω) {j : Irr 
+ 
+ theorem cfInner_ambientEta_one (hB : IsDadeBridgeData hc σ A₀ T ω) {j : Irr ↥W₂}
+     (hj : j ≠ principalIrr ↥W₂) : cfInner (hB.ambientEta j) (1 : G → ℂ) = 0 := by
+-  set hW := hc.primeCyclicTI.isCyclicTIPair_map_subtype hB.setOf_conj_eq hB.inter_eq_empty
++  set hW := hc.primeCyclicTI.isCyclicTIPair_map_subtype hB.isTIDiff
+   have h1 := hW.cfInner_prodCharEta_col hB.omega_isometry (irrMapSubtype L W₂ j)
+     (principalIrr ↥(W₂.map L.subtype))
+   rw [hW.prodCharEta_principal hB.omega_isometry] at h1
+@@ -161,8 +154,7 @@ theorem conj_tauBridge (hB : IsDadeBridgeData hc σ A₀ T ω) {j : Irr ↥W₂}
+ 
+ theorem conj_ambientEta (hB : IsDadeBridgeData hc σ A₀ T ω) (j : Irr ↥W₂) (x : G) :
+     conj (hB.ambientEta j x) = hB.ambientEta (starIrr j) x := by
+-  have hst := (hc.primeCyclicTI.isCyclicTIPair_map_subtype hB.setOf_conj_eq
+-      hB.inter_eq_empty).star_prodCharEta hB.omega_isometry
++  have hst := (hc.primeCyclicTI.isCyclicTIPair_map_subtype hB.isTIDiff).star_prodCharEta hB.omega_isometry
+     (i := principalIrr ↥(W₁.map L.subtype)) (k := principalIrr ↥(W₁.map L.subtype))
+     (j := irrMapSubtype L W₂ j) (l := irrMapSubtype L W₂ (starIrr j))
+     (by simp) (by rw [irrMapSubtype_starIrr, coe_starIrr])
+@@ -196,7 +188,7 @@ theorem tauBridge_sub_tauBridge (hB : IsDadeBridgeData hc σ A₀ T ω) {j k : I
+   rw [hsub, hkey]
+   have h1 := hc.primeCyclicTI.dadeMap_primeTIirr_sub_eq (A₀ := A₀) (T := T) (ω := ω)
+     hB.isometry hc.right_le_H hc.centralizer_sdiff_subset hB.image_subset hB.isDadeData
+-    hB.setOf_conj_eq hB.inter_eq_empty hB.omega_isometry (principalIrr ↥W₁) hk hj hone
++    hB.isTIDiff hB.omega_isometry (principalIrr ↥W₁) hk hj hone
+   rw [h1, hB.primeTISign_eq_one hk]
+   simp [ambientEta]
+ 
+diff --git a/CFSG/FeitThompson/Representations/PairedFittingWitnessExcludesPartner.lean b/CFSG/FeitThompson/Representations/PairedFittingWitnessExcludesPartner.lean
+index 4b87e6f26..a5b2854f2 100644
+--- a/CFSG/FeitThompson/Representations/PairedFittingWitnessExcludesPartner.lean
++++ b/CFSG/FeitThompson/Representations/PairedFittingWitnessExcludesPartner.lean
+@@ -342,8 +342,7 @@ private theorem exists_fittingInducedImage_aux
+   obtain ⟨ωM, hωM, hcol⟩ := OrientedCoreFamily.exists_isCyclicTIIsometry_prodCharEtaColSum_eq
+     (OrientedCoreFamily.map_subgroupOf_sup h1 h2) (Subgroup.map_subgroupOf_eq_of_le h1)
+     (Subgroup.map_subgroupOf_eq_of_le h2) hW
+-    (hP.isCyclicTIPair_map_subtype (OrientedCoreFamily.setOf_conj_eq_of_isCyclicTIPair h1 h2 hW)
+-      (OrientedCoreFamily.inter_eq_empty_of_isCyclicTIPair h1 h2 hW)) _hω
++    (hP.isCyclicTIPair_map_subtype (OrientedCoreFamily.isCyclicTIPair_map_subgroupOf h1 h2 hW).toIsTIDiff) _hω
+   have hirr : ∀ j : Irr ↥W₂, ∀ (x : ↥((W₂.subgroupOf M).map M.subtype)) (hx : (x : G) ∈ W₂),
+       ((irrMapSubtype M (W₂.subgroupOf M)
+         (OrientedCoreFamily.irrEquivOfMulEquiv (Subgroup.subgroupOfEquivOfLe h2) j) : Irr _) :
+@@ -369,8 +368,7 @@ private theorem exists_fittingInducedImage_aux
+     have key := OrientedCoreFamily.coe_nu_primeTIrow_sub_eq (ν0 := ν0) (ω := ωM) hP hσ'
+       (OrientedCoreFamily.le_hallCore_subgroupOf_W₂ hc) (H := hallCore ↥M) (A := A)
+       (by have := @hallCore_normal ↥M _; exact hA) hA₀ hD
+-      (OrientedCoreFamily.setOf_conj_eq_of_isCyclicTIPair h1 h2 hW)
+-      (OrientedCoreFamily.inter_eq_empty_of_isCyclicTIPair h1 h2 hW) hωM hS0
++      (OrientedCoreFamily.isCyclicTIPair_map_subgroupOf h1 h2 hW).toIsTIDiff hωM hS0
+       (fun f hf => OrientedCoreFamily.mem_classFun_of_mem_span_detectInd hf) hντ0 hj hk
+       (fun i => by rw [OrientedCoreFamily.primeTIirr_one_eq_relIndex hP hmac hσ' i hj,
+         OrientedCoreFamily.primeTIirr_one_eq_relIndex hP hmac hσ' i hk])
+diff --git a/CFSG/FeitThompson/Representations/PrimeCubeDivisorInducedCoherence.lean b/CFSG/FeitThompson/Representations/PrimeCubeDivisorInducedCoherence.lean
+index 76a32e5d0..255ef9bf8 100644
+--- a/CFSG/FeitThompson/Representations/PrimeCubeDivisorInducedCoherence.lean
++++ b/CFSG/FeitThompson/Representations/PrimeCubeDivisorInducedCoherence.lean
+@@ -29,14 +29,7 @@ structure IsPrimeCubeDivisorHyp (h : IsPrimeCyclicTIHyp K W₁ W₂)
+   isDadeData : IsDadeData L A₀ T
+   image_subset :
+     (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀
+-  stabilizer_eq : {g : G | (fun x => g⁻¹ * x * g) ''
+-      cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-    = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G)
+-  inter_eq_empty : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-    (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅
++  isTIDiff : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+   omega_isometry : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+     (W₂.map L.subtype) ω
+ 
+@@ -137,8 +130,7 @@ theorem isTypeVTwoFamilyData :
+   odd := hC.odd
+   isDadeData := hC.isDadeData
+   image_subset := hC.image_subset
+-  stabilizer_eq := hC.stabilizer_eq
+-  inter_eq_empty := hC.inter_eq_empty
++  isTIDiff := hC.isTIDiff
+   omega_isometry := hC.omega_isometry
+   card_lt := hC.card_lt
+   union_eq := by
+diff --git a/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyAntirealBlocks.lean b/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyAntirealBlocks.lean
+index 129d4632d..b7812d063 100644
+--- a/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyAntirealBlocks.lean
++++ b/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyAntirealBlocks.lean
+@@ -75,14 +75,7 @@ theorem primeDade_four_family_antireal_blocks {G : Type*} [Group G] [Fintype G]
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hodd : Odd (Nat.card G))
+     {j : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂)
+@@ -117,20 +110,20 @@ theorem primeDade_four_family_antireal_blocks {G : Type*} [Group G] [Fintype G]
+     (∃ ρ ∈ Irr G, star ρ ≠ ρ ∧
+       dadeMapFun L A₀ T (indClassFun K θ - star (indClassFun K θ)) = ρ - star ρ ∧
+       (∀ (a : Irr ↥(W₁.map L.subtype)) (b : Irr ↥(W₂.map L.subtype)),
+-        cfInner ρ ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω a b) = 0 ∧
++        cfInner ρ ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω a b) = 0 ∧
+           cfInner (star ρ)
+-            ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω a b) = 0) ∧
++            ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω a b) = 0) ∧
+       ∀ v ∈ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype),
+         ρ v = 0) ∧
+     dadeMapFun L A₀ T (h.primeTIrow σ j - h.primeTIrow σ (starIrr j))
+       = h.primeTISign σ j • ∑ i : ↑(Irr ↥W₁),
+-          ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω (irrMapSubtype L W₁ i)
++          ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω (irrMapSubtype L W₁ i)
+               (irrMapSubtype L W₂ j)
+-            - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω (irrMapSubtype L W₁ i)
++            - (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω (irrMapSubtype L W₁ i)
+               (irrMapSubtype L W₂ (starIrr j))) := by
+   classical
+   have hKn : K.Normal := h.normal
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set ξ : ↥L → ℂ := indClassFun K θ with hξdef
+   have hjs : starIrr j ≠ principalIrr ↥W₂ := h.starIrr_ne_principalIrr_right hj
+   have hjsne : starIrr j ≠ j := h.starIrr_ne_self_right hj
+@@ -301,7 +294,7 @@ theorem primeDade_four_family_antireal_blocks {G : Type*} [Group G] [Fintype G]
+     refine Finset.sum_congr rfl fun i _ => ?_
+     have hmem := h.primeTIirr_sub_mem_dadeDomain hσ hWH hA hA₀ i hj hjs (hone i)
+     rw [← coe_dadeMap hD ⟨_, hmem⟩]
+-    exact h.dadeMap_primeTIirr_sub_eq hσ hWH hA hA₀ hD hstab hdisj hω i hj hjs (hone i)
++    exact h.dadeMap_primeTIirr_sub_eq hσ hWH hA hA₀ hD hTI hω i hj hjs (hone i)
+   exact ⟨hsign, hrow, hdistinct, horth, hdegs, ⟨hnormξ, hnormsξ, hnormj, hnormk⟩, hsupp, hdomain,
+     ⟨ρ, hρ, hρnr, hρeq, horthρ, fun v hv =>
+       apply_eq_zero_of_forall_prodCharEta hW hω (Irr_subset_classFun hρ)
+diff --git a/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyCoherenceOrientation.lean b/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyCoherenceOrientation.lean
+index f2d3c920b..92a50c0ac 100644
+--- a/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyCoherenceOrientation.lean
++++ b/CFSG/FeitThompson/Representations/PrimeDadeFourFamilyCoherenceOrientation.lean
+@@ -186,14 +186,7 @@ theorem primeDade_four_family_coherence_orientation {G : Type*} [Group G] [Finty
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hodd : Odd (Nat.card G))
+     {j : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂)
+@@ -213,32 +206,32 @@ theorem primeDade_four_family_coherence_orientation {G : Type*} [Group G] [Finty
+         star ((ν w : virtualChars G) : G → ℂ) ≠ ((ν w : virtualChars G) : G → ℂ) ∧
+         ∀ (a : Irr ↥(W₁.map L.subtype)) (b : Irr ↥(W₂.map L.subtype)),
+           cfInner ((ν w : virtualChars G) : G → ℂ)
+-            ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω a b) = 0) ∧
++            ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω a b) = 0) ∧
+       (∀ w w' : Submodule.span ℤ S, (w : ↥L → ℂ) = indClassFun K θ →
+         (w' : ↥L → ℂ) = star (indClassFun K θ) →
+         ((ν w' : virtualChars G) : G → ℂ) = star ((ν w : virtualChars G) : G → ℂ)) ∧
+       (∀ wj wk : Submodule.span ℤ S, (wj : ↥L → ℂ) = h.primeTIrow σ j →
+         (wk : ↥L → ℂ) = h.primeTIrow σ (starIrr j) →
+         (((ν wj : virtualChars G) : G → ℂ) = h.primeTISign σ j •
+-              (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++              (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+                 (irrMapSubtype L W₂ j) ∧
+             ((ν wk : virtualChars G) : G → ℂ) = h.primeTISign σ j •
+-              (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++              (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+                 (irrMapSubtype L W₂ (starIrr j))) ∨
+           (((ν wj : virtualChars G) : G → ℂ) = (-h.primeTISign σ j) •
+-              (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++              (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+                 (irrMapSubtype L W₂ (starIrr j)) ∧
+             ((ν wk : virtualChars G) : G → ℂ) = (-h.primeTISign σ j) •
+-              (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++              (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+                 (irrMapSubtype L W₂ j))) := by
+   classical
+   obtain ⟨hsign, hrow, ⟨hd01, hd02, hd03, hd12, hd13, hd23⟩,
+     ⟨ho01, ho02, ho03, ho12, ho13, ho23⟩,
+     ⟨dn, hdn0, hdξ, hdsξ, hdj, hdk⟩, ⟨hn1, hn2, hn3, hn4⟩, hsupp, hdomain,
+     ⟨ρ, hρIrr, hρnr, hρeq, horthρ, hρV⟩, htransfer⟩ :=
+-    primeDade_four_family_antireal_blocks h hσ hWH hAconj hA hA₀ hD hstab hdisj hω hodd hj hθ
++    primeDade_four_family_antireal_blocks h hσ hWH hAconj hA hA₀ hD hTI hω hodd hj hθ
+       hHθ hξ hdeg
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   have hfinI : Fintype ↑(Irr ↥(W₁.map L.subtype)) := Fintype.ofFinite _
+   set ξ : ↥L → ℂ := indClassFun K θ with hξdef
+   set ψ : ↥L → ℂ := h.primeTIrow σ j with hψdef
+diff --git a/CFSG/FeitThompson/Representations/PrimeDadeLowFamilyBridgeRigidity.lean b/CFSG/FeitThompson/Representations/PrimeDadeLowFamilyBridgeRigidity.lean
+index 275582b60..ec2a67653 100644
+--- a/CFSG/FeitThompson/Representations/PrimeDadeLowFamilyBridgeRigidity.lean
++++ b/CFSG/FeitThompson/Representations/PrimeDadeLowFamilyBridgeRigidity.lean
+@@ -333,14 +333,7 @@ theorem tauBridge_eq_prodCharEta_sub (hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hprime₁ : (Nat.card ↥W₁).Prime) (hprime₂ : (Nat.card ↥W₂).Prime)
+     (hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+@@ -351,17 +344,17 @@ theorem tauBridge_eq_prodCharEta_sub (hodd : Odd (Nat.card G))
+     (hτ₁ : ∀ (f : Submodule.span ℤ S₁) (F : dadeDomain L A₀), (f : ↥L → ℂ) = (F : ↥L → ℂ) →
+       (ν₁ f : G → ℂ) = ((dadeMap hD F : classFun G) : G → ℂ))
+     (hpsi : tauPrincipalRowSub hB hA hD
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+           (principalIrr ↥(W₂.map L.subtype)) - (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ))
+     (i : Irr ↥W₁) {j : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂) :
+     tauBridge hB hA hD i hj
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω (irrMapSubtype L W₁ i)
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω (irrMapSubtype L W₁ i)
+             (irrMapSubtype L W₂ j)
+-        - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω (irrMapSubtype L W₁ i)
++        - (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω (irrMapSubtype L W₁ i)
+             (principalIrr ↥(W₂.map L.subtype))
+         - (n : ℂ) • (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ) := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set φ : G → ℂ := tauBridge hB hA hD i hj with hφdef
+   set N : ℕ := S₁.ncard with hN
+   have hn2 : 2 ≤ n := hB.two_le
+@@ -411,7 +404,7 @@ theorem tauBridge_eq_prodCharEta_sub (hodd : Odd (Nat.card G))
+   have hproj : ∑ r, cfInner φ (e r) • e r = (a : ℂ) • (∑ r, e r) - (N : ℂ) • e r₁ :=
+     sum_smul_eq_of_cfInner_eq hcoeff
+   obtain ⟨β, hβeq, -, hβreal, hβ1⟩ := PrimeDadeCommonError.exists_common_bridgeError
+-    hodd hB hA hD hstab hdisj hω hprime₁ hprime₂ hS₁ hS₁star hζS₁ hncard hdeg hν₁ hτ₁
++    hodd hB hA hD hTI hω hprime₁ hprime₂ hS₁ hS₁star hζS₁ hncard hdeg hν₁ hτ₁
+   have hβval : β = φ - hW.prodCharEta ω (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ j)
+       + hW.prodCharEta ω (irrMapSubtype L W₁ i) (principalIrr ↥(W₂.map L.subtype))
+       + (N : ℂ) • e r₁ := by
+diff --git a/CFSG/FeitThompson/Representations/PrimeFixedTIPGroupCoherence.lean b/CFSG/FeitThompson/Representations/PrimeFixedTIPGroupCoherence.lean
+index 4933a2399..58e16793b 100644
+--- a/CFSG/FeitThompson/Representations/PrimeFixedTIPGroupCoherence.lean
++++ b/CFSG/FeitThompson/Representations/PrimeFixedTIPGroupCoherence.lean
+@@ -183,15 +183,7 @@ structure IsPrimeFixedTIPGroupData (p a : ℕ) (K W₁ W₂ : Subgroup ↥L)
+   isDadeData : IsDadeData L A₀ T
+   image_subset :
+     (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀
+-  stabilizer_cyclicTIDiff_eq :
+-    {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G)
+-  inter_cyclicTIDiff_eq_empty : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-    (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅
++  isTIDiff : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+   omega_isometry : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+     (W₂.map L.subtype) ω
+   zeta_mem : ζ ∈ indFam K (Irr ↥K \ {1})
+@@ -246,7 +238,7 @@ theorem exists_isSubcoherent_fullFamily :
+     (H := K) h.primeCyclicTI.right_le le_rfl (A := (K : Set ↥L) \ {1})
+     (fun t => conj_image_punctured_eq K t)
+     (fun y _ _ => centralizer_sdiff_subset_punctured K y)
+-    h.image_subset h.isDadeData h.stabilizer_cyclicTIDiff_eq h.inter_cyclicTIDiff_eq_empty
++    h.image_subset h.isDadeData h.isTIDiff
+     h.omega_isometry (coe_fullFamily_eq_indFamDetect_self K)
+   exact ⟨R, hR⟩
+ 
+diff --git a/CFSG/FeitThompson/Representations/PrincipalColumnProjectionGluesFamilies.lean b/CFSG/FeitThompson/Representations/PrincipalColumnProjectionGluesFamilies.lean
+index 6885321aa..7b8668199 100644
+--- a/CFSG/FeitThompson/Representations/PrincipalColumnProjectionGluesFamilies.lean
++++ b/CFSG/FeitThompson/Representations/PrincipalColumnProjectionGluesFamilies.lean
+@@ -52,14 +52,7 @@ theorem dadeZMap_primeTIrow_sub_smul_eq (hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hprime₁ : (Nat.card ↥W₁).Prime) (hprime₂ : (Nat.card ↥W₂).Prime)
+     (hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+@@ -69,20 +62,20 @@ theorem dadeZMap_primeTIrow_sub_smul_eq (hodd : Odd (Nat.card G))
+     (hτ₁ : ∀ (f : Submodule.span ℤ S₁) (F : dadeDomain L A₀), (f : ↥L → ℂ) = (F : ↥L → ℂ) →
+       (ν₁ f : G → ℂ) = ((dadeMap hD F : classFun G) : G → ℂ))
+     (hpsi : tauPrincipalRowSub hB hA hD
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+           (principalIrr ↥(W₂.map L.subtype)) - (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ))
+     (hpsi' : ((dadeZMap hD ⟨h.primeTIrow σ (principalIrr ↥W₂) - ζ,
+         primeTIrow_principal_sub_mem_dadeZDomain (h := h) hB hA⟩ :
+           charSpanZero (Irr G)) : G → ℂ)
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+           (principalIrr ↥(W₂.map L.subtype)) - (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ))
+     {j : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂)
+     (hmem : h.primeTIrow σ j - (d : ℂ) • ζ ∈ dadeZDomain L A₀) :
+     ((dadeZMap hD ⟨h.primeTIrow σ j - (d : ℂ) • ζ, hmem⟩ : charSpanZero (Irr G)) : G → ℂ)
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
+         - (d : ℂ) • (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ) := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set e : G → ℂ := (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ) with he
+   have hmem0 := primeTIrow_principal_sub_mem_dadeZDomain (h := h) hB hA (A₀ := A₀)
+   have key : (⟨h.primeTIrow σ j - (d : ℂ) • ζ, hmem⟩ : dadeZDomain L A₀)
+@@ -111,7 +104,7 @@ theorem dadeZMap_primeTIrow_sub_smul_eq (hodd : Odd (Nat.card G))
+           - (n : ℂ) • e := by
+     intro i
+     rw [← tauBridge_def hB hA hD i hj]
+-    exact tauBridge_eq_prodCharEta_sub hodd hB hA hD hstab hdisj hω hprime₁ hprime₂ hS₁ hS₁star
++    exact tauBridge_eq_prodCharEta_sub hodd hB hA hD hTI hω hprime₁ hprime₂ hS₁ hS₁star
+       hζS₁ hncard hdeg hν₁ hτ₁ hpsi i hj
+   rw [hmap, Finset.sum_congr rfl fun i _ => hb i, hpsi']
+   have hcard : (Fintype.card ↑(Irr ↥W₁) : ℂ) = (Nat.card ↥W₁ : ℂ) := by
+@@ -188,14 +181,7 @@ theorem exists_isSubcoherent_indFam (hodd : Odd (Nat.card G))
+     (hσ : IsCyclicTIIsometry (W₁ ⊔ W₂) W₁ W₂ σ)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     {Sfin : Finset (↥L → ℂ)} (hSfin : (Sfin : Set (↥L → ℂ)) = indFam K (Irr ↥K \ {1})) :
+     ∃ R : (↥L → ℂ) → Finset (G → ℂ), IsSubcoherent Sfin (dadeMapFun L A₀ T) R := by
+@@ -204,7 +190,7 @@ theorem exists_isSubcoherent_indFam (hodd : Odd (Nat.card G))
+     (A := (K : Set ↥L) \ {1})
+     (fun t => PrimeFixedTIPGroupCoherence.conj_image_punctured_eq K t)
+     (fun y _ _ => PrimeFixedTIPGroupCoherence.centralizer_sdiff_subset_punctured K y)
+-    (image_bridgeSupport_subset (K := K) (W₁ := W₁) (W₂ := W₂) hA) hD hstab hdisj hω
++    (image_bridgeSupport_subset (K := K) (W₁ := W₁) (W₂ := W₂) hA) hD hTI hω
+     (by rw [hSfin, PrimeFixedTIPGroupCoherence.indFamDetect_self_eq_indFam_sdiff])
+   exact ⟨R, hR⟩
+ 
+@@ -285,14 +271,7 @@ theorem exists_isCoherentWith_tauPrincipalRowSub_eq (hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+     (hS₁star : ∀ χ ∈ S₁, star χ ∈ S₁) (hζS₁ : ζ ∈ S₁)
+@@ -302,16 +281,16 @@ theorem exists_isCoherentWith_tauPrincipalRowSub_eq (hodd : Odd (Nat.card G))
+     (hcoh₁ : IsCoherent S₁ τ₁)
+     (hproj : ∀ (i : Irr ↥(W₁.map L.subtype)) (l : Irr ↥(W₂.map L.subtype)),
+       IsOrthogonal (tauPrincipalRowSub hB hA hD
+-          - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++          - (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+               (principalIrr ↥(W₂.map L.subtype)))
+-        ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω i l)) :
++        ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω i l)) :
+     ∃ ν₁' : Submodule.span ℤ S₁ →+ virtualChars G, IsCoherentWith S₁ τ₁ ν₁' ∧
+       tauPrincipalRowSub hB hA hD
+-        = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++        = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+             (principalIrr ↥(W₂.map L.subtype))
+           - (ν₁' ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ) := by
+   obtain ⟨ν, hν⟩ := isCoherent_iff.1 hcoh₁
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   have hA0 : ∀ x : ↥L, x ∈ K → x ≠ 1 → (x : G) ∈ A₀ := fun x hx hx1 =>
+     hA ⟨x, mem_primeTIbridgeSupport_of_mem_of_ne_one hx hx1, rfl⟩
+   have hm : K.index = Nat.card ↥W₁ := h.index_eq
+@@ -348,14 +327,7 @@ theorem rowEtaSum_one_eq_prodCharEtaColSum [Fintype ↥((W₁ ⊔ W₂).map L.su
+ theorem coe_nu_primeTIrow_sub (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hS₂ : S₂ ⊆ indFam K (Irr ↥K \ {1}))
+     {ν₂ : Submodule.span ℤ S₂ →+ virtualChars G} (hν₂ : IsCoherentWith S₂ τ₂ ν₂)
+@@ -365,10 +337,10 @@ theorem coe_nu_primeTIrow_sub (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hjS : h.primeTIrow σ j ∈ S₂) (hkS : h.primeTIrow σ k ∈ S₂) :
+     (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span hjS⟩ : G → ℂ)
+         - (ν₂ ⟨h.primeTIrow σ k, Submodule.subset_span hkS⟩ : G → ℂ)
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
+-        - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
++        - (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+             (irrMapSubtype L W₂ k) := by
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   have hA₀ := image_bridgeSupport_subset (K := K) (W₁ := W₁) (W₂ := W₂) hA
+   have hmem : h.primeTIrow σ j - h.primeTIrow σ k ∈ Submodule.span ℤ S₂ :=
+     sub_mem (Submodule.subset_span hjS) (Submodule.subset_span hkS)
+@@ -383,7 +355,7 @@ theorem coe_nu_primeTIrow_sub (hB : h.IsUniformBridgeData σ ζ d n 1)
+   have hval := PrimeDadePivot.coe_nu_eq_coe_dadeMap hD hν₂ hτ₂
+     ⟨h.primeTIrow σ j - h.primeTIrow σ k, hmem⟩ ⟨_, hdom⟩ rfl
+   rw [hsplit, map_sub, Submodule.coe_sub] at hval
+-  rw [hval, dadeMap_primeTIrow_sub_eq hB hA₀ hD hstab hdisj hω hj hk ⟨_, hdom⟩ rfl,
++  rw [hval, dadeMap_primeTIrow_sub_eq hB hA₀ hD hTI hω hj hk ⟨_, hdom⟩ rfl,
+     rowEtaSum_one_eq_prodCharEtaColSum hW j, rowEtaSum_one_eq_prodCharEtaColSum hW k]
+ 
+ include h in
+@@ -413,14 +385,7 @@ theorem coe_nu_primeTIrow_eq_or (hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hS₂ : S₂ ⊆ indFam K (Irr ↥K \ {1})) (hS₂star : ∀ χ ∈ S₂, star χ ∈ S₂)
+     {ν₂ : Submodule.span ℤ S₂ →+ virtualChars G} (hν₂ : IsCoherentWith S₂ τ₂ ν₂)
+@@ -432,16 +397,16 @@ theorem coe_nu_primeTIrow_eq_or (hodd : Odd (Nat.card G))
+     (hcol : (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ : G → ℂ)
+         - (ν₂ ⟨h.primeTIrow σ (starIrr j),
+             Submodule.subset_span (hrows _ (starIrr_ne_principalIrr hj))⟩ : G → ℂ)
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
+-        - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
++        - (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+             (irrMapSubtype L W₂ (starIrr j))) :
+     (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ : G → ℂ)
+-        = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j) ∨
++        = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j) ∨
+       (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ : G → ℂ)
+-        = (-1 : ℂ) • (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++        = (-1 : ℂ) • (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+             (irrMapSubtype L W₂ (starIrr j)) := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   obtain ⟨a, -, ha⟩ := NormalInducedFamily.exists_apply_one_eq_of_mem_Irr hξIrr
+   have hjstar : starIrr j ≠ principalIrr ↥W₂ := starIrr_ne_principalIrr hj
+   have hjne : irrMapSubtype L W₂ j ≠ irrMapSubtype L W₂ (starIrr j) := fun hc =>
+@@ -500,14 +465,7 @@ omit [Fintype ↥(Subgroup.map L.subtype (W₁ ⊔ W₂))] in
+ theorem cfInner_nu_primeTIrow_prodCharEtaColSum_eq (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hζS₁ : ζ ∈ S₁) (hS₂ : S₂ ⊆ indFam K (Irr ↥K \ {1}))
+     {ν₂ : Submodule.span ℤ S₂ →+ virtualChars G} (hν₂ : IsCoherentWith S₂ τ₂ ν₂)
+     (hτ₂ : ∀ (f : charSpanZero S₂) (F : dadeDomain L A₀), (f : ↥L → ℂ) = (F : ↥L → ℂ) →
+@@ -519,7 +477,7 @@ theorem cfInner_nu_primeTIrow_prodCharEtaColSum_eq (hB : h.IsUniformBridgeData 
+     (hcross₂ : cfInner (ν₂ ⟨ξ, Submodule.subset_span hξS₂⟩ : G → ℂ)
+       (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ) = 0)
+     (hcol : cfInner (ν₂ ⟨ξ, Submodule.subset_span hξS₂⟩ : G → ℂ)
+-      ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      ((h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+         (irrMapSubtype L W₂ j)) = 0)
+     (hbridge : ((dadeZMap hD ⟨h.primeTIrow σ j - (d : ℂ) • ζ,
+         TypeVTwoFamilyJoining.charSpanZero_le_dadeZDomain
+@@ -527,13 +485,13 @@ theorem cfInner_nu_primeTIrow_prodCharEtaColSum_eq (hB : h.IsUniformBridgeData 
+           (image_bridgeSupport_subset (K := K) (W₁ := W₁) (W₂ := W₂) hA)
+           (primeTIrow_sub_smul_zeta_mem_charSpanZero hB hj)⟩ :
+           charSpanZero (Irr G)) : G → ℂ)
+-      = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
++      = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
+         - (d : ℂ) • (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ)) :
+     cfInner (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span hjS⟩ : G → ℂ)
+-        ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j))
++        ((h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j))
+       = (Nat.card ↥W₁ : ℂ) := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set gD : dadeZDomain L A₀ := ⟨h.primeTIrow σ j - (d : ℂ) • ζ,
+     TypeVTwoFamilyJoining.charSpanZero_le_dadeZDomain (P := indFam K (Irr ↥K \ {1}))
+       (subset_refl _) (image_bridgeSupport_subset (K := K) (W₁ := W₁) (W₂ := W₂) hA)
+@@ -579,14 +537,7 @@ theorem exists_isCoherentWith_forall_eq_prodCharEtaColSum_of_inter_Irr_eq_empty
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hS₂ : S₂ ⊆ indFam K (Irr ↥K \ {1}))
+     {ν₂ : Submodule.span ℤ S₂ →+ virtualChars G} (hν₂ : IsCoherentWith S₂ τ₂ ν₂)
+@@ -597,7 +548,7 @@ theorem exists_isCoherentWith_forall_eq_prodCharEtaColSum_of_inter_Irr_eq_empty
+     ∃ ν : Submodule.span ℤ S₂ →+ virtualChars G, IsCoherentWith S₂ τ₂ ν ∧
+       ∀ (j : Irr ↥W₂) (hj : j ≠ principalIrr ↥W₂),
+         (ν ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ : G → ℂ)
+-          = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++          = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+               (irrMapSubtype L W₂ j) := by
+   classical
+   have hcardW₁ : Nat.card ↥(W₁.map L.subtype) = Nat.card ↥W₁ :=
+@@ -618,7 +569,7 @@ theorem exists_isCoherentWith_forall_eq_prodCharEtaColSum_of_inter_Irr_eq_empty
+   have hnonempty : Nonempty {j : Irr ↥W₂ // j ≠ principalIrr ↥W₂} := ⟨⟨j0, hj0⟩⟩
+   have hfinι : Finite {j : Irr ↥W₂ // j ≠ principalIrr ↥W₂} := Subtype.finite
+   obtain ⟨ν, hν, hval⟩ := CoherentSimultaneousOrientation.exists_isCoherentWith_row_family
+-    (τ := τ₂) (ω := ω) (h.isCyclicTIPair_map_subtype hstab hdisj) hω (δ := 1) (Or.inl rfl)
++    (τ := τ₂) (ω := ω) (h.isCyclicTIPair_map_subtype hTI) hω (δ := 1) (Or.inl rfl)
+     (c := fun j : {j : Irr ↥W₂ // j ≠ principalIrr ↥W₂} => irrMapSubtype L W₂ (j : Irr ↥W₂))
+     (fun j k hjk => Subtype.ext (irrMapSubtype_injective L W₂ hjk)) hSM
+     (fun j => by
+@@ -636,7 +587,7 @@ theorem exists_isCoherentWith_forall_eq_prodCharEtaColSum_of_inter_Irr_eq_empty
+       show h.primeTIrow σ (j : Irr ↥W₂) 1 = _
+       rw [primeTIrow_apply_one hB j.2]; push_cast; ring) hν₂
+     (fun j k => by
+-      simpa using coe_nu_primeTIrow_sub hB hA hD hstab hdisj hω hS₂ hν₂ hτ₂ j.2 k.2
++      simpa using coe_nu_primeTIrow_sub hB hA hD hTI hω hS₂ hν₂ hτ₂ j.2 k.2
+         (hrows _ j.2) (hrows _ k.2))
+   exact ⟨ν, hν, fun j hj => by rw [hval ⟨j, hj⟩ _ rfl, one_smul]⟩
+ 
+@@ -644,14 +595,7 @@ theorem exists_isCoherentWith_coe_nu_primeTIrow_eq (hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hζS₁ : ζ ∈ S₁) (hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+     (hS₁star : ∀ χ ∈ S₁, star χ ∈ S₁) (hS₂ : S₂ ⊆ indFam K (Irr ↥K \ {1}))
+@@ -673,15 +617,15 @@ theorem exists_isCoherentWith_coe_nu_primeTIrow_eq (hodd : Odd (Nat.card G))
+             (image_bridgeSupport_subset (K := K) (W₁ := W₁) (W₂ := W₂) hA)
+             (primeTIrow_sub_smul_zeta_mem_charSpanZero hB hj)⟩ :
+             charSpanZero (Irr G)) : G → ℂ)
+-        = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
++        = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω (irrMapSubtype L W₂ j)
+           - (d : ℂ) • (ν₁ ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ))
+     {j : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂) :
+     ∃ ν₂ : Submodule.span ℤ S₂ →+ virtualChars G, IsCoherentWith S₂ τ₂ ν₂ ∧
+       (ν₂ ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ : G → ℂ)
+-        = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++        = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+             (irrMapSubtype L W₂ j) := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   have hmpos : (Nat.card ↥W₁ : ℂ) ≠ 0 := by
+     have h3 := h.three_le_natCard_left
+     simp only [ne_eq, Nat.cast_eq_zero]
+@@ -689,7 +633,7 @@ theorem exists_isCoherentWith_coe_nu_primeTIrow_eq (hodd : Odd (Nat.card G))
+   rcases Set.eq_empty_or_nonempty (S₂ ∩ Irr ↥L) with hempty | ⟨ξ, hξS₂, hξIrr⟩
+   · obtain ⟨ν₂, hν₂⟩ := isCoherent_iff.1 hcoh₂
+     obtain ⟨ν, hν, hval⟩ :=
+-      exists_isCoherentWith_forall_eq_prodCharEtaColSum_of_inter_Irr_eq_empty hB hA hD hstab hdisj
++      exists_isCoherentWith_forall_eq_prodCharEtaColSum_of_inter_Irr_eq_empty hB hA hD hTI
+         hω hS₂ hν₂ hτ₂ hrows hempty
+     exact ⟨ν, hν, hval j hj⟩
+   · obtain ⟨ν₂, hν₂⟩ := isCoherent_iff.1 hcoh₂
+@@ -710,11 +654,11 @@ theorem exists_isCoherentWith_coe_nu_primeTIrow_eq (hodd : Odd (Nat.card G))
+       rw [← conj_cfInner,
+         cfInner_prodCharEtaColSum_nu_eq_zero (h := h) hodd hA hD hW hω hS₂ hS₂star hν₂ hτ₂
+           hξS₂ hξIrr _, map_zero]
+-    have hpivot := cfInner_nu_primeTIrow_prodCharEtaColSum_eq (ν₁ := ν₁) hB hA hD hstab hdisj
++    have hpivot := cfInner_nu_primeTIrow_prodCharEtaColSum_eq (ν₁ := ν₁) hB hA hD hTI
+       hζS₁ hS₂ hν₂ hτ₂ hξS₂ hξIrr hξζ hj hjS hcross₁ hcross₂ hcol (hbridge hj)
+-    have hor := coe_nu_primeTIrow_eq_or hodd hB hA hD hstab hdisj hω hS₂ hS₂star hν₂ hτ₂ hrows
++    have hor := coe_nu_primeTIrow_eq_or hodd hB hA hD hTI hω hS₂ hS₂star hν₂ hτ₂ hrows
+       hξS₂ hξIrr hj
+-      (coe_nu_primeTIrow_sub hB hA hD hstab hdisj hω hS₂ hν₂ hτ₂ hj (starIrr_ne_principalIrr hj)
++      (coe_nu_primeTIrow_sub hB hA hD hTI hω hS₂ hν₂ hτ₂ hj (starIrr_ne_principalIrr hj)
+         hjS (hrows _ (starIrr_ne_principalIrr hj)))
+     refine ⟨ν₂, hν₂, hor.resolve_right fun hc => ?_⟩
+     rw [hc, cfInner_smul_left,
+@@ -800,14 +744,7 @@ theorem isCoherent_union (hodd : Odd (Nat.card G))
+     (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hprime₁ : (Nat.card ↥W₁).Prime) (hprime₂ : (Nat.card ↥W₂).Prime)
+     (hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+@@ -825,19 +762,19 @@ theorem isCoherent_union (hodd : Odd (Nat.card G))
+     (hcoh₁ : IsCoherent S₁ τ₁) (hcoh₂ : IsCoherent S₂ τ₂)
+     (hproj : ∀ (i : Irr ↥(W₁.map L.subtype)) (l : Irr ↥(W₂.map L.subtype)),
+       IsOrthogonal (tauPrincipalRowSub hB hA hD
+-          - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++          - (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+               (principalIrr ↥(W₂.map L.subtype)))
+-        ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω i l)) :
++        ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω i l)) :
+     IsCoherent (S₁ ∪ S₂) τU := by
+   classical
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   obtain ⟨R, hR⟩ := exists_isSubcoherent_indFam (σ := σ) (ω := ω) (h := h) hodd hB.isometry hA hD
+-    hstab hdisj hω (Sfin := toFinsetOfSubset (K := K) (subset_refl _)) (coe_toFinsetOfSubset _)
++    hTI hω (Sfin := toFinsetOfSubset (K := K) (subset_refl _)) (coe_toFinsetOfSubset _)
+   set Sfin := toFinsetOfSubset (K := K) (P := indFam K (Irr ↥K \ {1})) (subset_refl _)
+     with hSfindef
+   have hSfin : (Sfin : Set (↥L → ℂ)) = indFam K (Irr ↥K \ {1}) := coe_toFinsetOfSubset _
+   obtain ⟨ν₁', hν₁', hpsi⟩ := exists_isCoherentWith_tauPrincipalRowSub_eq hodd hB hA hD
+-    hstab hdisj hω hS₁ hS₁star hζS₁ hncard hdeg hτ₁ hcoh₁ hproj
++    hTI hω hS₁ hS₁star hζS₁ hncard hdeg hτ₁ hcoh₁ hproj
+   have hτ₁' : ∀ (f : Submodule.span ℤ S₁) (F : dadeDomain L A₀), (f : ↥L → ℂ) = (F : ↥L → ℂ) →
+       (ν₁' f : G → ℂ) = ((dadeMap hD F : classFun G) : G → ℂ) :=
+     PrimeDadePivot.coe_nu_eq_coe_dadeMap hD hν₁' hτ₁
+@@ -857,12 +794,12 @@ theorem isCoherent_union (hodd : Odd (Nat.card G))
+             charSpanZero (Irr G)) : G → ℂ)
+         = hW.prodCharEtaColSum ω (irrMapSubtype L W₂ j)
+           - (d : ℂ) • (ν₁' ⟨ζ, Submodule.subset_span hζS₁⟩ : G → ℂ) :=
+-    fun {j} hj => dadeZMap_primeTIrow_sub_smul_eq hodd hB hA hD hstab hdisj hω hprime₁ hprime₂ hS₁
++    fun {j} hj => dadeZMap_primeTIrow_sub_smul_eq hodd hB hA hD hTI hω hprime₁ hprime₂ hS₁
+       hS₁star hζS₁ hncard hdeg hν₁' hτ₁' hpsi hpsi' hj _
+   have hne := h.isCyclicTIPair.nontrivial_Irr_right
+   obtain ⟨j, hj⟩ := exists_ne (principalIrr ↥W₂)
+   obtain ⟨ν₂, hν₂, hνj⟩ := exists_isCoherentWith_coe_nu_primeTIrow_eq (ν₁ := ν₁') hodd hB hA hD
+-    hstab hdisj hω hζS₁ hS₁ hS₁star hS₂ hS₂star hS₁S₂ hrows hR hSfin hν₁' hτ₁ hτ₂ hcoh₂
++    hTI hω hζS₁ hS₁ hS₁star hS₂ hS₂star hS₁S₂ hrows hR hSfin hν₁' hτ₁ hτ₂ hcoh₂
+     (fun {j} hj => hbridge hj) hj
+   have hφmem : ((d : ℂ) • ζ) ∈ Submodule.span ℤ S₁ := by
+     rw [Int.cast_smul_eq_zsmul ℂ d ζ]
+diff --git a/CFSG/FeitThompson/Representations/TypeIIIAndIVWeightedNormalFamily.lean b/CFSG/FeitThompson/Representations/TypeIIIAndIVWeightedNormalFamily.lean
+index 7cbcfdb10..89d7192e4 100644
+--- a/CFSG/FeitThompson/Representations/TypeIIIAndIVWeightedNormalFamily.lean
++++ b/CFSG/FeitThompson/Representations/TypeIIIAndIVWeightedNormalFamily.lean
+@@ -48,29 +48,17 @@ theorem cyclicTIDiff_map_subtype_eq (hc : IsWitnessedPConfiguration M U W₁ W
+   rw [map_subtype_sup_subgroupOf hc, Subgroup.map_subgroupOf_eq_of_le hc.le_M_W₁,
+     Subgroup.map_subgroupOf_eq_of_le hc.le_M_W₂, cyclicTIDiff_sup_eq_cyclicTIset]
+ 
+-theorem setOf_conj_cyclicTIDiff_map_subtype (hc : IsWitnessedPConfiguration M U W₁ W₂) :
+-    {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-          (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))
+-      = cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-          (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))}
+-      = ((Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M) : Subgroup G) : Set G) := by
+-  rw [cyclicTIDiff_map_subtype_eq hc, map_subtype_sup_subgroupOf hc,
+-    setOf_conj_eq_self_eq_normalizer, hc.isTIWithNormalizer_cyclicTIset.normalizer_eq]
+-
+-theorem inter_conj_cyclicTIDiff_map_subtype (hc : IsWitnessedPConfiguration M U W₁ W₂) :
+-    ∀ g ∉ Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M),
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-            (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))
+-        ∩ cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-            (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))
+-        = ∅ := by
+-  intro g hg
+-  rw [map_subtype_sup_subgroupOf hc] at hg
+-  rw [cyclicTIDiff_map_subtype_eq hc, Set.inter_comm]
+-  exact Set.disjoint_iff_inter_eq_empty.1
+-    (hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg)
++theorem isTIDiff_map_subtype (hc : IsWitnessedPConfiguration M U W₁ W₂) :
++    IsTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
++      (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M)) where
++  setOf_conj_eq_self := by
++    rw [cyclicTIDiff_map_subtype_eq hc, map_subtype_sup_subgroupOf hc,
++      setOf_conj_eq_self_eq_normalizer, hc.isTIWithNormalizer_cyclicTIset.normalizer_eq]
++  inter_eq_empty g hg := by
++    rw [map_subtype_sup_subgroupOf hc] at hg
++    rw [cyclicTIDiff_map_subtype_eq hc, Set.inter_comm]
++    exact Set.disjoint_iff_inter_eq_empty.1
++      (hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg)
+ 
+ theorem coe_mem_cyclicTIset_of_mem (hc : IsWitnessedPConfiguration M U W₁ W₂)
+     {v : ↥M} (hv : v ∈ cyclicTIset (W₁.subgroupOf M) (W₂.subgroupOf M)) :
+@@ -169,13 +157,12 @@ theorem FPF_type_iii_iv_weighted_normal_family
+     Submodule.span_le.2
+       (fun g hg => PrimeDadeSubcoherence.mem_span_Irr_of_mem_indFamDetect (hStop ▸ hg)) hf
+   obtain ⟨σ, hσ⟩ := h.exists_isCyclicTIIsometry
+-  obtain ⟨ω, hω⟩ := (h.isCyclicTIPair_map_subtype (setOf_conj_cyclicTIDiff_map_subtype hc)
+-    (inter_conj_cyclicTIDiff_map_subtype hc)).exists_isCyclicTIIsometry
++  obtain ⟨ω, hω⟩ := (h.isCyclicTIPair_map_subtype (isTIDiff_map_subtype hc)).exists_isCyclicTIIsometry
+   obtain ⟨R, hsub, -, -, -⟩ := PrimeDadeSubcoherence.exists_isSubcoherent_indFamDetect
+     (L := M) (K := derivedOf M) (W₁ := W₁.subgroupOf M) (W₂ := W₂.subgroupOf M)
+     (σ := σ) (ω := ω) (A₀ := dadeA0 M W₁ W₂) (T := dadeT M) hG.odd h hσ
+     (H := derivedOf M) h.right_le le_rfl hAconj hA hA₀ hD
+-    (setOf_conj_cyclicTIDiff_map_subtype hc) (inter_conj_cyclicTIDiff_map_subtype hc) hω
++    (isTIDiff_map_subtype hc) hω
+     (S := indFamDetectFinset (derivedOf M) ((derivedOf M).subgroupOf (derivedOf M)))
+     (by rw [coe_indFamDetectFinset])
+   have hmemF : ∀ f ∈ S,
+diff --git a/CFSG/FeitThompson/Representations/TypeIIIIVTwoCoherentLayers.lean b/CFSG/FeitThompson/Representations/TypeIIIIVTwoCoherentLayers.lean
+index fd94e57d0..49db04852 100644
+--- a/CFSG/FeitThompson/Representations/TypeIIIIVTwoCoherentLayers.lean
++++ b/CFSG/FeitThompson/Representations/TypeIIIIVTwoCoherentLayers.lean
+@@ -563,8 +563,7 @@ theorem hasCoherentMap_indFamDetectKer [Fintype G]
+     hG.odd hP hσ (OrientedCoreFamily.le_hallCore_subgroupOf_W₂ hc) hHK
+     (OrientedCoreFamily.commutator_sdiff_one_conj M) (fun _ _ _ _ hx => ⟨hx.1.1, hx.2⟩)
+     (by rw [hcfg.A0_eq]) hcfg.isDadeData
+-    (OrientedCoreFamily.setOf_conj_eq_of_isCyclicTIPair hc.le_M_W₁ hc.le_M_W₂ hW)
+-    (OrientedCoreFamily.inter_eq_empty_of_isCyclicTIPair hc.le_M_W₁ hc.le_M_W₂ hW) hω hSc
++    (OrientedCoreFamily.isCyclicTIPair_map_subgroupOf hc.le_M_W₁ hc.le_M_W₂ hW).toIsTIDiff hω hSc
+   have hcore_sub :
+       PtypeCoreCoherence.coreDetectFam M U (⊥ : Subgroup ↥M) ⊆ (S : Set (↥M → ℂ)) := by
+     rw [hSc]; exact PtypeCoreCoherence.coreDetectFam_subset_indFamDetect M U ⊥
+diff --git a/CFSG/FeitThompson/Representations/TypeIIIVCoherentCrossedRowData.lean b/CFSG/FeitThompson/Representations/TypeIIIVCoherentCrossedRowData.lean
+index 5b1732043..425ce739c 100644
+--- a/CFSG/FeitThompson/Representations/TypeIIIVCoherentCrossedRowData.lean
++++ b/CFSG/FeitThompson/Representations/TypeIIIVCoherentCrossedRowData.lean
+@@ -36,38 +36,25 @@ theorem cyclicTIDiff_map_subtype_eq (h₁ : W₁ ≤ M) (h₂ : W₂ ≤ M) :
+   ext x
+   rw [mem_cyclicTIDiff, mem_cyclicTIset]
+ 
+-theorem setOf_conj_eq_of_isWitnessedPConfiguration [Finite G]
++theorem isTIDiff_of_isWitnessedPConfiguration [Finite G]
+     (hc : IsWitnessedPConfiguration M U W₁ W₂) :
+-    {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-          ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype)
+-      = cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-          ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype)}
+-      = (((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype : Subgroup G) : Set G) := by
+-  rw [cyclicTIDiff_map_subtype_eq hc.le_M_W₁ hc.le_M_W₂, setOf_conj_eq_self_eq_normalizer,
+-    hc.normalizer_cyclicTIset, map_subtype_subgroupOf_sup hc.le_M_W₁ hc.le_M_W₂]
+-
+-theorem inter_eq_empty_of_isWitnessedPConfiguration [Finite G]
+-    (hc : IsWitnessedPConfiguration M U W₁ W₂) :
+-    ∀ g ∉ (W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-            ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype)
+-        ∩ cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-            ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype) = ∅ := by
+-  intro g hg
+-  rw [map_subtype_subgroupOf_sup hc.le_M_W₁ hc.le_M_W₂] at hg
+-  rw [cyclicTIDiff_map_subtype_eq hc.le_M_W₁ hc.le_M_W₂, Set.inter_comm]
+-  exact Set.disjoint_iff_inter_eq_empty.1
+-    (hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg)
++    IsTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
++      ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype) where
++  setOf_conj_eq_self := by
++    rw [cyclicTIDiff_map_subtype_eq hc.le_M_W₁ hc.le_M_W₂, setOf_conj_eq_self_eq_normalizer,
++      hc.normalizer_cyclicTIset, map_subtype_subgroupOf_sup hc.le_M_W₁ hc.le_M_W₂]
++  inter_eq_empty g hg := by
++    rw [map_subtype_subgroupOf_sup hc.le_M_W₁ hc.le_M_W₂] at hg
++    rw [cyclicTIDiff_map_subtype_eq hc.le_M_W₁ hc.le_M_W₂, Set.inter_comm]
++    exact Set.disjoint_iff_inter_eq_empty.1
++      (hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg)
+ 
+ theorem isCyclicTIPair_map_subtype [Finite G] (hodd : Odd (Nat.card G))
+     (hc : IsWitnessedPConfiguration M U W₁ W₂) :
+     IsCyclicTIPair ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+       ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype) :=
+   (hc.isPrimeCyclicTIHyp_subgroupOf hodd).isCyclicTIPair_map_subtype
+-    (setOf_conj_eq_of_isWitnessedPConfiguration hc)
+-    (inter_eq_empty_of_isWitnessedPConfiguration hc)
++    (isTIDiff_of_isWitnessedPConfiguration hc)
+ 
+ theorem isCyclicTIPair_sup [Finite G] (hodd : Odd (Nat.card G))
+     (hc : IsWitnessedPConfiguration M U W₁ W₂) : IsCyclicTIPair (W₁ ⊔ W₂) W₁ W₂ := by
+diff --git a/CFSG/FeitThompson/Representations/TypeIINonfrobeniusCrossedColumnData.lean b/CFSG/FeitThompson/Representations/TypeIINonfrobeniusCrossedColumnData.lean
+index 1e158c647..7337df724 100644
+--- a/CFSG/FeitThompson/Representations/TypeIINonfrobeniusCrossedColumnData.lean
++++ b/CFSG/FeitThompson/Representations/TypeIINonfrobeniusCrossedColumnData.lean
+@@ -59,15 +59,14 @@ theorem isCyclicTIPair_map_subtype_of_isWitnessedPConfiguration [Finite G]
+   have hm1 : Subgroup.map N.subtype (W₁.subgroupOf N) = W₁ := by
+     rw [Subgroup.subgroupOf_map_subtype, inf_eq_left.2 hc.le_M_W₂]
+   have key := h.isCyclicTIPair_map_subtype
+-    (hstab := by
++    ⟨by
+       rw [hmap, hm2, hm1, ← cyclicTIset_eq_cyclicTIDiff, setOf_conj_eq_self_eq_normalizer,
+-        hc.isTIWithNormalizer_cyclicTIset.normalizer_eq])
+-    (hdisj := by
++        hc.isTIWithNormalizer_cyclicTIset.normalizer_eq], by
+       intro g hg
+       rw [hmap, hm2, hm1] at *
+       rw [← cyclicTIset_eq_cyclicTIDiff, Set.inter_comm]
+       exact Set.disjoint_iff_inter_eq_empty.1
+-        (hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg))
++        (hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg)⟩
+   rwa [hmap, hm2, hm1] at key
+ 
+ theorem isCyclicTIIsometry_of_data [Fintype G] {W₁ W₂ : Subgroup G} [Fintype ↥(W₁ ⊔ W₂)]
+@@ -644,14 +643,7 @@ theorem fourFamily_apply_eq_zero_of_notMem
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A X₁ X₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)
+-      = cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)}
+-      = ((((X₁ ⊔ X₂).map L.subtype) : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (X₁ ⊔ X₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)
+-        ∩ cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype) ω)
+     (hodd : Odd (Nat.card G))
+     {j : Irr ↥X₂} (hj : j ≠ principalIrr ↥X₂)
+@@ -662,7 +654,7 @@ theorem fourFamily_apply_eq_zero_of_notMem
+       ∀ s ∈ ({indClassFun K θ, star (indClassFun K θ), h.primeTIrow σ j,
+         h.primeTIrow σ (starIrr j)} : Set (↥L → ℂ)), s x = 0 := by
+   obtain ⟨-, -, -, -, -, -, hsupp, -⟩ :=
+-    primeDade_four_family_antireal_blocks h hσ hWH hAconj hA hA₀ hD hstab hdisj hω hodd hj hθ
++    primeDade_four_family_antireal_blocks h hσ hWH hAconj hA hA₀ hD hTI hω hodd hj hθ
+       hHθ hξ hdeg
+   intro x hx hx1 s hs
+   have hxA : x ∉ A ∪ {1} := by
+@@ -684,14 +676,7 @@ theorem charSpanZero_fourFamily_le_dadeZDomain
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A X₁ X₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)
+-      = cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)}
+-      = ((((X₁ ⊔ X₂).map L.subtype) : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (X₁ ⊔ X₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)
+-        ∩ cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype) ω)
+     (hodd : Odd (Nat.card G))
+     {j : Irr ↥X₂} (hj : j ≠ principalIrr ↥X₂)
+@@ -700,7 +685,7 @@ theorem charSpanZero_fourFamily_le_dadeZDomain
+     charSpanZero ({indClassFun K θ, star (indClassFun K θ), h.primeTIrow σ j,
+         h.primeTIrow σ (starIrr j)} : Set (↥L → ℂ)) ≤ dadeZDomain L A₀ := by
+   refine charSpanZero_le_dadeZDomain_of_forall_eq_zero ?_
+-    (fourFamily_apply_eq_zero_of_notMem h hσ hWH hAconj hA hA₀ hD hstab hdisj hω hodd hj hθ
++    (fourFamily_apply_eq_zero_of_notMem h hσ hWH hAconj hA hA₀ hD hTI hω hodd hj hθ
+       hHθ hξ hdeg (B := A₀) (fun y hy => by
+         obtain ⟨x, hx, rfl⟩ := hy
+         exact hA₀ ⟨x, subset_bridgeSupport_left hx, rfl⟩))
+@@ -732,10 +717,6 @@ theorem exists_column_witness_of_fourFamily {Wamb V₁ V₂ : Subgroup G} [Finty
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A X₁ X₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) '' cyclicTIDiff Wamb V₁ V₂ = cyclicTIDiff Wamb V₁ V₂}
+-      = (Wamb : Set G))
+-    (hdisj : ∀ g ∉ Wamb,
+-      (fun x => g⁻¹ * x * g) '' cyclicTIDiff Wamb V₁ V₂ ∩ cyclicTIDiff Wamb V₁ V₂ = ∅)
+     (hWpair : IsCyclicTIPair Wamb V₁ V₂) (hω : IsCyclicTIIsometry Wamb V₁ V₂ ω)
+     (hodd : Odd (Nat.card G))
+     {j : Irr ↥X₂} (hj : j ≠ principalIrr ↥X₂)
+@@ -753,16 +734,16 @@ theorem exists_column_witness_of_fourFamily {Wamb V₁ V₂ : Subgroup G} [Finty
+   set S : Set (↥L → ℂ) := {indClassFun K θ, star (indClassFun K θ), h.primeTIrow σ j,
+       h.primeTIrow σ (starIrr j)} with hSdef
+   have hS : charSpanZero S ≤ dadeZDomain L A₀ :=
+-    charSpanZero_fourFamily_le_dadeZDomain h hσ hWH hAconj hA hA₀ hD hstab hdisj hω
++    charSpanZero_fourFamily_le_dadeZDomain h hσ hWH hAconj hA hA₀ hD hWpair.toIsTIDiff hω
+       hodd hj hθ hHθ hξ hdeg
+   have hsuppB : ∀ x : ↥L, (x : G) ∉ B → x ≠ 1 → ∀ s ∈ S, s x = 0 :=
+-    fourFamily_apply_eq_zero_of_notMem h hσ hWH hAconj hA hA₀ hD hstab hdisj hω
++    fourFamily_apply_eq_zero_of_notMem h hσ hWH hAconj hA hA₀ hD hWpair.toIsTIDiff hω
+       hodd hj hθ hHθ hξ hdeg hAB
+   obtain ⟨-, -, -, -, ⟨d, -, hdξ, hdsξ, hdj, -⟩, -, -, -, -, -⟩ :=
+-    primeDade_four_family_antireal_blocks h hσ hWH hAconj hA hA₀ hD hstab hdisj hω hodd hj hθ
++    primeDade_four_family_antireal_blocks h hσ hWH hAconj hA hA₀ hD hWpair.toIsTIDiff hω hodd hj hθ
+       hHθ hξ hdeg
+   obtain ⟨ν, hν, hnu1, hnu2, hnu3⟩ :=
+-    primeDade_four_family_coherence_orientation h hσ hWH hAK hAconj hA hA₀ hD hstab hdisj hω hodd
++    primeDade_four_family_coherence_orientation h hσ hWH hAK hAconj hA hA₀ hD hWpair.toIsTIDiff hω hodd
+       hj hθ hHθ hξ hdeg hSdef (τ := dadeBaselineHom hD hS)
+       (fun f F hfF => coe_dadeBaselineHom hD hS f F hfF.symm)
+   have hmemξ : indClassFun K θ ∈ S := Set.mem_insert _ _
+@@ -899,18 +880,12 @@ private theorem FPF_type_ii_nonfrobenius_crossed_column_data_aux
+     image_fixedSetIn_subset_fixedSet N
+   have hT : ∀ u ∈ B, CFSG.FeitThompson.Prep09.hallSignalizerOn N u = ⊥ := fun u hu =>
+     hJbot u (Or.inl (by rw [coreFixedSet_hallCoreIn_eq_fixedSet]; exact hu))
+-  have hstab : {g : G | (fun x => g⁻¹ * x * g) '' cyclicTIDiff (W₁ ⊔ W₂) W₂ W₁
+-      = cyclicTIDiff (W₁ ⊔ W₂) W₂ W₁} = ((W₁ ⊔ W₂ : Subgroup G) : Set G) :=
+-    hWpair.setOf_conj_eq_self
+-  have hdisj : ∀ g ∉ (W₁ ⊔ W₂ : Subgroup G),
+-      (fun x => g⁻¹ * x * g) '' cyclicTIDiff (W₁ ⊔ W₂) W₂ W₁ ∩ cyclicTIDiff (W₁ ⊔ W₂) W₂ W₁
+-        = ∅ := hWpair.inter_eq_empty
+   obtain ⟨qw, hqw, ε, hε, lam, hlamV, hlamS, hlamnr, hlamorth, hlam1, hlam2⟩ :=
+     exists_column_witness_of_fourFamily hmapW hmap1 hmap2 hlocal hσ
+       (H := hallCore ↥N) (subgroupOf_le_hallCore_of_le hc.le_hallCore_W₂)
+       (fixedSetIn_subset_sdiff _ _) (conj_image_fixedSetIn _ _)
+       (fun y hy hy1 => sdiff_inf_centralizer_subset_fixedSetIn _ _ hy hy1)
+-      (image_bridgeSupport_subset hc) hD hstab hdisj hWpair hω hG.odd_natCard hj hβ hHθ hξ hdegβ
++      (image_bridgeSupport_subset hc) hD hWpair hω hG.odd_natCard hj hβ hHθ hξ hdegβ
+       hAB
+   have ha : ∀ i, a i ∈ Irr ↥W₁ := fun i => harange ▸ Set.mem_range_self i
+   have hb : ∀ jj, b jj ∈ Irr ↥W₂ := fun jj => hbrange ▸ Set.mem_range_self jj
+diff --git a/CFSG/FeitThompson/Representations/TypeIPBridgeOrthogonality.lean b/CFSG/FeitThompson/Representations/TypeIPBridgeOrthogonality.lean
+index ebab796eb..5061e1164 100644
+--- a/CFSG/FeitThompson/Representations/TypeIPBridgeOrthogonality.lean
++++ b/CFSG/FeitThompson/Representations/TypeIPBridgeOrthogonality.lean
+@@ -232,9 +232,9 @@ theorem isCyclicTIPair_of_isWitnessedPConfiguration [Finite G] (hodd : Odd (Nat.
+   have hcyc : IsCyclic ↥(W₁ ⊔ W₂) := by
+     refine (MulEquiv.isCyclic h.isInternalDirectProduct_sup.mulEquivProd).mp ?_
+     exact Group.isCyclic_prod_iff.2 ⟨h.isCyclic_W₁, h.isCyclic_W₂, hcop⟩
+-  refine ⟨h.ne_bot_W₁, h.ne_bot_W₂, h.coe_sup_W₁_W₂.symm, h.inf_W₁_W₂,
+-    fun x hx y hy => (h.commute_W₁_W₂ hx hy), hcyc, ?_, ?_, ?_⟩
+-  · exact hodd.of_dvd_nat (Subgroup.card_subgroup_dvd_card _)
++  refine ⟨⟨?_, ?_⟩, h.ne_bot_W₁, h.ne_bot_W₂, h.coe_sup_W₁_W₂.symm, h.inf_W₁_W₂,
++    fun x hx y hy => (h.commute_W₁_W₂ hx hy), hcyc,
++    hodd.of_dvd_nat (Subgroup.card_subgroup_dvd_card _)⟩
+   · rw [cyclicTIDiff_eq_cyclicTIset]
+     ext g
+     simp only [Set.mem_ofPred_eq, SetLike.mem_coe]
+diff --git a/CFSG/FeitThompson/Representations/TypePOrientedCoreFamily.lean b/CFSG/FeitThompson/Representations/TypePOrientedCoreFamily.lean
+index 588bb1c5b..cf695c812 100644
+--- a/CFSG/FeitThompson/Representations/TypePOrientedCoreFamily.lean
++++ b/CFSG/FeitThompson/Representations/TypePOrientedCoreFamily.lean
+@@ -611,30 +611,6 @@ theorem image_cyclicTIsetConj_eq {M W₁ W₂ : Subgroup G} (h1 : W₁ ≤ M) (h
+     exact ⟨⟨m, hm⟩⁻¹ * ⟨v, hvM⟩ * ⟨m, hm⟩, ⟨⟨m, hm⟩, ⟨v, hvM⟩,
+       (mem_cyclicTIset_subgroupOf_iff h1 h2).2 hv, rfl⟩, by simp⟩
+ 
+-omit [Fintype G] in
+-theorem setOf_conj_eq_of_isCyclicTIPair {M W₁ W₂ : Subgroup G} (h1 : W₁ ≤ M) (h2 : W₂ ≤ M)
+-    (hW : IsCyclicTIPair (W₁ ⊔ W₂) W₁ W₂) :
+-    {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-          ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype)
+-      = cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-          ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype)}
+-      = (((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype : Subgroup G) : Set G) := by
+-  rw [cyclicTIDiff_map_subgroupOf h1 h2, map_subgroupOf_sup h1 h2]
+-  exact hW.setOf_conj_eq_self
+-
+-omit [Fintype G] in
+-theorem inter_eq_empty_of_isCyclicTIPair {M W₁ W₂ : Subgroup G} (h1 : W₁ ≤ M) (h2 : W₂ ≤ M)
+-    (hW : IsCyclicTIPair (W₁ ⊔ W₂) W₁ W₂) :
+-    ∀ g ∉ (W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-            ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype)
+-        ∩ cyclicTIDiff ((W₁.subgroupOf M ⊔ W₂.subgroupOf M).map M.subtype)
+-            ((W₁.subgroupOf M).map M.subtype) ((W₂.subgroupOf M).map M.subtype) = ∅ := by
+-  rw [cyclicTIDiff_map_subgroupOf h1 h2, map_subgroupOf_sup h1 h2]
+-  exact hW.inter_eq_empty
+-
+ omit [Fintype G] in
+ theorem isCyclicTIPair_map_subgroupOf {M W₁ W₂ : Subgroup G} (h1 : W₁ ≤ M) (h2 : W₂ ≤ M)
+     (hW : IsCyclicTIPair (W₁ ⊔ W₂) W₁ W₂) :
+@@ -779,8 +755,7 @@ theorem exists_isSubcoherent_detectInd_commutator {M W₁ W₂ : Subgroup G} {A
+   have : Fintype ↑(Irr ↥(W₁.subgroupOf M)) := Fintype.ofFinite _
+   obtain ⟨R, hR, -⟩ := PrimeDadeSubcoherence.exists_isSubcoherent_indFamDetect (σ := σ) (ω := ω)
+     hodd h hσ hWH hHK hAconj hA hA₀ hD
+-    (setOf_conj_eq_of_isCyclicTIPair h1 h2 hWpair)
+-    (inter_eq_empty_of_isCyclicTIPair h1 h2 hWpair) hω hS
++    (isCyclicTIPair_map_subgroupOf h1 h2 hWpair).toIsTIDiff hω hS
+   exact ⟨R, hR⟩
+ 
+ theorem exists_isCoherentWith_baselineMap
+@@ -1445,22 +1420,15 @@ theorem dadeMapFun_primeTIrow_sub
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     {j k : Irr ↥W₂} (hj : j ≠ principalIrr ↥W₂) (hk : k ≠ principalIrr ↥W₂)
+     (hone : ∀ i : Irr ↥W₁, h.primeTIirr σ i j 1 = h.primeTIirr σ i k 1) :
+     dadeMapFun L A₀ T (h.primeTIrow σ j - h.primeTIrow σ k)
+       = h.primeTISign σ j • ∑ i : Irr ↥W₁,
+-          ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++          ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ j)
+-            - (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω
++            - (h.isCyclicTIPair_map_subtype hTI).prodCharEta ω
+               (irrMapSubtype L W₁ i) (irrMapSubtype L W₂ k)) := by
+   classical
+   have hsplit : h.primeTIrow σ j - h.primeTIrow σ k
+@@ -1471,7 +1439,7 @@ theorem dadeMapFun_primeTIrow_sub
+   refine Finset.sum_congr rfl fun i _ => ?_
+   have hmem := h.primeTIirr_sub_mem_dadeDomain hσ hWH hA hA₀ i hj hk (hone i)
+   rw [← coe_dadeMap hD ⟨_, hmem⟩]
+-  exact h.dadeMap_primeTIirr_sub_eq hσ hWH hA hA₀ hD hstab hdisj hω i hj hk (hone i)
++  exact h.dadeMap_primeTIirr_sub_eq hσ hWH hA hA₀ hD hTI hω i hj hk (hone i)
+ 
+ omit [Fintype G] [Fintype ↥(map L.subtype (W₁ ⊔ W₂))] [Fintype ↑(Irr ↥W₁)] in
+ theorem primeTIirr_one_eq_relIndex {H U : Subgroup ↥L} (h : IsPrimeCyclicTIHyp K W₁ W₂)
+@@ -1487,14 +1455,7 @@ theorem coe_nu_primeTIrow_sub_eq {H : Subgroup ↥L} [H.Normal] {S : Set (↥L 
+     (hA : ∀ y ∈ H, y ≠ 1 → ((K ⊓ Subgroup.centralizer {y} : Subgroup ↥L) : Set ↥L) \ {1} ⊆ A)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport A W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hS0 : ∀ (f : charSpanZero S) (x : ↥L), (x : G) ∉ A₀ → (f : ↥L → ℂ) x = 0)
+     (hScf : ∀ f ∈ Submodule.span ℤ S, f ∈ classFun ↥L)
+@@ -1505,9 +1466,9 @@ theorem coe_nu_primeTIrow_sub_eq {H : Subgroup ↥L} [H.Normal] {S : Set (↥L 
+     (hjS : h.primeTIrow σ j ∈ S) (hkS : h.primeTIrow σ k ∈ S) :
+     (ν0 ⟨h.primeTIrow σ j, Submodule.subset_span hjS⟩ : G → ℂ)
+         - (ν0 ⟨h.primeTIrow σ k, Submodule.subset_span hkS⟩ : G → ℂ)
+-      = h.primeTISign σ j • (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++      = h.primeTISign σ j • (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+           (irrMapSubtype L W₂ j)
+-        - h.primeTISign σ j • (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++        - h.primeTISign σ j • (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+           (irrMapSubtype L W₂ k) := by
+   classical
+   have : Fintype ↑(Irr ↥(W₁.map L.subtype)) := Fintype.ofFinite _
+@@ -1522,7 +1483,7 @@ theorem coe_nu_primeTIrow_sub_eq {H : Subgroup ↥L} [H.Normal] {S : Set (↥L 
+   have hdom : h.primeTIrow σ j - h.primeTIrow σ k ∈ dadeDomain L A₀ :=
+     mem_dadeDomain.2 ⟨hScf _ hdiff, fun x hx => hS0 ⟨_, hzero⟩ x hx⟩
+   rw [CoherentRowColumn.coe_nu_sub (ν := ν0) hjS hkS, hντ ⟨_, hdiff⟩ ⟨_, hdom⟩ rfl, coe_dadeMap,
+-    dadeMapFun_primeTIrow_sub h hσ hWH hA hA₀ hD hstab hdisj hω hj hk hone,
++    dadeMapFun_primeTIrow_sub h hσ hWH hA hA₀ hD hTI hω hj hk hone,
+     IsCyclicTIPair.prodCharEtaColSum_eq_sum, IsCyclicTIPair.prodCharEtaColSum_eq_sum,
+     ← smul_sub, ← Finset.sum_sub_distrib]
+   congr 1
+@@ -2057,8 +2018,7 @@ private theorem orientedCoreFamily_aux
+   obtain ⟨ωM, hωM, hcol⟩ := exists_isCyclicTIIsometry_prodCharEtaColSum_eq
+     (map_subgroupOf_sup h1 h2) (Subgroup.map_subgroupOf_eq_of_le h1)
+     (Subgroup.map_subgroupOf_eq_of_le h2) hWpair
+-    (hP.isCyclicTIPair_map_subtype (setOf_conj_eq_of_isCyclicTIPair h1 h2 hWpair)
+-      (inter_eq_empty_of_isCyclicTIPair h1 h2 hWpair)) hωL
++    (hP.isCyclicTIPair_map_subtype (isCyclicTIPair_map_subgroupOf h1 h2 hWpair).toIsTIDiff) hωL
+   have hirr : ∀ j : Irr ↥W₂, ∀ (x : ↥((W₂.subgroupOf M).map M.subtype)) (hx : (x : G) ∈ W₂),
+       ((irrMapSubtype M (W₂.subgroupOf M)
+         (irrEquivOfMulEquiv (Subgroup.subgroupOfEquivOfLe h2) j) : Irr _) :
+@@ -2081,8 +2041,7 @@ private theorem orientedCoreFamily_aux
+     have key := coe_nu_primeTIrow_sub_eq (ν0 := ν0) (ω := ωM) hP hσ'
+       (le_hallCore_subgroupOf_W₂ hc) (H := hallCore ↥M) (A := A)
+       (by have := @hallCore_normal ↥M _; exact hA) hA₀ hD
+-      (setOf_conj_eq_of_isCyclicTIPair h1 h2 hWpair)
+-      (inter_eq_empty_of_isCyclicTIPair h1 h2 hWpair) hωM hS0
++      (isCyclicTIPair_map_subgroupOf h1 h2 hWpair).toIsTIDiff hωM hS0
+       (fun f hf => mem_classFun_of_mem_span_detectInd hf) hντ0 hj hk
+       (fun i => by rw [primeTIirr_one_eq_relIndex hP hmac hσ' i hj,
+         primeTIirr_one_eq_relIndex hP hmac hσ' i hk])
+diff --git a/CFSG/FeitThompson/Representations/TypeThreeFiveFrobeniusPartnerContradiction.lean b/CFSG/FeitThompson/Representations/TypeThreeFiveFrobeniusPartnerContradiction.lean
+index 08e388111..6dee4e3d7 100644
+--- a/CFSG/FeitThompson/Representations/TypeThreeFiveFrobeniusPartnerContradiction.lean
++++ b/CFSG/FeitThompson/Representations/TypeThreeFiveFrobeniusPartnerContradiction.lean
+@@ -363,7 +363,7 @@ theorem one_sub_measure_sub_inv_lt_div
+     rw [Subgroup.map_sup, map_subgroupOf_eq_of_le hc.le_M_W₁, map_subgroupOf_eq_of_le hc.le_M_W₂]
+   have hpair : IsCyclicTIPair (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+       (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M)) := by
+-    refine hprime.isCyclicTIPair_map_subtype ?_ ?_
++    refine hprime.isCyclicTIPair_map_subtype ⟨?_, ?_⟩
+     · rw [hsup, map_subgroupOf_eq_of_le hc.le_M_W₁, map_subgroupOf_eq_of_le hc.le_M_W₂,
+         cyclicTIDiff_sup_eq_cyclicTIset, setOf_conj_eq_self_eq_normalizer,
+         hc.normalizer_cyclicTIset]
+diff --git a/CFSG/FeitThompson/Representations/TypeThreeFourPrincipalRowProjection.lean b/CFSG/FeitThompson/Representations/TypeThreeFourPrincipalRowProjection.lean
+index d329decaa..d9cb2dd01 100644
+--- a/CFSG/FeitThompson/Representations/TypeThreeFourPrincipalRowProjection.lean
++++ b/CFSG/FeitThompson/Representations/TypeThreeFourPrincipalRowProjection.lean
+@@ -149,14 +149,7 @@ theorem isCoherent_union_of_isOrthogonal_prodCharEtaColSum {G : Type*} [Group G]
+     (hodd : Odd (Nat.card G)) (hB : h.IsUniformBridgeData σ ζ d n 1)
+     (hA : (fun x : ↥L => (x : G)) '' primeTIbridgeSupport K X₁ X₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)
+-      = cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)}
+-      = (((X₁ ⊔ X₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (X₁ ⊔ X₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype)
+-        ∩ cyclicTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((X₁ ⊔ X₂).map L.subtype) (X₁.map L.subtype) (X₂.map L.subtype))
+     (hWpair : IsCyclicTIPair Wamb V₁ V₂) (hωa : IsCyclicTIIsometry Wamb V₁ V₂ ωa)
+     (hprime₁ : (Nat.card ↥X₁).Prime) (hprime₂ : (Nat.card ↥X₂).Prime)
+     (hS₁ : S₁ ⊆ indFam K (Irr ↥K \ {1}) ∩ Irr ↥L)
+@@ -179,7 +172,7 @@ theorem isCoherent_union_of_isOrthogonal_prodCharEtaColSum {G : Type*} [Group G]
+         (hWpair.prodCharEta ωa i l)) :
+     IsCoherent (S₁ ∪ S₂) τU := by
+   subst hmapW hmap1 hmap2
+-  refine PrimeDadeColumnGluing.isCoherent_union hodd hB hA hD hstab hdisj hωa hprime₁ hprime₂
++  refine PrimeDadeColumnGluing.isCoherent_union hodd hB hA hD hTI hωa hprime₁ hprime₂
+     hS₁ hS₁star hζS₁ hncard hdeg hS₂ hS₂star hS₁S₂ hrows hτ₁ hτ₂ hτU hcoh₁ hcoh₂ ?_
+   intro i l
+   rw [PrimeDadeLowFamily.tauPrincipalRowSub_eq_dadeMap hB hA hD ⟨_, hF⟩ rfl]
+@@ -322,8 +315,8 @@ private theorem not_forall_isOrthogonal_sub_prodCharEtaColSum
+   have hU := isCoherent_union_of_isOrthogonal_prodCharEtaColSum (τ₁ := τ₁) (τ₂ := τ₂) (τU := τU)
+     (CrossedRowData.map_subtype_subgroupOf_sup hc.le_M_W₁ hc.le_M_W₂)
+     (Subgroup.map_subgroupOf_eq_of_le hc.le_M_W₁) (Subgroup.map_subgroupOf_eq_of_le hc.le_M_W₂)
+-    hodd hB hA hD (CrossedRowData.setOf_conj_eq_of_isWitnessedPConfiguration hc)
+-    (CrossedRowData.inter_eq_empty_of_isWitnessedPConfiguration hc) hWpair hω
++    hodd hB hA hD (CrossedRowData.isTIDiff_of_isWitnessedPConfiguration hc)
++    hWpair hω
+     (hcard1 ▸ hqprime) (hcard2 ▸ hpprime) (fun χ hχ => ⟨hS₁ind hχ, hS₁Irr hχ⟩) hS₁star hζ
+     (by rw [hncard, Nat.card_coe_set_eq])
+     (fun χ hχ => by rw [hcard1]; exact hS₁deg χ hχ) hS₂ind hS₂star hdisj12 hrows
+diff --git a/CFSG/FeitThompson/Representations/TypeThreeFourScalarCoordinateIndexCollapse.lean b/CFSG/FeitThompson/Representations/TypeThreeFourScalarCoordinateIndexCollapse.lean
+index c94fc9b18..fe040bbcd 100644
+--- a/CFSG/FeitThompson/Representations/TypeThreeFourScalarCoordinateIndexCollapse.lean
++++ b/CFSG/FeitThompson/Representations/TypeThreeFourScalarCoordinateIndexCollapse.lean
+@@ -203,8 +203,8 @@ private theorem indexCollapse_residual
+   obtain ⟨j', ε, hε, hνMj⟩ := exists_sign_col_of_isUniformBridgeData
+     (CrossedRowData.map_subtype_subgroupOf_sup hc.le_M_W₁ hc.le_M_W₂)
+     (Subgroup.map_subgroupOf_eq_of_le hc.le_M_W₁) (Subgroup.map_subgroupOf_eq_of_le hc.le_M_W₂)
+-    hodd hB hA hD (CrossedRowData.setOf_conj_eq_of_isWitnessedPConfiguration hc)
+-    (CrossedRowData.inter_eq_empty_of_isWitnessedPConfiguration hc) hW hω hS₂ind hS₂star hν₂
++    hodd hB hA hD (CrossedRowData.isTIDiff_of_isWitnessedPConfiguration hc)
++    hW hω hS₂ind hS₂star hν₂
+     (fun f F hfF => TypeVTwoFamilyJoining.coe_subDadeHom hD hS₂ind hAb f F hfF.symm)
+     hrows hΛS hθind hj
+   set x : Submodule.span ℤ S₂ := ⟨h.primeTIrow σ j, Submodule.subset_span (hrows j hj)⟩ with hx
+diff --git a/CFSG/FeitThompson/Representations/TypeVMaximalExclusion.lean b/CFSG/FeitThompson/Representations/TypeVMaximalExclusion.lean
+index 75c5a08ef..795003c4b 100644
+--- a/CFSG/FeitThompson/Representations/TypeVMaximalExclusion.lean
++++ b/CFSG/FeitThompson/Representations/TypeVMaximalExclusion.lean
+@@ -67,39 +67,26 @@ theorem cyclicTIDiff_map_subgroupOf (h₁ : W₁ ≤ M) (h₂ : W₂ ≤ M) :
+   ext g
+   rw [mem_cyclicTIDiff, mem_cyclicTIset]
+ 
+-theorem IsWitnessedPConfiguration.stabilizer_cyclicTIDiff_map
+-    (hc : IsWitnessedPConfiguration M ⊥ W₁ W₂) :
+-    {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-          (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))
+-      = cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-          (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))}
+-      = ((Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M) : Subgroup G) : Set G) := by
+-  rw [cyclicTIDiff_map_subgroupOf hc.le_M_W₁ hc.le_M_W₂, Subgroup.map_sup,
+-    map_subtype_subgroupOf_of_le hc.le_M_W₁, map_subtype_subgroupOf_of_le hc.le_M_W₂,
+-    setOf_conj_eq_self_eq_normalizer, hc.isTIWithNormalizer_cyclicTIset.normalizer_eq]
+-
+-theorem IsWitnessedPConfiguration.inter_cyclicTIDiff_map_eq_empty
+-    (hc : IsWitnessedPConfiguration M ⊥ W₁ W₂)
+-    {g : G} (hg : g ∉ Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M)) :
+-    (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-          (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))
+-      ∩ cyclicTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+-          (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M))
+-      = ∅ := by
+-  rw [Subgroup.map_sup, map_subtype_subgroupOf_of_le hc.le_M_W₁,
+-    map_subtype_subgroupOf_of_le hc.le_M_W₂] at hg
+-  rw [cyclicTIDiff_map_subgroupOf hc.le_M_W₁ hc.le_M_W₂, Set.inter_comm,
+-    ← Set.disjoint_iff_inter_eq_empty]
+-  exact hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg
++theorem IsWitnessedPConfiguration.isTIDiff_map (hc : IsWitnessedPConfiguration M ⊥ W₁ W₂) :
++    IsTIDiff (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
++      (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M)) where
++  setOf_conj_eq_self := by
++    rw [cyclicTIDiff_map_subgroupOf hc.le_M_W₁ hc.le_M_W₂, Subgroup.map_sup,
++      map_subtype_subgroupOf_of_le hc.le_M_W₁, map_subtype_subgroupOf_of_le hc.le_M_W₂,
++      setOf_conj_eq_self_eq_normalizer, hc.isTIWithNormalizer_cyclicTIset.normalizer_eq]
++  inter_eq_empty g hg := by
++    rw [Subgroup.map_sup, map_subtype_subgroupOf_of_le hc.le_M_W₁,
++      map_subtype_subgroupOf_of_le hc.le_M_W₂] at hg
++    rw [cyclicTIDiff_map_subgroupOf hc.le_M_W₁ hc.le_M_W₂, Set.inter_comm,
++      ← Set.disjoint_iff_inter_eq_empty]
++    exact hc.isTIWithNormalizer_cyclicTIset.disjoint_image_conj_inv hg
+ 
+ theorem IsWitnessedPConfiguration.isCyclicTIPair_map (hodd : Odd (Nat.card G))
+     (hc : IsWitnessedPConfiguration M ⊥ W₁ W₂) :
+     IsCyclicTIPair (Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))
+       (Subgroup.map M.subtype (W₁.subgroupOf M)) (Subgroup.map M.subtype (W₂.subgroupOf M)) :=
+   (hc.isPrimeCyclicTIHyp_subgroupOf hodd).isCyclicTIPair_map_subtype
+-    hc.stabilizer_cyclicTIDiff_map fun _ hg => hc.inter_cyclicTIDiff_map_eq_empty hg
++    hc.isTIDiff_map
+ 
+ theorem IsWitnessedPConfiguration.exists_isCyclicTIIsometry_map [Fintype G]
+     [Fintype ↥(Subgroup.map M.subtype (W₁.subgroupOf M ⊔ W₂.subgroupOf M))]
+@@ -281,8 +268,7 @@ theorem IsWitnessedPConfiguration.exists_isSubcoherent_fullFamily (hodd : Odd (N
+     (A := ((derivedOf M : Subgroup ↥M) : Set ↥M) \ {1})
+     (fun t => PrimeFixedTIPGroupCoherence.conj_image_punctured_eq (derivedOf M) t)
+     (fun y _ _ => PrimeFixedTIPGroupCoherence.centralizer_sdiff_subset_punctured (derivedOf M) y)
+-    hc.image_bridgeSupport_subset_dadeA0 hD hc.stabilizer_cyclicTIDiff_map
+-    (fun _ hg => hc.inter_cyclicTIDiff_map_eq_empty hg) hω
++    hc.image_bridgeSupport_subset_dadeA0 hD hc.isTIDiff_map hω
+     (PrimeFixedTIPGroupCoherence.coe_fullFamily_eq_indFamDetect_self (derivedOf M))
+   exact ⟨R, hR⟩
+ 
+@@ -353,8 +339,7 @@ theorem IsWitnessedPConfiguration.hasCoherentMap_of_isTIWithNormalizer (hodd : O
+       odd_natCard := hodd
+       isDadeData := hD
+       image_subset := hc.image_bridgeSupport_subset_dadeA0
+-      stabilizer_cyclicTIDiff_eq := hc.stabilizer_cyclicTIDiff_map
+-      inter_cyclicTIDiff_eq_empty := fun _ hg => hc.inter_cyclicTIDiff_map_eq_empty hg
++      isTIDiff := hc.isTIDiff_map
+       omega_isometry := hω
+       zeta_mem := hζmem
+       zeta_irr := hζirr
+@@ -455,8 +440,7 @@ theorem IsWitnessedPConfiguration.hasCoherentMap_of_prime_cube (hodd : Odd (Nat.
+       odd := hodd
+       isDadeData := hD
+       image_subset := hc.image_bridgeSupport_subset_dadeA0
+-      stabilizer_eq := hc.stabilizer_cyclicTIDiff_map
+-      inter_eq_empty := fun _ hg => hc.inter_cyclicTIDiff_map_eq_empty hg
++      isTIDiff := hc.isTIDiff_map
+       omega_isometry := hω }
+   rw [indFamNonprincipal_eq_indFam_sdiff]
+   exact hasCoherentMap_of_isCoherent (coe_subDadeHom_eq_dadeMapFun hD _ hC.image_subset)
+diff --git a/CFSG/FeitThompson/Representations/TypeVTwoFamilyCoherenceJoining.lean b/CFSG/FeitThompson/Representations/TypeVTwoFamilyCoherenceJoining.lean
+index 2519f8e62..041af53aa 100644
+--- a/CFSG/FeitThompson/Representations/TypeVTwoFamilyCoherenceJoining.lean
++++ b/CFSG/FeitThompson/Representations/TypeVTwoFamilyCoherenceJoining.lean
+@@ -30,14 +30,7 @@ structure IsTypeVTwoFamilyData {G : Type*} [Group G] [Fintype G] {L : Subgroup G
+   isDadeData : IsDadeData L A₀ T
+   image_subset :
+     (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀
+-  stabilizer_eq : {g : G | (fun x => g⁻¹ * x * g) ''
+-      cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-    = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G)
+-  inter_eq_empty : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-    (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅
++  isTIDiff : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+   omega_isometry : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+     (W₂.map L.subtype) ω
+   card_lt : Nat.card ↥W₁ < Nat.card ↥W₂
+@@ -136,20 +129,13 @@ theorem isCoherent_congr {S : Set (↥L → ℂ)} {τ τ' : charSpanZero S →+
+ theorem isCoherent_primeTIrowFam_subDadeHom (hB : h.IsUniformBridgeData σ ζ d n δ)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype)
+       (W₂.map L.subtype) ω) :
+     IsCoherent (primeTIrowFam h σ)
+       (subDadeHom hD (primeTIrowFam_subset_indFam hB) hA₀) := by
+   refine isCoherent_congr (τ := (spanIrrToVirtualChars G).comp (rowDadeHom hD hB hA₀)) ?_
+-    (isCoherent_primeTIrowFam hB hA₀ hD hstab hdisj hω)
++    (isCoherent_primeTIrowFam hB hA₀ hD hTI hω)
+   intro f
+   have hmem : (f : ↥L → ℂ) ∈ dadeDomain L A₀ :=
+     mem_dadeDomain_of_mem_dadeZDomain
+@@ -318,26 +304,19 @@ theorem exists_virtualChar_norm_one_dadeMap_primeTIrow_sub
+     (hB : h.IsUniformBridgeData σ ζ d n δ)
+     (hA₀ : (fun x : ↥L => (x : G)) '' bridgeSupport ((K : Set ↥L) \ {1}) W₁ W₂ ⊆ A₀)
+     (hD : IsDadeData L A₀ T)
+-    (hstab : {g : G | (fun x => g⁻¹ * x * g) ''
+-        cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-      = cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)}
+-      = (((W₁ ⊔ W₂).map L.subtype : Subgroup G) : Set G))
+-    (hdisj : ∀ g ∉ (W₁ ⊔ W₂).map L.subtype,
+-      (fun x => g⁻¹ * x * g) ''
+-          cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype)
+-        ∩ cyclicTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) = ∅)
++    (hTI : IsTIDiff ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype))
+     (hω : IsCyclicTIIsometry ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) ω)
+     (hm : Nat.card ↥W₁ < Nat.card ↥W₂) :
+     ∃ χ ∈ Submodule.span ℤ (Irr G), cfInner χ χ = 1 ∧
+       (∀ (i : Irr ↥(W₁.map L.subtype)) (j : Irr ↥(W₂.map L.subtype)),
+-        IsOrthogonal χ ((h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEta ω i j)) ∧
++        IsOrthogonal χ ((h.isCyclicTIPair_map_subtype hTI).prodCharEta ω i j)) ∧
+       ((dadeMap hD ⟨h.primeTIrow σ (principalIrr ↥W₂) - ζ,
+             primeTIrow_principal_sub_mem_dadeDomain hB hA₀⟩ : classFun G) : G → ℂ)
+-        = (h.isCyclicTIPair_map_subtype hstab hdisj).prodCharEtaColSum ω
++        = (h.isCyclicTIPair_map_subtype hTI).prodCharEtaColSum ω
+             (principalIrr ↥(W₂.map L.subtype)) - χ := by
+   classical
+   have : Fintype ↑(Irr ↥(W₁.map L.subtype)) := Fintype.ofFinite _
+-  set hW := h.isCyclicTIPair_map_subtype hstab hdisj with hWdef
++  set hW := h.isCyclicTIPair_map_subtype hTI with hWdef
+   set β : ↥L → ℂ := h.primeTIrow σ (principalIrr ↥W₂) - ζ with hβ
+   have hβdom : β ∈ dadeDomain L A₀ := primeTIrow_principal_sub_mem_dadeDomain hB hA₀
+   set f : G → ℂ := ((dadeMap hD ⟨β, hβdom⟩ : classFun G) : G → ℂ) with hf
+@@ -400,7 +379,7 @@ theorem isCoherent_rowFamily :
+     IsCoherent (primeTIrowFam h σ)
+       (subDadeHom hC.isDadeData hC.primeTIrowFam_subset hC.image_subset) :=
+   isCoherent_primeTIrowFam_subDadeHom hC.local_data hC.image_subset hC.isDadeData
+-    hC.stabilizer_eq hC.inter_eq_empty hC.omega_isometry
++    hC.isTIDiff hC.omega_isometry
+ 
+ include hC in
+ omit [K.Normal] in
+@@ -489,7 +468,7 @@ theorem exists_isSubcoherent_fullFamily :
+     (H := K) h.right_le le_rfl (A := (K : Set ↥L) \ {1})
+     (fun t => PrimeFixedTIPGroupCoherence.conj_image_punctured_eq K t)
+     (fun y _ _ => PrimeFixedTIPGroupCoherence.centralizer_sdiff_subset_punctured K y)
+-    hC.image_subset hC.isDadeData hC.stabilizer_eq hC.inter_eq_empty
++    hC.image_subset hC.isDadeData hC.isTIDiff
+     hC.omega_isometry (PrimeFixedTIPGroupCoherence.coe_fullFamily_eq_indFamDetect_self K)
+   exact ⟨R, hR⟩
+ 
+@@ -503,7 +482,7 @@ include hC in
+ omit [K.Normal] in
+ theorem isCyclicTIPair_map :
+     IsCyclicTIPair ((W₁ ⊔ W₂).map L.subtype) (W₁.map L.subtype) (W₂.map L.subtype) :=
+-  h.isCyclicTIPair_map_subtype hC.stabilizer_eq hC.inter_eq_empty
++  h.isCyclicTIPair_map_subtype hC.isTIDiff
+ 
+ theorem isLargeLinearLayerData
+     {ν : Submodule.span ℤ T₁ →+ virtualChars G}
+@@ -587,7 +566,7 @@ theorem dadeZMap_primeTIrow_principal_sub_eq
+   have hWL : hL.isCyclicTIPair = hC.isCyclicTIPair_map := rfl
+   obtain ⟨χ, -, hχnorm, hχorth, hfeq⟩ :=
+     exists_virtualChar_norm_one_dadeMap_primeTIrow_sub hC.local_data hC.image_subset
+-      hC.isDadeData hC.stabilizer_eq hC.inter_eq_empty hC.omega_isometry hC.card_lt
++      hC.isDadeData hC.isTIDiff hC.omega_isometry hC.card_lt
+   have hdZ : ((dadeZMap hC.isDadeData ⟨h.primeTIrow σ (principalIrr ↥W₂) - ζ,
+       hC.primeTIrow_principal_sub_mem_dadeZDomain⟩ : charSpanZero (Irr G)) : G → ℂ)
+       = hC.isCyclicTIPair_map.prodCharEtaColSum ω
+@@ -695,7 +674,7 @@ theorem exists_isCoherent_indFam :
+   have hfinJ : Fintype ↑(Irr ↥W₂) := Fintype.ofFinite _
+   obtain ⟨R, hR⟩ := hC.exists_isSubcoherent_fullFamily
+   obtain ⟨ν₂, hν₂, hν₂val⟩ := exists_isCoherentWith_primeTIrowFam hC.local_data hC.image_subset
+-    hC.isDadeData hC.stabilizer_eq hC.inter_eq_empty hC.omega_isometry
++    hC.isDadeData hC.isTIDiff hC.omega_isometry
+   have hrowsub : ((rowFinset h σ : Finset (↥L → ℂ)) : Set (↥L → ℂ))
+       ⊆ indFam K (Irr ↥K \ {1}) := by
+     rw [coe_rowFinset]; exact hC.primeTIrowFam_subset
+-- 
+2.54.0 (Apple Git-157)
+
