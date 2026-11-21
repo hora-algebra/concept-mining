@@ -1,6 +1,7 @@
 # Strategy: where an order of magnitude could come from
 
-Status: night of 2026-11-21/22. Written by the strategy session that watches
+Status: night of 2026-11-21/22, updated for the 1 % goal of
+[plan-one-percent.md](plan-one-percent.md). Written by the strategy session that watches
 the mining sessions. Figures are upper bounds unless marked *verified*. The
 library is 35,093,004 lines inside declarations (as in
 [plan-one-percent.md](plan-one-percent.md)); shares below are of that total.
@@ -18,14 +19,19 @@ library is 35,093,004 lines inside declarations (as in
    removes its whole price at once.
 3. **The first such move is verified on paper and is 1.44 % of the library:**
    the Feit–Thompson theorem is proved twice, and both proofs are used.
-   One proof can become a one-line application of the other (below).
-4. **The next and larger class is the induction hypothesis.** The final
-   theorem is proved by induction on the order with "every proper section is
-   known" (`KProper`) in every branch. Classification theorems from the
-   literature that are applied only to proper sections could be replaced by
-   that hypothesis plus facts about the known groups. This is the step the
-   second-generation proof of Gorenstein, Lyons and Solomon takes, and it is
-   where most of the remaining price sits.
+   One proof can become a one-line application of the other (below). It needs
+   a new import from ThirdParty/QiuzhenCFSG into CFSG/FeitThompson, which the
+   checker's scope rule refuses today.
+4. **The induction hypothesis does not free the large literature theorems.**
+   The final theorem is proved by induction on the order with "every proper
+   section is known" (`KProper`) in every branch. We checked whether the
+   largest classification theorems from the literature are applied only to
+   proper sections, where that hypothesis would replace them. They are not:
+   each has at least one use on the simple group of the branch itself (below).
+5. **For the 1 % goal, cleanup on the laptop is enough.** Declarations that
+   neither the final theorem nor any `CFSG.Milestones` declaration needs come
+   to 1,337,670 lines (3.8 %). Six parts whose builds fit the laptop hold
+   365,994 of them (1.04 %); see [Cleanup toward 1 %](#cleanup-toward-1-).
 
 ## Prices: the dominator tree of the final theorem
 
@@ -60,14 +66,16 @@ The full list of declarations with a price of at least 3,000 lines is in
 | Rank | Kind | Where | Upper bound | Share | How real |
 |---|---|---|---|---|---|
 | 1 | **A theory rebuilt in isolation** | Feit–Thompson proved twice (ThirdParty/QiuzhenCFSG and CFSG/FeitThompson) | 504,237 | 1.44 % | *verified*: identical statements, both used; Lean not yet run |
-|  |  | literature classification theorems applied to sections where `KProper` is available (GH74, Gorenstein–Walter, Bender–Suzuki, ...) | up to ~2.5 M | ~7 % | being checked (use sites, missing catalog facts) |
+|  |  | literature classification theorems applied to sections where `KProper` is available (GH74, Gorenstein–Walter, Bender–Suzuki, ...) | 0 | 0 % | **refuted**: every one of them is also applied to the simple group of its branch; see below |
 |  |  | basic group-theory layer re-proved per region | 130,000 | 0.4 % | measured earlier; needs a full build |
 | 2 | **One general theorem plus checks per case** | families of independent subtrees whose statements differ only in numbers or type names | 994,793 | 2.8 % | identifier multiset of the statement, so some families may join different statements; sampled families are real (e.g. `GGResIDisp.{A6,A7,B7,C7,D4..D7,E6}.ggResI_type_*`, `ggResQTwoFinite_{A7,B7,C7,D7,E6}`) |
-| 3 | **The same skeleton per sporadic or Lie-type group** | files whose paths differ only in a group or Lie-type name | 790,123 | 2.3 % | noisy: section numbers like `F134` match the pattern; overlaps rank 2 |
+| 3 | **The same skeleton per sporadic or Lie-type group** | declarations that name a group (21 % of the library), clustered by name and by proof skeleton | 60,000–195,000 | 0.2–0.6 % | measured by miner-b: about 120,000 lines of repeated argument at most (0.3 %), the rest data tables; 4,688 of 4,800 clusters are under 100 lines each. A first count by file names (790,123 lines) was mostly section numbers |
 
 Rank 2 and 3 overlap each other and the proof-shape families of
 [compression-map.md](compression-map.md) (866,990 lines). Together they are of
-the order of 1–1.5 M lines, about 3–4 %. The family bound leaves out two false
+the order of 1 M lines, about 3 %, as an upper bound; where the repetition was
+measured more closely (per group, rank 3) it shrank to a tenth of the first
+count. The family bound leaves out two false
 matches: `Assembly.large_even` and `Assembly.rank_three_even` (their statements
 differ only in `4 ≤ evenRank` versus `evenRank = 3`) and the Feit–Thompson pair
 (counted in rank 1).
@@ -90,6 +98,27 @@ pair and otherwise only wrappers (a milestone restating a theorem it calls),
 families that differ in a dropped constant (`.J4` vs `.M24`) and one copied
 development (`KD46.Inst.exists_sec6`, 4,455 lines, already in the
 same-statement table).
+
+### The induction hypothesis: checked and refuted
+
+Six expensive theorems from the literature were traced to the groups they are
+finally applied to (about 40 use sites read):
+
+| Theorem | Price | Applied to the simple group of the branch | Applied to a proper section |
+|---|---|---|---|
+| Gorenstein–Harada, sectional 2-rank ≤ 4 | 1,231,219 | yes: rank 3 (Sims 3.16), GF(2)-type width 2 (Aschbacher 1977), type E (Smith 1980) | one site already has `IsKGroupCat` (`HNRecog/GH73/Reduction.lean`), so the theorem is redundant there |
+| GF(2^n)-type (Parrott, Timmesfeld) | 816,980 | all three users | none |
+| Gorenstein–Walter | 198,807 | probably (`CFSG/Dihedral`) | five sites (involution centralizers, local subgroups) |
+| Bender–Suzuki (`theorem_SE`) | 172,317 | yes: the disconnected-graph branch | three sites, with no K-group hypothesis in scope |
+| Holt | 57,987 | all four users | none |
+| Goldschmidt | 32,529 | yes: O'Nan's analysis | Goldschmidt 1975's own counterexample |
+
+A theorem's price is freed only when **all** its uses go away, so none of these
+subtrees can be dropped this way. The catalog of facts about the known groups
+would still help: several intermediate statements (`GH74ModelsInput`,
+`gorensteinWalterStatement`, `theorem_SE`, ...) are quantified over all groups
+without a K-group hypothesis, and the uses on sections could be rerouted. That
+removes uses, not lines.
 
 ### A calibration
 
@@ -118,7 +147,7 @@ proved again is not measured yet.
 
 | Strategy | What it looks at | Cost | Expected | Status |
 |---|---|---|---|---|
-| **Price-tag search** (new) | the expensive declarations and their statements; asks what else in the library, Mathlib or the induction hypothesis implies each one | an hour of analysis per class; one Lean bridge per hit | 1.44 % found; up to ~7 % in the K-group class | running |
+| **Price-tag search** (new) | the expensive declarations and their statements; asks what else in the library, Mathlib or the induction hypothesis implies each one | an hour of analysis per class; one Lean bridge per hit | 1.44 % found; the K-group class gave nothing | running on the shared theorems |
 | Two-layer search over files ([two-layer-search.md](two-layer-search.md)) | files and hypothesis bundles of one region | ~1 h per region | StageK: 0.9 % of Feit–Thompson | done once |
 | Statement-schema families | statements equal up to numbers and type names | prototypes need only Mathlib | ≤ 2.8 % | handed to miner-b |
 | Cumulative stages / bundled contexts (StageK, generalized) | repeated hypotheses in statements | ~1 h + build per region | ~1 % of each region | proven on Feit–Thompson |
@@ -143,21 +172,58 @@ Procedure for the next runs:
 3. Verification layer, cold: write the bridge in Lean. Accept only if Lean and
    the token count say so.
 
+## Cleanup toward 1 %
+
+"Deletable" below means: reached neither from the final theorem nor from any
+declaration in `CFSG.Milestones` (which is kept), in the elaborated graph of
+the proof map. 1,337,670 lines qualify; another 559,425 are needed only by
+Milestones. The checker builds the target folder, so what a laptop can verify
+is set by the import closure of the modules that change (lines of source that
+must be built). One part with a closure of about 1.3 M lines takes 1.5–2 hours
+on six cores.
+
+| Part | Deletable | Closure to build | Where |
+|---|---|---|---|
+| Permutation.FiveTransitive | 165,930 | 0.20 M | laptop |
+| Sporadic.Schreier | 79,232 | 1.29 M | laptop |
+| ThirdParty.QiuzhenCFSG | 58,726 | 1.32 M | laptop |
+| LieType.AlgebraicGroups | 26,150 | 0.23 M | laptop |
+| FeitThompson (mostly Representations) | 21,616 | 0.27 M | laptop |
+| ThirdParty.BrauerInduction | 14,370 | 0.02 M | laptop |
+| **Laptop total** | **365,994 (1.04 %)** | | |
+| Monster.B | 36,960 | 1.80 M | laptop, slow |
+| Walter.Ree, CharacterTheory.Semidihedral / .Wreathed, ClassicalInvolution.Balance, LocalAnalysis.ComponentInitial | 15,000–22,000 each | 1.9–2.3 M | laptop, slow |
+| LocalAnalysis.StandardType | 69,415 | 16.4 M | full build |
+| LocalAnalysis.ComponentClassification | 50,296 | 7.1 M | full build |
+| Certificates.Kernel | 40,677 | 8.9 M | full build |
+| ClassicalInvolution.Q3, LocalAnalysis.AGLEmbeddingD2, RankThree.PartTwo, ... | 10,000–27,000 each | 5–17 M | full build |
+| Certificates (top level) | 104,859 | not measured (outside our checkout) | unknown |
+
+The route replacement of Feit–Thompson would add 504,232 lines to the laptop
+column (closure 0.62 M lines). None of those lines is needed by Milestones: the
+only declaration outside the subtree that refers into it is the proof being
+replaced. It waits for a decision on the scope rule (rule 5 below).
+
+Per-part tables: `tools/strategy/` computes prices; the deletable and build
+figures come from the same graph plus the module imports of upstream
+`965a077` (the proof map is of `3e39d10`, so every deletion is still checked by
+building).
+
 ## Next moves (decided)
 
 | Who | What | Why |
 |---|---|---|
-| concept-map | replace the proof of `CFSG.odd_order_theorem` by `CFSG.FeitThompson.isSolvable_of_odd_natCard`; delete what becomes unreachable in ThirdParty/QiuzhenCFSG | 504,237 lines, 1.44 %; QiuzhenCFSG already imports CFSG/FeitThompson, so the build stays cheap |
-| miner-a | delete the unreachable `Permutation/FiveTransitive` (166 k lines) | the largest cleanup whose build fits on the laptop tonight |
-| miner-b | rank the statement-schema families, prove the general theorems in files that import only Mathlib | the per-case files need builds the laptop cannot do tonight |
-| strategist | check whether GH74, Gorenstein–Walter, Bender–Suzuki are applied only to proper sections; list the catalog facts that would replace them | the largest remaining class |
+| concept-map | measure the Feit–Thompson route replacement and open a draft pull request marked as waiting for the scope rule; in the same build, delete the unreachable parts of ThirdParty/QiuzhenCFSG and ThirdParty/BrauerInduction | 504,232 lines pending a decision; 73,096 lines within today's rules |
+| miner-a | the cleanup script; then Permutation.FiveTransitive, Sporadic.Schreier, LieType.AlgebraicGroups, FeitThompson | 293,000 lines, all on the laptop |
+| miner-b | count cleanup and concepts separately on the progress page; make the checker and ledger accept cleanup | needed before any cleanup can be recorded |
+| strategist | price-tag search on the shared theorems; "Resume here" below | |
 
-What the laptop can verify tonight is limited by import closures (lines of
-other CFSG folders that a folder imports):
+What the laptop can verify is limited by import closures (lines of other
+CFSG folders that a folder imports, at upstream `965a077`):
 
 | Folder | Own | Imported from elsewhere |
 |---|---|---|
-| ThirdParty/QiuzhenCFSG | 1.34 M | 0.27 M (CFSG/FeitThompson only) |
+| ThirdParty/QiuzhenCFSG | 1.34 M | 0 (closed) |
 | CharacterTheory | 0.46 M | 1.94 M |
 | Monster | 0.42 M | 3.67 M |
 | Sporadic | 0.61 M | 9.57 M |
@@ -189,6 +255,14 @@ None of these is changed here; each is a proposal.
    measured on the *base* commit. Otherwise a route replacement, which makes a
    needed proof unneeded and then deletes it, would be paid at a quarter of the
    rate although it is exactly the kind of concept this project looks for.
+
+5. **Imports across folders.** The checker accepts new imports only from
+   Mathlib or the target folder. The Feit–Thompson route replacement must
+   import CFSG/FeitThompson from ThirdParty/QiuzhenCFSG. Proposal: also accept
+   an import of a module of another folder when (a) that folder does not import
+   the target (no cycle), and (b) the checker builds that module too. Both are
+   mechanical checks, and the protected statements still guard the rest of the
+   library.
 
 ## Tool note
 
