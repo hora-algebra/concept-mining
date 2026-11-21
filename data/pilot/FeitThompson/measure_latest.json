@@ -1,13 +1,13 @@
 {
   "target": "CFSG.FeitThompson",
   "modules": 1414,
-  "code_lines": 240176,
-  "declarations": 19762,
-  "declaration_code_lines": 209990,
+  "code_lines": 240136,
+  "declarations": 19751,
+  "declaration_code_lines": 209950,
   "needed_declarations": 16418,
   "needed_code_lines": 188871,
-  "unneeded_declarations": 3344,
-  "unneeded_code_lines": 21119,
+  "unneeded_declarations": 3333,
+  "unneeded_code_lines": 21079,
   "protected": [
     "CFSG.FeitThompson.isSolvable_of_odd_natCard"
   ]

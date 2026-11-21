@@ -46,6 +46,22 @@ def append(name: str, row: dict) -> None:
         f.write("\t".join(str(row[c]).replace("\t", " ").replace("\n", " ") for c in COLS[name]) + "\n")
 
 
+def count_uses(decls: str, name: str) -> int:
+    """Number of non-auxiliary declarations whose type or value refers to the
+    constant `name` (matched as a full name or a dot-suffix)."""
+    import re
+    aux = re.compile(r"\._|\.(match_|proof_|eq_\d|eq_def)")
+    rows = [l.rstrip("\n").split("\t") for l in open(decls, encoding="utf-8")]
+    targets = {r[0] for r in rows if r[0] == name or r[0].endswith("." + name)}
+    n = 0
+    for r in rows:
+        if r[0] in targets or aux.search(r[0].replace("_private.", "", 1)) or r[3] == "0":
+            continue
+        if targets & set(r[8].split()):
+            n += 1
+    return n
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -62,6 +78,9 @@ def main() -> None:
     for k in ("target", "concept", "meaning", "before", "after", "commit"):
         c.add_argument("--" + k, required=True)
     c.add_argument("--uses", type=int, required=True)
+    u = sub.add_parser("uses", help="declarations that refer to a concept directly")
+    u.add_argument("--decls", required=True)
+    u.add_argument("--name", required=True)
     a = ap.parse_args()
     today = datetime.date.today().isoformat()
     if a.cmd == "measure":
@@ -72,12 +91,15 @@ def main() -> None:
             subprocess.run([sys.executable, os.path.join(HERE, "mine.py"), "--decls", decls, "--root", a.root,
                             "--protected", a.protected, "--out", tmp], check=True, stdout=subprocess.DEVNULL)
             base = json.load(open(os.path.join(tmp, "baseline.json")))
+            os.replace(decls, a.out + ".decls.tsv")  # kept for counting uses
         json.dump(base, open(a.out, "w"), indent=2)
         print(json.dumps({k: base[k] for k in ("code_lines", "needed_code_lines", "needed_declarations")}))
     elif a.cmd == "history":
         b = json.load(open(a.measure))
         append("history.tsv", dict(date=today, target=a.target, lines_total=b["needed_code_lines"],
                                    declarations=b["needed_declarations"], note=a.note))
+    elif a.cmd == "uses":
+        print(count_uses(a.decls, a.name))
     else:
         b0, b1 = json.load(open(a.before)), json.load(open(a.after))
         x0, x1 = b0["needed_code_lines"], b1["needed_code_lines"]

@@ -87,6 +87,17 @@ def sh(cmd, cwd=None, check=True, capture=True, **kw):
     return r
 
 
+def marker(c, target, agent):
+    return "<!--concept-mining-target:v1 " + json.dumps(
+        {"candidate": c["id"], "target": f"CFSG/{target}", "agent": agent}) + "-->"
+
+
+def release(lease, cid, owner):
+    if os.path.exists(lease):
+        subprocess.run([sys.executable, lease, "release", cid, "--owner", owner], cwd=REPO,
+                       capture_output=True, text=True)
+
+
 def log(msg):
     print(f"[contribute {time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
@@ -113,7 +124,7 @@ def open_claims(target):
     return ids
 
 
-def run_agent(agent, prompt, root, minutes, model):
+def run_agent(agent, prompt, root, minutes, model, budget=None):
     if agent == "claude":
         cmd = ["claude", "-p", "--permission-mode", "acceptEdits",
                "--allowedTools", "Read,Edit,Write,Glob,Grep,Bash(lake:*),Bash(nice:*),Bash(python3:*),"
@@ -121,6 +132,8 @@ def run_agent(agent, prompt, root, minutes, model):
                "Bash(cat:*),Bash(ls:*),Bash(find:*),Bash(wc:*),Bash(head:*),Bash(tail:*)"]
         if model:
             cmd += ["--model", model]
+        if budget:
+            cmd += ["--max-budget-usd", str(budget)]
         cmd.append(prompt)
         stdin = None
     elif agent == "codex":
@@ -149,7 +162,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--target", required=True)
     ap.add_argument("--root", required=True, help="Lean checkout used for the work (created if missing)")
-    ap.add_argument("--agent", default="claude")
+    ap.add_argument("--agent", "--provider", dest="agent", default="claude",
+                    help="claude | codex | cmd:<command> (alias --provider; anthropic means claude, openai means codex)")
+    ap.add_argument("--budget-usd", type=float, default=None,
+                    help="spending cap passed to the agent where it supports one (Claude Code --max-budget-usd)")
+    ap.add_argument("--contributor", default=None, help="GitHub login for the ledger (default: gh's login)")
     ap.add_argument("--model", default=None)
     ap.add_argument("--candidate", default=None)
     ap.add_argument("--minutes", type=int, default=120, help="time limit for the agent")
@@ -157,6 +174,7 @@ def main() -> None:
     ap.add_argument("--no-pr", action="store_true")
     ap.add_argument("--skip-prepare", action="store_true", help="the checkout is already prepared and built")
     a = ap.parse_args()
+    a.agent = {"anthropic": "claude", "openai": "codex"}.get(a.agent, a.agent)
     root = os.path.abspath(os.path.expanduser(a.root))
     target = a.target
     pilot = os.path.join(REPO, "data", "pilot", target)
@@ -187,6 +205,17 @@ def main() -> None:
     # 3. claim
     branch = f"contrib/{target}/{c['id']}"
     pr_url = None
+    lease = os.path.join(HERE, "site", "claim.py")
+    owner = f"{os.uname().nodename}-{os.getpid()}"
+    agent_name = f"{a.agent}/{a.model}" if a.model else a.agent
+    if not a.no_pr and os.path.exists(lease):
+        r = sh([sys.executable, lease, "acquire", c["id"], "--owner", owner, "--agent", agent_name,
+                "--ttl", f"{a.minutes + 60}m"], cwd=REPO, check=False)
+        if r.returncode == 3:
+            raise SystemExit(f"{c['id']} is claimed by someone else; run again to pick another candidate")
+        if r.returncode:
+            raise RuntimeError("claim failed: " + (r.stderr or r.stdout)[-500:])
+        log(f"claimed {c['id']} (lease refs/claims/{c['id']})")
     if not a.no_pr:
         sh(["git", "fetch", "-q", "origin", "main"], cwd=REPO)
         sh(["git", "switch", "-q", "-c", branch, "origin/main"], cwd=REPO)
@@ -198,7 +227,8 @@ def main() -> None:
         sh(["git", "commit", "-q", "-m", f"Claim {target}/{c['id']}"], cwd=REPO)
         sh(["git", "push", "-q", "-u", "origin", branch], cwd=REPO)
         pr_url = sh(["gh", "pr", "create", "--draft", "--title", f"[{target}/{c['id']}] {c['title']}",
-                     "--body", f"## 報告\n候補 `{c['id']}` に着手中（自動実行）．\n\n{c['summary']}"],
+                     "--body", f"## 報告\n候補 `{c['id']}` に着手中（自動実行）．\n\n{c['summary']}\n\n"
+                     + marker(c, target, agent_name)],
                     cwd=REPO).stdout.strip()
         log(f"claimed: {pr_url}")
 
@@ -209,7 +239,7 @@ def main() -> None:
         prompt = PROMPT.format(**{**c, "target": target, "protected": protected, "min_tokens": a.min_tokens,
                                   "base": base, "verify": os.path.join(HERE, "verify.py"),
                                   "concept_file": concept_file})
-        agent_log = run_agent(a.agent, prompt, root, a.minutes, a.model)
+        agent_log = run_agent(a.agent, prompt, root, a.minutes, a.model, a.budget_usd)
         concept = {}
         if os.path.exists(concept_file):
             try:
@@ -239,6 +269,8 @@ def main() -> None:
             sh(["git", "push", "-q"], cwd=REPO)
             sh(["gh", "pr", "close", pr_url, "--comment",
                 f"不採用（{verdict['phase']}: {verdict['reason']}）．判定記録だけ残します．"], cwd=REPO, check=False)
+        if not a.no_pr:
+            release(lease, c["id"], owner)
         sys.exit(1)
 
     # 6. record
@@ -266,14 +298,31 @@ def main() -> None:
     json.dump(json.load(open(after)), open(last, "w"), indent=2)
     uses = 0
     if concept.get("name"):
-        leaf = re.escape(concept["name"].split(".")[-1])
-        out = sh(["git", "grep", "-ow", "-E", leaf, "--", f"CFSG/{target}"], cwd=root, check=False).stdout
-        uses = len(out.splitlines())
+        sys.path.insert(0, HERE)
+        from ledger import count_uses
+        uses = count_uses(after + ".decls.tsv", concept["name"])
     sh([sys.executable, os.path.join(HERE, "ledger.py"), "concept", "--target", target, "--concept", name,
         "--meaning", concept.get("meaning", ""), "--before", before, "--after", after, "--uses", str(uses),
         "--commit", os.path.basename(patch)])
     sh([sys.executable, os.path.join(HERE, "ledger.py"), "history", "--target", target, "--measure", after,
         "--note", f"after {name}"])
+    contributor = a.contributor or (sh(["gh", "api", "user", "--jq", ".login"], cwd=REPO, check=False).stdout.strip()
+                                    if not a.no_pr else "")
+    prnum = re.search(r"/pull/(\d+)", pr_url or "")
+    ctsv = os.path.join(REPO, "data", "ledger", "contributions.tsv")
+    cols = ["date", "pr", "contributor", "agent", "target", "candidate", "tokens_before", "tokens_after",
+            "cleanup_tokens", "lines_saved", "concepts", "reused", "upstream_commit", "head_sha"]
+    newfile = not os.path.exists(ctsv)
+    upstream_commit = dict(l.split("=", 1) for l in open(os.path.join(REPO, "lean", "UPSTREAM")).read().split())["commit"]
+    with open(ctsv, "a", encoding="utf-8") as f:
+        if newfile:
+            f.write("\t".join(cols) + "\n")
+        row = dict(date=datetime.date.today().isoformat(), pr=prnum.group(1) if prnum else "", contributor=contributor,
+                   agent=agent_name, target=f"CFSG/{target}", candidate=c["id"],
+                   tokens_before=verdict["tokens_before"], tokens_after=verdict["tokens_after"], cleanup_tokens=0,
+                   lines_saved=verdict["code_lines_saved"], concepts=f"{name}:{uses}", reused="",
+                   upstream_commit=upstream_commit, head_sha="")
+        f.write("\t".join(str(row[k]) for k in cols) + "\n")
     log(f"accepted: {patch}")
     if pr_url:
         sh(["git", "add", patch, vpath, last, os.path.join(REPO, "data", "ledger")], cwd=REPO)
@@ -281,10 +330,11 @@ def main() -> None:
         sh(["git", "push", "-q"], cwd=REPO)
         body = (f"## 報告\n概念 `{name}` を導入し，{target} が {verdict['tokens_saved']} トークン"
                 f"（{verdict['code_lines_saved']} 行）縮みました．判定は自動（tools/verify.py）．\n\n"
-                f"意味（AIの下書き）：{concept.get('meaning', '')}\n")
+                f"意味（AIの下書き）：{concept.get('meaning', '')}\n\n" + marker(c, target, agent_name) + "\n")
         sh(["gh", "pr", "edit", pr_url, "--body", body], cwd=REPO)
         sh(["gh", "pr", "ready", pr_url], cwd=REPO)
         log(f"ready for the CI recheck: {pr_url}")
+        release(lease, c["id"], owner)
 
 
 if __name__ == "__main__":

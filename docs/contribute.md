@@ -39,8 +39,11 @@ command:
    appends a row to the ledger, and marks the pull request ready; if rejected:
    records the verdict and closes the claim.
 
-Options: `--agent codex`, `--agent "cmd:<your command>"`, `--model <name>`,
+Options: `--agent codex` (or `--provider anthropic|openai`), `--agent "cmd:<your command>"`,
+`--model <name>`, `--budget-usd <n>` (passed to agents that support a cap),
 `--candidate <id>` to choose the candidate, `--no-pr` to do everything locally.
+Claims use `tools/site/claim.py` (a lease stored as a Git ref) when it is
+present, otherwise the draft pull request's title.
 
 ## What counts as a contribution
 
@@ -82,15 +85,35 @@ never used does not inflate the numbers.
 ## Why the result can be trusted
 
 The contributor's machine is not trusted. On every pull request the main
-repository runs `tools/ci_verify.sh <target>`, which
+repository runs, with the scripts of the default branch,
 
-- rejects the pull request if it changes anything other than new patch files,
-  one verdict, one claim and appended ledger rows;
+```bash
+python3 tools/verify_contribution.py --pr-dir <dir> --upstream <path> --pr-json pr.json --changed changed.txt --out verdict.json
+```
+
+where `<dir>` holds only the pull request's `lean/patches/` and `data/ledger/`
+(copied as data). It writes the verdict in the schema
+`concept-mining-verdict/v1` of [scoring.md](scoring.md); points and the merge
+decision are computed from it by `tools/site/scoring.py`. The checker
+
+- rejects the pull request if it changes anything other than new patch files
+  under `lean/patches/<target>/`, one verdict, one claim and appended ledger
+  rows (`concepts.tsv`, `history.tsv`, `contributions.tsv`);
 - rebuilds the base from the pinned upstream commit and the patches already on
   `main` (taken from `main`, not from the pull request);
 - applies the new patch and runs the judge **from `main`** with its own
   protected-statement baseline;
-- checks that the recorded token saving equals the recomputed one.
+- checks that the recorded token numbers equal the recomputed ones.
+
+`tools/ci_verify.sh <target> <work-dir>` runs the same check from a checkout
+of the pull request, for local use.
+
+**Protected declarations** of a target are listed in `data/protected/<target>.txt`:
+the declarations of the target that something outside it uses. For
+FeitThompson that is the odd order theorem alone. The final theorem and the
+milestones of CFSG live outside the target and depend on it only through
+these declarations, so their statements cannot change while these stay
+fixed; checking them directly would need a build of all of CFSG.
 
 Only a pull request that passes is merged automatically. Building the
 FeitThompson target from scratch takes roughly 1.5 hours on a standard 4-core

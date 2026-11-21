@@ -1,0 +1,165 @@
+From 3b646fa558a70386f3e90062492be7c941cece30 Mon Sep 17 00:00:00 2001
+From: concept-mining <concept-mining@users.noreply.github.com>
+Date: Sat, 21 Nov 2026 16:06:28 +0900
+Subject: [PATCH] Concept: Irr
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Irr G is the set of irreducible complex characters of a group G: the functions G → ℂ that are characters of some finite-dimensional irreducible complex representation of G.
+
+Candidate copies-CauchySchwarzProjection-irr, saves 564 tokens.
+---
+ .../ArrayProjectionEnergySaturation.lean      |  7 -------
+ .../CharacterValuesAlgebraicIntegers.lean     |  6 +++---
+ .../ClassFunctionCauchySchwarzProjection.lean | 15 -------------
+ .../FiniteOrderTraceCharacters.lean           | 21 ++++---------------
+ .../IrreducibleDegreeDividesOrder.lean        |  7 -------
+ .../PGroupIrreducibleDegreePower.lean         |  9 --------
+ 6 files changed, 7 insertions(+), 58 deletions(-)
+
+diff --git a/CFSG/FeitThompson/Representations/ArrayProjectionEnergySaturation.lean b/CFSG/FeitThompson/Representations/ArrayProjectionEnergySaturation.lean
+index 958588f97..3e64619db 100644
+--- a/CFSG/FeitThompson/Representations/ArrayProjectionEnergySaturation.lean
++++ b/CFSG/FeitThompson/Representations/ArrayProjectionEnergySaturation.lean
+@@ -15,13 +15,6 @@ namespace CauchySchwarzProjection
+ open ComplexConjugate
+ open scoped ComplexOrder
+ 
+-theorem irr_eq_Irr (G : Type*) [Group G] : irr G = Irr G :=
+-  Set.ext fun _ => mem_irr.trans mem_Irr.symm
+-
+-theorem span_irr_le_virtualChars (G : Type*) [Group G] :
+-    Submodule.span ℤ (irr G) ≤ virtualChars G :=
+-  Submodule.span_le.2 (by rw [irr_eq_Irr]; exact Irr_subset_virtualChars)
+-
+ variable {G : Type*} [Fintype G]
+ 
+ theorem classFunInner_self_ofReal_re (f : G → ℂ) :
+diff --git a/CFSG/FeitThompson/Representations/CharacterValuesAlgebraicIntegers.lean b/CFSG/FeitThompson/Representations/CharacterValuesAlgebraicIntegers.lean
+index 28c01e1b3..48a2609f2 100644
+--- a/CFSG/FeitThompson/Representations/CharacterValuesAlgebraicIntegers.lean
++++ b/CFSG/FeitThompson/Representations/CharacterValuesAlgebraicIntegers.lean
+@@ -32,9 +32,9 @@ theorem FDRep.isIntegral_character [Finite G] (W : FDRep ℂ G) (g : G) :
+     IsIntegral ℤ (W.character g) :=
+   Representation.isIntegral_character W.ρ g
+ 
+-theorem irreducibleCharacters.isIntegral [Finite G] {χ : G → ℂ}
+-    (hχ : χ ∈ irreducibleCharacters G) (g : G) : IsIntegral ℤ (χ g) := by
+-  obtain ⟨W, -, rfl⟩ := mem_irreducibleCharacters_iff.1 hχ
++theorem Irr.isIntegral [Finite G] {χ : G → ℂ}
++    (hχ : χ ∈ Irr G) (g : G) : IsIntegral ℤ (χ g) := by
++  obtain ⟨W, -, rfl⟩ := mem_Irr.1 hχ
+   exact FDRep.isIntegral_character W g
+ 
+ theorem exists_monic_natDegree_pos_character [Finite G] [FiniteDimensional ℂ V]
+diff --git a/CFSG/FeitThompson/Representations/ClassFunctionCauchySchwarzProjection.lean b/CFSG/FeitThompson/Representations/ClassFunctionCauchySchwarzProjection.lean
+index 3e90ac59b..bc5ee4829 100644
+--- a/CFSG/FeitThompson/Representations/ClassFunctionCauchySchwarzProjection.lean
++++ b/CFSG/FeitThompson/Representations/ClassFunctionCauchySchwarzProjection.lean
+@@ -34,21 +34,6 @@ def classFun (G : Type*) [Group G] : Submodule ℂ (G → ℂ) where
+ @[simp] lemma mem_classFun {f : G → ℂ} :
+     f ∈ classFun G ↔ ∀ g x : G, f (x * g * x⁻¹) = f g := Iff.rfl
+ 
+-def irr (G : Type*) [Group G] : Set (G → ℂ) :=
+-  {χ | ∃ V : FDRep ℂ G, Representation.IsIrreducible V.ρ ∧ V.character = χ}
+-
+-lemma mem_irr {χ : G → ℂ} :
+-    χ ∈ irr G ↔ ∃ V : FDRep ℂ G, Representation.IsIrreducible V.ρ ∧ V.character = χ := Iff.rfl
+-
+-lemma character_mem_irr {V : Type} [AddCommGroup V] [Module ℂ V] [Module.Finite ℂ V]
+-    {ρ : Representation ℂ G V} (hρ : Representation.IsIrreducible ρ) : ρ.character ∈ irr G := by
+-  refine ⟨FDRep.of ρ, by rwa [FDRep.of_ρ'], funext fun g => ?_⟩
+-  simp [FDRep.character, Representation.character, FDRep.of_ρ']
+-
+-lemma irr_subset_classFun : irr G ⊆ classFun G := by
+-  rintro χ ⟨V, -, rfl⟩
+-  exact fun g x => V.char_conj g x
+-
+ end ClassFun
+ 
+ section Inner
+diff --git a/CFSG/FeitThompson/Representations/FiniteOrderTraceCharacters.lean b/CFSG/FeitThompson/Representations/FiniteOrderTraceCharacters.lean
+index cc5cca0e7..582041bd7 100644
+--- a/CFSG/FeitThompson/Representations/FiniteOrderTraceCharacters.lean
++++ b/CFSG/FeitThompson/Representations/FiniteOrderTraceCharacters.lean
+@@ -1,5 +1,5 @@
+ module
+-public import Mathlib.RepresentationTheory.Character
++public import CFSG.FeitThompson.Representations.ClassFunctionInnerProductNorms
+ public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+ public import Mathlib.Analysis.Complex.Norm
+ import Mathlib.Analysis.Complex.Polynomial.Basic
+@@ -15,17 +15,10 @@ open Module Polynomial
+ 
+ variable {G : Type*} [Group G] {V : Type*} [AddCommGroup V] [Module ℂ V] {g : G}
+ 
+-def irreducibleCharacters (G : Type*) [Group G] : Set (G → ℂ) :=
+-  {χ | ∃ W : FDRep ℂ G, Representation.IsIrreducible W.ρ ∧ W.character = χ}
+-
+-theorem mem_irreducibleCharacters_iff {χ : G → ℂ} :
+-    χ ∈ irreducibleCharacters G ↔
+-      ∃ W : FDRep ℂ G, Representation.IsIrreducible W.ρ ∧ W.character = χ := Iff.rfl
+-
+-theorem Representation.character_mem_irreducibleCharacters {V : Type} [AddCommGroup V]
++theorem Representation.character_mem_Irr {V : Type} [AddCommGroup V]
+     [Module ℂ V] [Module.Finite ℂ V] (ρ : Representation ℂ G V) (h : ρ.IsIrreducible) :
+-    ρ.character ∈ irreducibleCharacters G := by
+-  refine ⟨FDRep.of ρ, ?_, ?_⟩
++    ρ.character ∈ Irr G := by
++  refine mem_Irr.2 ⟨FDRep.of ρ, ?_, ?_⟩
+   · rw [FDRep.of_ρ']; exact h
+   · funext g; rw [FDRep.character, FDRep.of_ρ']; rfl
+ 
+@@ -37,12 +30,6 @@ theorem Representation.nontrivial_of_isIrreducible (ρ : Representation ℂ G V)
+   · exact absurd (Subsingleton.elim _ _) h1
+   · exact hn
+ 
+-theorem irreducibleCharacters.one_pos {χ : G → ℂ} (hχ : χ ∈ irreducibleCharacters G) :
+-    ∃ n : ℕ, 0 < n ∧ χ 1 = n := by
+-  obtain ⟨W, hW, rfl⟩ := hχ
+-  have : Nontrivial W.V := Representation.nontrivial_of_isIrreducible _ hW
+-  exact ⟨finrank ℂ W.V, finrank_pos, W.char_one⟩
+-
+ variable [FiniteDimensional ℂ V] (ρ : Representation ℂ G V)
+ 
+ omit [FiniteDimensional ℂ V] in
+diff --git a/CFSG/FeitThompson/Representations/IrreducibleDegreeDividesOrder.lean b/CFSG/FeitThompson/Representations/IrreducibleDegreeDividesOrder.lean
+index 6723a323f..38cf20f72 100644
+--- a/CFSG/FeitThompson/Representations/IrreducibleDegreeDividesOrder.lean
++++ b/CFSG/FeitThompson/Representations/IrreducibleDegreeDividesOrder.lean
+@@ -62,13 +62,6 @@ theorem Irr.exists_degree {G : Type*} [Group G] [Finite G] {χ : G → ℂ} (hχ
+   have := hW
+   exact ⟨finrank ℂ W.V, Representation.character_one_eq_natCast_and_dvd W.ρ⟩
+ 
+-theorem irreducibleCharacters.exists_degree {G : Type*} [Group G] [Finite G] {χ : G → ℂ}
+-    (hχ : χ ∈ irreducibleCharacters G) :
+-    ∃ n : ℕ, 0 < n ∧ χ 1 = (n : ℂ) ∧ n ∣ Nat.card G := by
+-  obtain ⟨W, hW, rfl⟩ := mem_irreducibleCharacters_iff.1 hχ
+-  have := hW
+-  exact ⟨finrank ℂ W.V, Representation.character_one_eq_natCast_and_dvd W.ρ⟩
+-
+ theorem Irr.character_one_dvd_card_int {G : Type*} [Group G] [Finite G] {χ : G → ℂ}
+     (hχ : χ ∈ Irr G) : ∃ n : ℤ, χ 1 = (n : ℂ) ∧ n ∣ (Nat.card G : ℤ) := by
+   obtain ⟨n, -, hn, hdvd⟩ := Irr.exists_degree hχ
+diff --git a/CFSG/FeitThompson/Representations/PGroupIrreducibleDegreePower.lean b/CFSG/FeitThompson/Representations/PGroupIrreducibleDegreePower.lean
+index b7355b8d5..d30f0adf3 100644
+--- a/CFSG/FeitThompson/Representations/PGroupIrreducibleDegreePower.lean
++++ b/CFSG/FeitThompson/Representations/PGroupIrreducibleDegreePower.lean
+@@ -46,13 +46,4 @@ theorem Irr.exists_one_eq_pow_of_card_eq_prime_pow {p a : ℕ} (hp : p.Prime) {P
+   obtain ⟨b, hb, rfl⟩ := (Nat.dvd_prime_pow hp).1 hdvd
+   exact ⟨b, hb, by rw [hχ1]; push_cast; ring⟩
+ 
+-theorem irreducibleCharacters.exists_one_eq_pow_of_card_eq_prime_pow {p a : ℕ} (hp : p.Prime)
+-    {P : Type*} [Group P] (hcard : Nat.card P = p ^ a) {χ : P → ℂ}
+-    (hχ : χ ∈ irreducibleCharacters P) : ∃ b ≤ a, χ 1 = (p : ℂ) ^ b := by
+-  have : Finite P := Nat.finite_of_card_ne_zero (by rw [hcard]; exact pow_ne_zero _ hp.pos.ne')
+-  obtain ⟨n, -, hχ1, hdvd⟩ := irreducibleCharacters.exists_degree hχ
+-  rw [hcard] at hdvd
+-  obtain ⟨b, hb, rfl⟩ := (Nat.dvd_prime_pow hp).1 hdvd
+-  exact ⟨b, hb, by rw [hχ1]; push_cast; ring⟩
+-
+ end CFSG.FeitThompson
+-- 
+2.54.0 (Apple Git-157)
+

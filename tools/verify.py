@@ -48,7 +48,10 @@ FORBIDDEN = re.compile(
     r"\bextern\b|debug\.skipKernelTC|Lean\.ofReduceBool|trustCompiler|^\s*@\[csimp\]|"
     # metaprogramming runs code while compiling; a refactor has no need for it
     r"#eval|#exit|\brun_cmd\b|\brun_tac\b|\b(?:builtin_)?initialize\b|^\s*(?:elab|macro|syntax|macro_rules|elab_rules)\b|"
-    r"declare_syntax_cat|\bIO\.|\bunsafeCast\b|@\[(?:command_)?elab", re.M)
+    r"declare_syntax_cat|\bIO\.|\bunsafeCast\b|@\[(?:command_)?elab|^\s*(?:local\s+|scoped\s+)?(?:notation|infix[lr]?|prefix|postfix)\b|"
+    # raising resource limits hides slow or looping proofs
+    r"set_option\s+(?:maxHeartbeats|maxRecDepth|synthInstance\.maxHeartbeats|synthInstance\.maxSize|"
+    r"maxSynthPendingDepth|exponentiation\.threshold)\b", re.M)
 IMPORT = re.compile(r"^\s*(?:public\s+)?(?:meta\s+)?import\s+(?:all\s+)?(\S+)", re.M)
 
 
@@ -137,7 +140,10 @@ def main() -> None:
     pilot = os.path.join(REPO, "data", "pilot", a.target)
     v = {"target": a.target, "base": git(root, "rev-parse", a.base).strip(),
          "head": git(root, "rev-parse", a.head).strip() if a.head else "worktree",
-         "verdict": "error", "phase": None, "reason": ""}
+         "verdict": "error", "phase": None, "reason": "",
+         # check names shared with docs/scoring.md; None = not reached
+         "checks": {"paths_allowed": None, "no_shortcuts": None, "build": None,
+                    "protected_unchanged": None, "axioms_unchanged": None}}
     code = 75
     try:
         # scope
@@ -148,22 +154,37 @@ def main() -> None:
             raise Reject("no change")
         outside = [f for f in files if not (f.startswith(folder + "/") and f.endswith(".lean"))]
         if outside:
+            v["checks"]["paths_allowed"] = False
             raise Reject("changes outside the target: " + ", ".join(outside[:5]))
         for f in files:
             s = read_head(root, a.head, f) or ""
             before = set(IMPORT.findall(read_base(root, a.base, f)))
             for imp in set(IMPORT.findall(s)) - before:
                 if not (imp.startswith("Mathlib") or imp == f"CFSG.{a.target}" or imp.startswith(f"CFSG.{a.target}.")):
+                    v["checks"]["paths_allowed"] = False
                     raise Reject(f"{f} imports {imp}, outside Mathlib and CFSG.{a.target}")
+        v["checks"]["paths_allowed"] = True
         # guards: only lines that the change adds
         v["phase"] = "guards"
+        # file headers such as `set_option maxSynthPendingDepth 3` are the
+        # project's convention, not a shortcut: allow options already used in
+        # at least 100 files of the target at base
+        hdr = git(root, "grep", "-h", "-E", r"^set_option ", a.base, "--", folder)
+        common = {l.split(":", 1)[-1].strip() for l in hdr.splitlines()}
+        counts = {}
+        for l in hdr.splitlines():
+            k = l.split(":", 1)[-1].strip()
+            counts[k] = counts.get(k, 0) + 1
+        common = {k for k, n in counts.items() if n >= 100}
         for f in files:
             new = read_head(root, a.head, f) or ""
-            old = set(read_base(root, a.base, f).splitlines())
+            old = set(read_base(root, a.base, f).splitlines()) | common
             added = "\n".join(l for l in new.splitlines() if l not in old)
             m = FORBIDDEN.search(added)
             if m:
+                v["checks"]["no_shortcuts"] = False
                 raise Reject(f"{f} adds forbidden construct: {m.group(0).strip()}")
+        v["checks"]["no_shortcuts"] = True
         # size
         v["phase"] = "size"
         b = tree_size(root, a.base, folder)
@@ -188,17 +209,28 @@ def main() -> None:
         if r.returncode != 0:
             errs = [l for l in (r.stdout + r.stderr).splitlines() if "error:" in l]
             v["log_tail"] = "\n".join(errs[:20])[-3000:]
+            v["checks"]["build"] = False
             raise Reject("build failed")
+        v["checks"]["build"] = True
         # protected
         v["phase"] = "protected"
-        prot = [l.strip() for l in open(os.path.join(pilot, "protected.txt")) if l.strip()]
+        plist = os.path.join(REPO, "data", "protected", f"{a.target}.txt")
+        prot = [l.strip() for l in open(plist if os.path.exists(plist) else os.path.join(pilot, "protected.txt")) if l.strip()]
         imports = [l.strip() for l in open(os.path.join(pilot, "protected_imports.txt")) if l.strip()]
         baseline = open(os.path.join(pilot, "protected_baseline.txt"), encoding="utf-8").read()
         rc, out = probe(root, prot, imports)
         if rc != 0:
+            v["checks"]["protected_unchanged"] = False
             raise Reject("protected declarations do not elaborate")
-        if out != baseline:
-            raise Reject("protected statement or axioms changed")
+        is_ax = lambda l: "depends on axioms" in l or "does not depend on any axioms" in l
+        split = lambda t: ([l for l in t.splitlines() if not is_ax(l)], [l for l in t.splitlines() if is_ax(l)])
+        (st_new, ax_new), (st_old, ax_old) = split(out), split(baseline)
+        v["checks"]["protected_unchanged"] = st_new == st_old
+        v["checks"]["axioms_unchanged"] = ax_new == ax_old
+        if not v["checks"]["protected_unchanged"]:
+            raise Reject("protected statement changed")
+        if not v["checks"]["axioms_unchanged"]:
+            raise Reject("axioms of a protected declaration changed")
         axioms = set(re.findall(r"\b(propext|Classical\.choice|Quot\.sound|[\w.]+)\b",
                                 " ".join(re.findall(r"depends on axioms: \[([^\]]*)\]", out))))
         if not axioms <= PERMITTED_AXIOMS:

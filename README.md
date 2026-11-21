@@ -30,8 +30,10 @@ abstractions.
 - The score of a refactoring is how much it shrinks the library.
 - A concept is ranked by the shrinkage it buys, not by how familiar it is.
 
-The exact size measure (source lines, tokens, or size of the elaborated proof
-terms) is an open design question. See [Open questions](#open-questions).
+Size is counted in Lean tokens outside comments, so that joining lines or
+shortening names earns nothing ([Contribute](docs/contribute.md)). How to
+credit abstractions that pay off only after they spread is discussed in
+[Two-layer search](docs/two-layer-search.md).
 
 ## Roadmap
 
@@ -42,7 +44,9 @@ terms) is an open design question. See [Open questions](#open-questions).
 | 3. Pilot | Refactor one small, self-contained part and measure the shrinkage | laptop / one server |
 | 4. Scale | Apply the abstractions that worked across the library | shared build cache |
 
-Status: **stage 1 done**. The dependency graph of all 2.2 million
+Status: **stage 1 done; stage 3 pilot running on Feit–Thompson**, with
+concepts introduced by an unattended loop and judged by Lean
+([Pilot: Feit–Thompson](docs/pilot-feit-thompson.md)). The dependency graph of all 2.2 million
 declarations has been extracted without a build; see
 [Stage 1: Map](docs/stage1-map.md) for the layout of the formalization, the
 most used declarations, and candidate ranges for stages 2 and 3, and
@@ -53,8 +57,9 @@ a laptop and how refactorings will be tried with several model providers.
 
 - **Mathematicians.** Look at a candidate from stage 2 and say what the common
   idea is called, or should be called. No Lean needed.
-- **Lean users.** Pick a candidate, carry out the refactoring on a branch, and
-  open a pull request. CI reports the change in size.
+- **Anyone with an AI agent.** One command picks an open candidate, lets
+  your agent (Claude Code, Codex, or any other) introduce the concept, judges
+  it with Lean and opens a pull request; see [Contribute](docs/contribute.md).
 - **Compute.** A full build takes about a day on a strong Linux machine. We
   want a shared build cache so that contributors rebuild only what they touch.
   If you can host builds or cache storage, please open an issue.
