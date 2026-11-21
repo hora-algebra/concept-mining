@@ -1,0 +1,22 @@
+{
+ "allowed_meta": [],
+ "closure_prefixes": [
+  "CFSG"
+ ],
+ "lean_version": "4.35.0",
+ "printer": "closure-v1 (tools/gate/CheckEnv.lean)",
+ "protected": {
+  "CFSG.FeitThompson.isSolvable_of_odd_natCard": {
+   "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "closure": "closure-v1\ntheorem CFSG.FeitThompson.isSolvable_of_odd_natCard u1 : (pi d (sort (s u0)) (pi c (@ (const Group [u0]) #0) (pi c (@ (const Finite [(s u0)]) #1) (pi d (@ (@ (@ (const Odd [0]) (const Nat [])) (const Nat.instSemiring [])) (@ (const Nat.card [u0]) #2)) (@ (@ (const Group.IsSolvable [u0]) #3) #2)))))\n",
+   "closure_sha256": "c3d5a05e3008627ead416918f2ca768c20b1c0e960d69b5c7fe87f2fa94e315d",
+   "kind": "theorem"
+  }
+ },
+ "schema": "concept-mining-protected/v1",
+ "target": "FeitThompson"
+}

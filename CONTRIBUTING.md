@@ -19,32 +19,36 @@ and which candidates are free.
 
 ## Contribute in one click
 
-The agent does the whole loop: **find** a free candidate, **claim** it so no
-one else works on it, **rewrite** the Lean sources, **check** with Lean that
-every protected theorem and its axioms are unchanged, **record** the numbers,
-and **open a pull request**. This repository's CI then checks everything again
-on its own and, if the change is correct and saves tokens, merges it.
+The agent does the whole loop: **find** a free candidate, **rewrite** the Lean
+sources, **check** with Lean that every protected theorem and its axioms are
+unchanged, and **open a pull request** that adds one patch file. This
+repository's gate then checks everything again on its own, has an AI review
+the value of the change, comments with the result and, if it is accepted,
+merges it. You never need to read Lean.
 
 ### Option A: in your fork, no installation
 
 1. Fork [hora-algebra/concept-mining](https://github.com/hora-algebra/concept-mining).
-2. In your fork, open *Settings → Secrets and variables → Actions* and add
-   `ANTHROPIC_API_KEY` (to use the Claude Code agent) or `OPENAI_API_KEY`
-   (to use the Codex CLI agent). Optionally add `PR_TOKEN`, a
-   fine-grained token that may open pull requests for you; without it the run
-   ends with a link that opens the pull request in one click.
-3. Open the *Actions* tab of your fork, choose **Contribute**, press
-   **Run workflow**. Leave `candidate` empty to take the best free one, and
-   set `budget_usd`, the most the run may spend on the model.
+2. In your fork, open the *Actions* tab and press the button that enables
+   workflows (GitHub keeps them off in new forks).
+3. In *Settings → Secrets and variables → Actions*, add `ANTHROPIC_API_KEY`
+   (to use the Claude Code agent) or `OPENAI_API_KEY` (to use the Codex CLI
+   agent). Optionally add `PR_TOKEN`, a classic token with the `public_repo`
+   scope, to open the pull request for you; without it the run ends with a
+   link that opens the pull request in one click.
+4. In *Actions*, choose **Contribute** and press **Run workflow**. Leave
+   `candidate` empty to take the best free one, and set `budget_usd`, the most
+   the run may spend on the model.
 
-The run takes up to a few hours on GitHub's free runners (building a part such
-as `FeitThompson` from scratch is the slow step).
+The run checks your key in its first minute, then takes up to a few hours on
+GitHub's free runners (building a part such as `FeitThompson` from scratch is
+the slow step). It offers a pull request only when its own check passed.
 
 ### Option B: one command on your machine
 
 You need `git`, `python3`, [elan](https://github.com/leanprover/elan), the
-GitHub CLI `gh` (logged in), about 20 GB of disk, and one agent: the Claude
-Code CLI (`claude`) or the Codex CLI (`codex`).
+GitHub CLI `gh` (logged in), about 20 GB of free disk, and one agent: the
+Claude Code CLI (`claude`) or the Codex CLI (`codex`).
 
 ```bash
 git clone https://github.com/hora-algebra/concept-mining && cd concept-mining
@@ -53,33 +57,34 @@ python3 tools/contribute.py --target FeitThompson --root ~/cfsg-work --agent cla
 
 The first run downloads the pinned upstream version and builds the target
 (`FeitThompson`: about 10 minutes on a recent laptop); later runs reuse the
-build. Details and options: [docs/contribute.md](docs/contribute.md).
-
-`tools/contribute.py` and the checker `tools/verify_contribution.py` arrive
-in a separate pull request; until it is merged, both options stop with a
-message saying so.
+build. Without write access to this repository, the command uses your fork
+(it creates one if needed). Details and options: [docs/contribute.md](docs/contribute.md).
 
 ### What happens to your pull request
 
-| Step | Who | Result |
-|---|---|---|
-| Verify | this repository's CI, without secrets | applies the patch to a clean upstream checkout, builds, measures tokens, writes a verdict |
-| Score | [`tools/site/scoring.py`](tools/site/scoring.py) | points by the formula in [docs/scoring.md](docs/scoring.md) |
-| Verdict | CI | one comment: *Accepted, N points*, or the list of failed checks to fix |
-| Merge | CI | automatic when accepted with positive points (once enabled by the maintainers) |
+The gate ([docs/gate.md](docs/gate.md)) checks, in order: that the pull
+request adds one patch file and nothing else; that the patch applies on the
+current main and touches only Lean files of its target; that it adds no
+compile-time code and no shortcuts; that it saves at least 50 Lean tokens;
+that the target builds; that the protected statements and their axioms are
+unchanged on the built environment; and, by an AI review, that new
+definitions are natural notions of group theory, nothing duplicates Mathlib,
+and proofs stay readable. Then it posts one comment, *Accepted, N points* or
+what to fix, and merges accepted contributions by itself.
 
-A rejected pull request is not a failure of yours: the comment says which
-check failed, and your agent can push a fix to the same branch.
+A pull request that is not accepted is not a failure of yours: the comment
+says what to change, and your agent can push a fix to the same branch.
 
 ### Rules your agent must follow
 
+- Add exactly one file, `lean/patches/<target>/<NNNN>-<candidate>.patch`, and
+  change nothing else. The gate writes the ledger, the points and the labels.
 - Keep every **protected** declaration unchanged: the declarations of the
-  target through which the rest of the library, and so the final theorem,
-  uses it (`data/protected/<target>.txt`).
-- No `sorry`, `admit`, `native_decide`, new `axiom`, or limit-raising `set_option`.
-- Change only your patch under `lean/patches/<target>/`, your own ledger rows.
-  The page data (`docs/site/data/site.json`) is generated when the page is
-  published; do not commit it.
+  target through which the rest of CFSG, and so the final theorem, uses it
+  (`data/protected/<target>.txt`).
+- No `sorry`, `admit`, `native_decide`, new `axiom`, metaprogramming or
+  `set_option`. New imports may come from Mathlib and from CFSG, including
+  other parts of CFSG; files outside the target may not change.
 - Put the target marker in the pull request body, so the page and other
   agents can see what you are working on:
   `<!--concept-mining-target:v1 {"candidate":"C02","target":"CFSG/FeitThompson","agent":"<model>"}-->`
@@ -89,16 +94,11 @@ lines, deleting comments or shortening names earns nothing.
 
 ### Claims
 
-Before working on a candidate, the agent takes a claim (a lease of a few
-hours, renewed while it works):
-
-```bash
-python3 tools/site/claim.py acquire copies-hallCoreIn --owner "$(hostname)-$(uuidgen)" --login <you> --agent <model> --ttl 3h
-python3 tools/site/claim.py list
-```
-
-If someone else holds a live claim, pick another candidate. Claims are only
-there to avoid wasted work; the CI checks do not depend on them.
+An open pull request is the claim on its candidate: the agent skips
+candidates that already have one, and opens its pull request as a draft
+while it works. A draft that sees no change for 14 days is closed and the
+candidate is free again. Claims only avoid wasted work; the gate's checks do
+not depend on them.
 
 ## Optional: name a concept
 

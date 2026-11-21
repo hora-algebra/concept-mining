@@ -4,12 +4,14 @@ Every contribution to concept-mining is a change to the Lean sources of
 [AxiomMath/CFSG](https://github.com/AxiomMath/CFSG) that makes them shorter
 while proving the same theorems. A contribution is **accepted** only when a
 machine can check that it is correct and that it really saved something, and
-its **points** are computed by a fixed formula from numbers the machine
-measured. No judgment by a person or a model changes the points.
+an AI review finds it worth having; its **points** are computed by a fixed
+formula from numbers the machine measured. No judgment by a person or a model
+changes the points.
 
 This page is the rule book. The same text, shortened, is on the progress page.
-Its version is `scoring/v1`; any change to the formula or the columns below
-bumps the version and is announced in the pull request that changes it.
+Its version is `scoring/v2`; any change to the formula, the checks or the
+columns below bumps the version and is announced in the pull request that
+changes it.
 
 ## In one paragraph
 
@@ -43,44 +45,36 @@ progress page because they are easier to picture, but they do not earn points.
 ## When a contribution is accepted
 
 A contribution is accepted, and merged automatically, only if **all** of the
-following hold. Each failed check is reported back with its name, so the
-contributor (or their agent) knows exactly what to fix.
+following hold. The checks run in this order on the repository's own gate
+([docs/gate.md](gate.md)), independently of anything the contributor ran;
+each failed check is reported back with its name, so the contributor (or
+their agent) knows exactly what to fix.
 
 | Check | What is verified | Name in the verdict |
 |---|---|---|
-| Builds | the target and every module that imports a changed file build with `lake build` | `build` |
-| Same theorems | for every **protected** declaration, `#check @name` prints exactly what it printed before | `protected_unchanged` |
-| Same axioms | `#print axioms` on every protected declaration prints exactly what it printed before | `axioms_unchanged` |
-| No shortcuts | no `sorry`, `admit`, `native_decide`, new `axiom`, or `set_option` that raises limits in changed files | `no_shortcuts` |
-| No code at compile time | the patch adds no `#eval`, `run_cmd`, `initialize`, new macros, syntax or elaborators, `unsafe` or IO code, and no new package imports (checked before building) | `no_metaprogramming` |
-| Allowed paths | the pull request changes only the upstream patch and its own ledger rows | `paths_allowed` |
-| Numbers match | the numbers in the ledger rows equal the numbers the checker measured itself | `ledger_matches` |
+| Allowed paths | the pull request adds one patch file and nothing else; the patch touches only Lean files of its target | `paths_allowed` |
+| Applies | main's patches for the target, with the new one inserted in file-name order, apply to the pinned upstream | `applies` |
+| No code at compile time | no new `#eval`, `run_cmd`, `initialize`, macros, syntax, elaborators, printing attributes, `unsafe`, `Lean.*` or IO code (checked before building) | `no_metaprogramming` |
+| No shortcuts | no new `sorry`, `admit`, `native_decide`, `axiom`, `implemented_by` or `set_option`; new imports only from Mathlib and CFSG | `no_shortcuts` |
+| Saves tokens | the target shrinks by at least 50 tokens | `saves_tokens` |
+| Builds | the target builds with `lake build` | `build` |
+| Same theorems | every **protected** declaration has, on the built environment, structurally the same statement, and every CFSG definition that statement mentions is unchanged | `protected_unchanged` |
+| Same axioms | the axioms of every protected declaration are unchanged and among `propext`, `Classical.choice`, `Quot.sound` | `axioms_unchanged` |
+| Worth having | an AI review finds that new definitions and lemmas are natural notions of group theory (not bundles packed only to save tokens), that nothing duplicates Mathlib, and that proofs stay readable | `value_review` |
 | Positive score | the points below are greater than zero | `positive_score` |
 
-**Protected declarations** are the declarations of the target through which
-the rest of the library uses it, listed in `data/protected/<target>.txt`. The
-final theorem `CFSG.classification_finite_simple_groups` and the statements
-under `CFSG.Milestones` depend on the target only through these, so keeping
-their statements and axioms unchanged keeps the final theorem unchanged
-without rebuilding the whole library. For `FeitThompson` the list is the
-single theorem `isSolvable_of_odd_natCard`.
+**Protected declarations** are the declarations of the target that the rest
+of the library needs for the final theorem or for one of the statements under
+`CFSG.Milestones`, listed in `data/protected/<target>.txt`. The final theorem
+`CFSG.classification_finite_simple_groups` and the statements under
+`CFSG.Milestones` depend on the target only through these, so keeping their
+statements and axioms unchanged keeps the final theorem unchanged without
+rebuilding the whole library. For `FeitThompson` the list is the single
+theorem `isSolvable_of_odd_natCard`.
 
-The check runs **on the repository's own CI, independently** of anything the
-contributor ran: it applies the patch to a clean checkout of the pinned
-upstream commit, builds, measures, and computes the points. A contributor's
-own measurements are only compared against it.
-
-Two details make the automatic merge safe:
-
-- The deciding run always uses the workflow and scripts of the default
-  branch, never those of the pull request, and takes from the pull request
-  only its patch files and ledger rows, as data. (A first run with the pull
-  request's own files gives quick feedback but cannot merge anything.)
-- Lean can execute code while compiling. Since such code could tamper with
-  the verdict, patches that add it are refused before anything is built
-  (`no_metaprogramming`). Rewriting proofs and definitions never needs it.
-  The build itself runs with a read-only token; the separate step that
-  comments and merges runs no pull request content.
+The AI review decides acceptance only; it never changes the points. It
+blocks only with a concrete reason, and gives advice on robustness, naming
+and documentation that does not block.
 
 ## The formula
 
@@ -127,42 +121,17 @@ the page, but points go to the account. Naming a concept or writing its
 mathematical meaning is welcome and credited by name on the page; it does not
 earn points, since it cannot be measured mechanically.
 
-## Optional model review
-
-A Lean check cannot tell whether a concept's name and one-sentence meaning
-make mathematical sense, or whether a shrink is a genuine abstraction rather
-than packing many facts into one opaque lemma. As an **advisory** second
-opinion, CI can ask language models to review each accepted contribution:
-
-- input: the diff, the new concepts with their statements, the proposed name
-  and meaning;
-- output: a short JSON verdict (`name_ok`, `meaning_ok`, `genuine_abstraction`,
-  each with one sentence of reason), posted as a comment and shown on the page
-  next to the concept;
-- it never changes points and never blocks a merge; a negative review adds the
-  label `review-flagged` so that a person can look.
-
-Two reviewers from different providers are used so that no single model
-decides. Estimated cost per contribution, at the list prices in
-[`tools/trials/pricing.json`](../tools/trials/pricing.json) (checked
-2026-11-21), assuming 30 k input tokens and 2 k output tokens per reviewer:
-
-| Reviewer pair | Per contribution | 100 contributions |
-|---|---|---|
-| Claude Haiku 5.5 + GPT-6 Luna | about 0.008 USD | about 0.80 USD |
-| Claude Sonnet 5.5 + GPT-6.2 Sol | about 0.16 USD | about 16 USD |
-| Claude Opus 5.5 + GPT-6.2 Astra | about 0.48 USD | about 48 USD |
-
-Large diffs (200 k input tokens) cost about 6 times more; batch pricing halves
-all figures. The review is off until the maintainers enable it and set a
-monthly budget.
-
 ## Columns (for tool authors)
 
-The checker writes one verdict file per pull request and, on acceptance, one
-row of `data/ledger/contributions.tsv`. Points are never stored: they are
-recomputed from these columns by [`tools/site/scoring.py`](../tools/site/scoring.py),
-so the formula lives in one place.
+Contributors never write ledger rows. The gate ends its comment on every
+pull request with a record of what it measured, and the progress page
+rebuilds one row of `contributions.tsv` per merged pull request whose record
+says *accepted* for the merged commit (`tools/site/gate_ledger.py`; only
+comments by the Actions bot count). The rows already in
+`data/ledger/contributions.tsv` are from before the gate. Points are never
+stored: they are recomputed from these columns by
+[`tools/site/scoring.py`](../tools/site/scoring.py), so the formula lives in
+one place.
 
 **`data/ledger/contributions.tsv`** (tab-separated, one row per accepted pull request)
 
@@ -185,52 +154,27 @@ so the formula lives in one place.
 
 `tokens_saved = tokens_before − tokens_after − cleanup_tokens`.
 
-**Verdict file** (`verdict.json`, uploaded by the verify job as an artifact)
-
-```json
-{
-  "schema": "concept-mining-verdict/v1",
-  "pr": 12, "head_sha": "…", "upstream_commit": "…",
-  "contributor": "octocat", "agent": "anthropic/claude-sonnet-5-5",
-  "target": "CFSG/FeitThompson", "candidate": "C02",
-  "checks": {"build": true, "protected_unchanged": true, "axioms_unchanged": true,
-             "no_shortcuts": true, "paths_allowed": true, "ledger_matches": true},
-  "tokens_before": 0, "tokens_after": 0, "cleanup_tokens": 0, "lines_saved": 0,
-  "concepts": [{"name": "…", "uses": 0, "meaning": "…"}],
-  "reused": [{"name": "…", "count": 0}],
-  "reasons": ["human-readable reason for each failed check"]
-}
-```
-
-`positive_score` is added by `scoring.py`, which reads the verdict, computes
-the points and decides acceptance. The checker is called as
-
-```bash
-python3 tools/verify_contribution.py --pr-dir <dir with patches/ and data/ledger/ of the PR> \
-    --upstream <where to put the upstream checkout> --pr-json pr.json --changed changed.txt --out verdict.json
-```
-
-where `pr.json` holds `pr`, `head_sha` and `contributor` (these trusted values
-override anything the checker writes) and `changed.txt` lists the paths the
-pull request changes. Patches live in `lean/patches/<target>/NNNN-<candidate>.patch`
-(made by `git format-patch`) and are applied in order on top of the upstream
+Patches live in `lean/patches/<target>/NNNN-<candidate>.patch` (made by
+`git format-patch`) and are applied in file-name order on top of the upstream
 commit pinned in `lean/UPSTREAM` (`tools/apply_patches.sh`). Candidate ids
 come from `data/pilot/<target>/candidates.jsonl` (for example
 `copies-hallCoreIn`, `bundle-dd790378`); the ten drafts in
 [first-issues.md](first-issues.md) use ids `C01`–`C10`. In the ledger,
 `concepts.tsv`'s `commit` column may hold either a git hash or the patch file
-name.
+name. The gate's tools and the record it writes are described in
+[docs/gate.md](gate.md) and `tools/gate/`.
 
-Not measured yet by the checker: `cleanup_tokens` (always 0, so dead-code
-deletion currently counts at the full rate) and `reused` (always empty, so no
-reuse points are awarded yet). The formula already handles both.
+`cleanup_tokens` is measured on the built environment before the change:
+the tokens of the declarations the patch deletes that no protected
+declaration needs, directly or indirectly. `reused` is not measured yet
+(always empty, so no reuse points are awarded yet); the formula already
+handles it.
 
 ## Claims
 
-To avoid two agents working on the same candidate, a contributor may claim it
-first. A claim is a lease with an expiry time, stored as a Git ref
-`refs/claims/<candidate>` and created or renewed atomically
-(`git push --force-with-lease`), so exactly one claimant wins. Claims are
-optional and only prevent duplicated work; an expired claim is free to take.
-`tools/site/claim.py` implements acquire, renew, release and list; the
-progress page shows current claims with who holds them and which agent.
+To avoid two agents working on the same candidate, an open pull request
+(usually a draft, opened when the agent starts) is the claim on its
+candidate; agents skip candidates that have one. A draft without changes for
+14 days is closed and the candidate is free again. Claims only prevent
+duplicated work. Maintainers can also take a lease with
+`tools/site/claim.py`; the progress page shows both.

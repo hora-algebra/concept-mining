@@ -1,0 +1,189 @@
+name: Contribution gate
+
+# Checks every pull request against main and merges accepted contributions.
+# How it works and why it is safe: docs/gate.md.
+#
+# pull_request_target runs THIS file and the scripts of the default branch,
+# never the pull request's. The pull request's patch is read as data through
+# the API; its Lean only ever runs in the `build` job, which has no token and
+# runs Lean inside a bubblewrap sandbox. Jobs with write access run no pull
+# request content.
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: pull request number to check again
+        required: true
+
+permissions: {}
+
+concurrency:
+  group: gate-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+jobs:
+  shape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    outputs:
+      kind: ${{ steps.s.outputs.kind }}
+      target: ${{ steps.s.outputs.target }}
+      patch_name: ${{ steps.s.outputs.patch_name }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - id: s
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+        run: |
+          set -eu
+          case "$PR" in ''|*[!0-9]*) echo "not a pull request number"; exit 1 ;; esac
+          python3 tools/gate/shape.py --repo "$REPO" --pr "$PR" --out out
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, re
+          s = json.load(open("out/shape.json"))
+          for k in ("kind", "target", "patch_name"):
+              v = s.get(k) or ""
+              assert re.fullmatch(r"[A-Za-z0-9_./-]*", v), k
+              print(f"{k}={v}")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: shape
+          path: out/
+          retention-days: 30
+
+  build:
+    needs: shape
+    if: needs.shape.outputs.kind == 'contribution'
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions: {}
+    outputs:
+      mechanical_ok: ${{ steps.b.outputs.mechanical_ok }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: shape
+          path: out
+      - name: Prepare the runner (disk, sandbox, pinned elan)
+        run: sh tools/gate/setup_runner.sh
+      - id: b
+        name: Apply, measure, build in the sandbox, inspect
+        env:
+          TARGET: ${{ needs.shape.outputs.target }}
+          PATCH_NAME: ${{ needs.shape.outputs.patch_name }}
+        run: |
+          set +e
+          python3 tools/gate/build_check.py --target "$TARGET" --patch out/new.patch \
+            --patch-name "$PATCH_NAME" --upstream "$RUNNER_TEMP/cfsg" --out out --replay
+          echo "exit $?"
+          python3 -c "import json; f=json.load(open('out/facts.json')); print('mechanical_ok=' + str(all(v is True for v in f['checks'].values()) and not f['setup_error']).lower())" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: facts
+          path: |
+            out/facts.json
+            out/lean.diff
+            out/*.log
+          retention-days: 30
+
+  review:
+    needs: [shape, build]
+    if: needs.build.outputs.mechanical_ok == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    # one review at a time, so two cannot both read the day's spend before
+    # either records it; a review cancelled while queued is retried by the sweep
+    concurrency:
+      group: gate-review
+      cancel-in-progress: false
+    permissions:
+      contents: write   # appends to the review-spend record on the ci-state branch
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: shape
+          path: out
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: facts
+          path: out
+      - name: AI review (three blocking points, one advisory), within the daily budget
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DAILY_CAP_USD: ${{ vars.REVIEW_DAILY_CAP_USD || '10' }}
+        run: python3 tools/gate/review_step.py --out out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: review
+          path: out/review.json
+          retention-days: 90
+
+  act:
+    needs: [shape, build, review]
+    if: always() && needs.shape.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: gate-merge
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      statuses: write
+      actions: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: shape
+          path: out
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        continue-on-error: true
+        with:
+          name: facts
+          path: out
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        continue-on-error: true
+        with:
+          name: review
+          path: out
+      - name: Decide, report, merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          AUTO_MERGE: ${{ vars.AUTO_MERGE_ENABLED }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 tools/gate/decide.py --shape out/shape.json --facts out/facts.json \
+            --review out/review.json --out out/decision.json
+          python3 tools/gate/act.py --shape out/shape.json --decision out/decision.json --review out/review.json

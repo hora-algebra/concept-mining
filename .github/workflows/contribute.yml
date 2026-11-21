@@ -1,83 +1,204 @@
 name: Contribute
 
 # The "Contribute" button. Run it from the Actions tab of YOUR FORK
-# (Actions -> Contribute -> Run workflow). It runs tools/contribute.py: pick a
-# free candidate, claim it, let an AI agent (Claude Code or Codex CLI) rewrite
-# it, judge the result with Lean, and record it. With the secret PR_TOKEN it
-# also opens the pull request on hora-algebra/concept-mining; without it, the
-# result is pushed to a branch of your fork and the run summary links to it.
+# (Actions -> Contribute -> Run workflow); docs/contribute.md explains each step.
+# It runs tools/contribute.py from hora-algebra/concept-mining main, so a fork
+# that is behind main still uses the current tools and data.
 #
-# Secrets in your fork: ANTHROPIC_API_KEY (agent "claude") or OPENAI_API_KEY
-# (agent "codex"); the provider bills you per use, capped by budget_usd.
-# Optional PR_TOKEN: a fine-grained token that may open pull requests for you.
+# Secrets of your fork: ANTHROPIC_API_KEY (agent claude) or OPENAI_API_KEY
+# (agent codex). Optional PR_TOKEN, a classic token with the public_repo scope:
+# the pull request is then opened for you. Without it, an accepted result is
+# pushed to a branch of your fork and the summary has a link that opens the
+# pull request.
+#
+# Two jobs on two machines: "work" runs the agent and Lean and holds no token
+# that can write anything; "hand-in" runs no agent and no Lean, and pushes the
+# accepted patch and opens the pull request. So whatever the agent does, it
+# never sees PR_TOKEN or a token that can push.
 
 on:
   workflow_dispatch:
     inputs:
-      target:
-        description: "Part of the library to work on"
-        default: FeitThompson
-      candidate:
-        description: "Candidate id from data/pilot/<target>/candidates.jsonl, or empty for the best free one"
-        default: ""
       agent:
         description: "AI agent"
         type: choice
         options: [claude, codex]
         default: claude
-      model:
-        description: "Model id (empty = the agent's default)"
-        default: ""
       budget_usd:
-        description: "Hard spending limit for this run, in USD"
+        description: "Claude only: the most the run may spend, in USD (Codex is limited by time only)"
         default: "5"
+      minutes:
+        description: "Time limit for the agent, in minutes"
+        default: "120"
+      target:
+        description: "Part of the library to work on"
+        default: FeitThompson
+      candidate:
+        description: "Candidate id, or empty for the best free one"
+        default: ""
+      model:
+        description: "Model id, or empty for the agent's default"
+        default: ""
+      fix_pr:
+        description: "To fix a pull request that was not accepted: its number (otherwise empty)"
+        default: ""
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  contribute:
+  work:
     runs-on: ubuntu-latest
-    timeout-minutes: 340
+    timeout-minutes: 345
+    outputs:
+      accepted: ${{ steps.run.outputs.accepted }}
     steps:
+      - name: Check the API key
+        env:
+          AGENT: ${{ inputs.agent }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          FIX_PR: ${{ inputs.fix_pr }}
+        run: |
+          if [ -n "$FIX_PR" ] && ! [[ "$FIX_PR" =~ ^[0-9]+$ ]]; then
+            echo "::error::fix_pr must be the number of a pull request, like 42, or empty."
+            exit 1
+          fi
+          if [ "$AGENT" = claude ]; then
+            name=ANTHROPIC_API_KEY; key=$ANTHROPIC_API_KEY; url=https://api.anthropic.com/v1/models
+            hdr="x-api-key: $key"; ver="anthropic-version: 2023-06-01"
+          else
+            name=OPENAI_API_KEY; key=$OPENAI_API_KEY; url=https://api.openai.com/v1/models
+            hdr="Authorization: Bearer $key"; ver="Accept: application/json"
+          fi
+          if [ -z "$key" ]; then
+            echo "::error::The secret $name is missing. In your fork open Settings, then Secrets and variables, then Actions, add $name, and run again."
+            exit 1
+          fi
+          h="$RUNNER_TEMP/headers"
+          (umask 077; printf '%s\n%s\n' "$hdr" "$ver" > "$h")
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -H @"$h" "$url" || true)
+          rm -f "$h"
+          case "$code" in
+            200) echo "The $name key works." ;;
+            401) echo "::error::The provider rejected $name (HTTP 401). Create a new key, replace the secret, and run again."; exit 1 ;;
+            000|"") echo "::error::Could not reach $url to check $name. This is usually a passing network problem: run again in a few minutes."; exit 1 ;;
+            *) echo "::warning::Checking $name gave HTTP $code, so the key could not be confirmed; continuing." ;;
+          esac
+
+      - name: Make room on the disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          df -h "$RUNNER_TEMP"
+
       - uses: actions/checkout@v4
         with:
+          repository: hora-algebra/concept-mining
+          ref: main
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Remember the earlier attempts of this fork
+        uses: actions/cache/restore@v4
+        with:
+          path: out/contribute
+          key: contribute-attempts-${{ github.run_id }}
+          restore-keys: contribute-attempts-
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Check that the contribute command is installed
-        run: |
-          test -f tools/contribute.py || { echo "::error::tools/contribute.py is not in this repository yet"; exit 1; }
+
       - name: Install Lean (elan) and the agent
+        env:
+          AGENT: ${{ inputs.agent }}
+          OPENAI_API_KEY: ${{ inputs.agent == 'codex' && secrets.OPENAI_API_KEY || '' }}
         run: |
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          if [ "${{ inputs.agent }}" = claude ]; then npm install -g @anthropic-ai/claude-code; else npm install -g @openai/codex; fi
-      - name: Search, claim, rewrite, judge, record
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GH_TOKEN: ${{ secrets.PR_TOKEN || secrets.GITHUB_TOKEN }}
-          HAS_PR_TOKEN: ${{ secrets.PR_TOKEN != '' }}
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          args=(--target "${{ inputs.target }}" --root "$RUNNER_TEMP/cfsg-work" --agent "${{ inputs.agent }}"
-                --budget-usd "${{ inputs.budget_usd }}" --contributor "${{ github.actor }}")
-          [ -n "${{ inputs.candidate }}" ] && args+=(--candidate "${{ inputs.candidate }}")
-          [ -n "${{ inputs.model }}" ] && args+=(--model "${{ inputs.model }}")
-          [ "$HAS_PR_TOKEN" = "true" ] || args+=(--no-pr)
-          python3 tools/contribute.py "${args[@]}"
-      - name: Push the result to a branch of this fork
-        if: always()
-        run: |
-          if [ -n "$(git status --porcelain lean/patches data/ledger)" ] || [ "$(git rev-list --count origin/${{ github.ref_name }}..HEAD)" != 0 ]; then
-            b="contribute/${{ github.run_id }}"
-            git add lean/patches data/ledger 2>/dev/null || true
-            git commit -qm "Contribution from run ${{ github.run_id }}" || true
-            git push -q origin "HEAD:refs/heads/$b"
-            echo "Result pushed to [$b](https://github.com/${{ github.repository }}/tree/$b). [Open a pull request](https://github.com/hora-algebra/concept-mining/compare/main...${{ github.repository_owner }}:concept-mining:$b?expand=1)" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$AGENT" = claude ]; then
+            npm install -g @anthropic-ai/claude-code
           else
-            echo "Nothing was accepted in this run; no branch pushed." >> "$GITHUB_STEP_SUMMARY"
+            npm install -g @openai/codex
+            printenv OPENAI_API_KEY | codex login --with-api-key
           fi
+
+      - name: Pick, rewrite, check
+        id: run
+        env:
+          AGENT: ${{ inputs.agent }}
+          TARGET: ${{ inputs.target }}
+          CANDIDATE: ${{ inputs.candidate }}
+          MODEL: ${{ inputs.model }}
+          BUDGET: ${{ inputs.budget_usd }}
+          MINUTES: ${{ inputs.minutes }}
+          FIX_PR: ${{ inputs.fix_pr }}
+          FORK: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          # only the chosen agent's key; contribute.py gives the agent nothing else
+          ANTHROPIC_API_KEY: ${{ inputs.agent == 'claude' && secrets.ANTHROPIC_API_KEY || '' }}
+          OPENAI_API_KEY: ${{ inputs.agent == 'codex' && secrets.OPENAI_API_KEY || '' }}
+          # read-only: lists the open pull requests of hora-algebra/concept-mining
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=(--root "$RUNNER_TEMP/cfsg-work" --agent "$AGENT" --minutes "$MINUTES" --contributor "$ACTOR"
+                --fork "$FORK" --pr none --handoff out/handoff/handoff.json)
+          if [ -n "$FIX_PR" ]; then args+=(--fix "$FIX_PR"); else args+=(--target "$TARGET"); fi
+          [ -n "$CANDIDATE" ] && args+=(--candidate "$CANDIDATE")
+          [ -n "$MODEL" ] && args+=(--model "$MODEL")
+          [ "$AGENT" = claude ] && args+=(--budget-usd "$BUDGET")
+          rc=0
+          python3 tools/contribute.py "${args[@]}" || rc=$?
+          if [ -f out/handoff/handoff.json ]; then echo "accepted=true" >> "$GITHUB_OUTPUT"; fi
+          # not accepted (1) and taken by someone else (3) are ordinary outcomes; the summary explains them
+          case "$rc" in 0|1|3) exit 0 ;; *) exit "$rc" ;; esac
+
+      - name: Pass the accepted patch to the next job
+        if: steps.run.outputs.accepted == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: handoff
+          path: out/handoff/
+          retention-days: 7
+
+      - name: Keep the record of this attempt
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: out/contribute
+          key: contribute-attempts-${{ github.run_id }}
+
+  hand-in:
+    needs: work
+    if: needs.work.outputs.accepted == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: hora-algebra/concept-mining
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: handoff
+          path: out/handoff
+
+      - name: Push the patch and open the pull request
+        env:
+          FIX_PR: ${{ inputs.fix_pr }}
+          FORK: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          HAS_PR_TOKEN: ${{ secrets.PR_TOKEN != '' }}
+          # gh opens the pull request with PR_TOKEN; branches go to this fork with this run's own token
+          GH_TOKEN: ${{ secrets.PR_TOKEN || github.token }}
+          CONTRIBUTE_PUSH_TOKEN: ${{ github.token }}
+        run: |
+          args=(--hand-in out/handoff/handoff.json --contributor "$ACTOR" --fork "$FORK")
+          [ -n "$FIX_PR" ] && args+=(--fix "$FIX_PR")
+          if [ "$HAS_PR_TOKEN" = true ]; then args+=(--pr open); else args+=(--pr link); fi
+          python3 tools/contribute.py "${args[@]}"
