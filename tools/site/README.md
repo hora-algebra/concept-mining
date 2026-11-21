@@ -61,6 +61,15 @@ Not checked here: that the line counts match the Lean sources. Counting them
 needs a checkout of the upstream sources at the recorded commit, which CI
 does not have.
 
+## Upper bounds and search results
+
+`data/potential/blocks.tsv` (upper bound per part and method) and
+`data/search/hypotheses.jsonl` (two-layer search) are described in
+[docs/potential-and-search.md](../../docs/potential-and-search.md);
+`potential.py` reads and checks them, `potential_dead_code.py` writes the
+`dead-code` layer from the proof-map graph. `--hypotheses FILE` previews
+other search results (an example is in `example_search/`).
+
 ## Scoring and claims
 
 - `scoring.py` holds the formula of [docs/scoring.md](../../docs/scoring.md).

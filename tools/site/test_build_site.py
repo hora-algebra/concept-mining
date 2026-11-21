@@ -12,6 +12,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(__file__))
 import build_site as bs  # noqa: E402
 import scoring  # noqa: E402
+import potential  # noqa: E402
 
 HERE = os.path.dirname(__file__)
 TODAY = dt.date(2026, 12, 31)
@@ -117,6 +118,36 @@ class Scoring(unittest.TestCase):
         u1 = next(p for p in b["contributors"] if p["contributor"] == "example-user-1")
         self.assertEqual(u1["reuse_points"], 52.0)
         self.assertEqual(u1["points"], 960 + 518 + 52)
+
+
+class PotentialAndSearch(unittest.TestCase):
+    def test_replace_method_keeps_others(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "blocks.tsv")
+            potential.replace_method(p, "a", [{"folder": "F", "part": "", "method": "a", "lines": 5, "tokens": None, "evidence": "x"}])
+            potential.replace_method(p, "b", [{"folder": "F", "part": "P", "method": "b", "lines": 7, "tokens": 70, "evidence": "y"}])
+            potential.replace_method(p, "a", [{"folder": "G", "part": "", "method": "a", "lines": 1, "tokens": None, "evidence": "z"}])
+            rows, problems = potential.read_potential(p)
+            self.assertEqual(problems, [])
+            self.assertEqual(sorted((r["folder"], r["method"], r["lines"]) for r in rows), [("F", "b", 7), ("G", "a", 1)])
+
+    def test_dead_code_layer_matches_stage1(self):
+        rows, problems = potential.read_potential(os.path.join(bs.ROOT, "data/potential/blocks.tsv"))
+        self.assertEqual(problems, [])
+        dead = sum(r["lines"] for r in rows if r["method"] == "dead-code")
+        with open(os.path.join(bs.ROOT, "data/map/summary.json")) as fh:
+            self.assertEqual(dead, __import__("json").load(fh)["unreachable_lines"])
+
+    def test_hypotheses(self):
+        hs, problems = potential.read_hypotheses(os.path.join(HERE, "example_search", "hypotheses.jsonl"))
+        self.assertEqual(problems, [])
+        self.assertEqual(len(hs), 40)
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "h.jsonl")
+            open(p, "w").write('{"id": "a", "concept": "X", "status": "maybe"}\n{"id": "a", "concept": "Y", "status": "proposed"}\nnot json\n')
+            hs, problems = potential.read_hypotheses(p)
+            self.assertEqual(len(problems), 2)  # bad status, not JSON
+            self.assertEqual(len(hs), 1)
 
 
 if __name__ == "__main__":

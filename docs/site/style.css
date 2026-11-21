@@ -163,3 +163,13 @@ footer a { color: inherit; }
 .held { color: var(--doing); font-weight: 600; font-size: 13px; }
 @media (max-width: 420px) { .boards { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .rules { grid-template-columns: 1fr 1fr; gap: 8px; } .rule { padding: 10px; font-size: 13px; } .rule b { font-size: 14.5px; } }
+
+/* upper bound and search */
+.ramp { display: inline-block; width: 120px; height: 10px; border-radius: 2px; vertical-align: middle; }
+.funnel { display: grid; gap: 6px; margin-bottom: 14px; }
+.funnel .row { display: grid; grid-template-columns: 9em minmax(0, 1fr) 4em; gap: 10px; align-items: center; font-size: 14px; }
+.funnel .bar { height: 16px; background: var(--accent); border-radius: 0 3px 3px 0; min-width: 2px; }
+.funnel .bar.ok { background: var(--done); } .funnel .bar.no { background: var(--muted); }
+.funnel .n { font-variant-numeric: tabular-nums; text-align: right; }
+.hyp td:first-child { min-width: 12em; }
+.hyp .mean { color: var(--fg2); font-size: 13px; }

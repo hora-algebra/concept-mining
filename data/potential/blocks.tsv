@@ -1,0 +1,270 @@
+folder	part	method	lines	tokens	evidence
+Adapters	(40 other parts)	dead-code	182		18 declarations not needed by CFSG.classification_finite_simple_groups
+Adapters	QiuzhenLegacy	dead-code	562		28 declarations not needed by CFSG.classification_finite_simple_groups
+Adapters	RankTwoModelTransports	dead-code	17		1 declarations not needed by CFSG.classification_finite_simple_groups
+Adapters	TauCetiExceptional	dead-code	1316		125 declarations not needed by CFSG.classification_finite_simple_groups
+Algebra	F4	dead-code	81		36 declarations not needed by CFSG.classification_finite_simple_groups
+Alternating	Multipliers	dead-code	28		4 declarations not needed by CFSG.classification_finite_simple_groups
+Assembly	(78 other parts)	dead-code	462		48 declarations not needed by CFSG.classification_finite_simple_groups
+Assembly	GL83LieDefs	dead-code	1		1 declarations not needed by CFSG.classification_finite_simple_groups
+Assembly	OddCoreElimination	dead-code	21		6 declarations not needed by CFSG.classification_finite_simple_groups
+Assembly	OrderReductions	dead-code	3179		240 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	(33 other parts)	dead-code	374		65 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	Chevalley	dead-code	2		2 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyBinomial	dead-code	18		4 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyInfinitesimals	dead-code	117		20 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyParameterAddition	dead-code	52		10 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyPinnedLemmas	dead-code	20		3 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyRootArtifact	dead-code	18		2 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyStringsInputs	dead-code	5		1 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyUnits	dead-code	232		26 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	ChevalleyWeyl	dead-code	32		4 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	SourceClassicalTransportOrthogonal	dead-code	91		7 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	SourceClassicalTransportSymplectic	dead-code	77		6 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	SourceClassicalTransportUnitary	dead-code	149		3 declarations not needed by CFSG.classification_finite_simple_groups
+Blueprint	SourceQuadraticClassification	dead-code	42		5 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	(27 other parts)	dead-code	862		178 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	Foote81L6	dead-code	162		57 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	Foote82	dead-code	104		21 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	Hall82	dead-code	72		11 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	PushingUpLit	dead-code	1145		150 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	Stroth77	dead-code	15838		834 declarations not needed by CFSG.classification_finite_simple_groups
+CGT	Timmesfeld75	dead-code	198		37 declarations not needed by CFSG.classification_finite_simple_groups
+Certificates	(70 other parts)	dead-code	4594		446 declarations not needed by CFSG.classification_finite_simple_groups
+Certificates	Kernel	dead-code	47223		6883 declarations not needed by CFSG.classification_finite_simple_groups
+Certificates(top)	(4742 other parts)	dead-code	5083		604 declarations not needed by CFSG.classification_finite_simple_groups
+Certificates(top)	Data	dead-code	39026		8159 declarations not needed by CFSG.classification_finite_simple_groups
+Certificates(top)	Kernel	dead-code	71427		22645 declarations not needed by CFSG.classification_finite_simple_groups
+Certified	Classification	dead-code	3		1 declarations not needed by CFSG.classification_finite_simple_groups
+CharacterTheory	(34 other parts)	dead-code	7312		403 declarations not needed by CFSG.classification_finite_simple_groups
+CharacterTheory	Semidihedral	dead-code	17587		911 declarations not needed by CFSG.classification_finite_simple_groups
+CharacterTheory	TwoRankLowerBound	dead-code	5046		337 declarations not needed by CFSG.classification_finite_simple_groups
+CharacterTheory	Wreathed	dead-code	16442		1087 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalGroups	(12 other parts)	dead-code	142		11 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalGroups	Orthogonal	dead-code	2068		183 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalGroups	SpecialLinear	dead-code	56		13 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalGroups	Symplectic	dead-code	372		26 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalGroups	Unitary	dead-code	236		26 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalGroups	UnitaryFlag	dead-code	31		7 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	(40 other parts)	dead-code	36870		2603 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	Asc77	dead-code	14439		1143 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	ModelFacts	dead-code	4445		381 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	Phan	dead-code	2329		311 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	Q3	dead-code	27177		2418 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	RouteD	dead-code	9947		734 declarations not needed by CFSG.classification_finite_simple_groups
+ClassicalInvolution	SmallCases	dead-code	13702		1241 declarations not needed by CFSG.classification_finite_simple_groups
+Combinatorics	(44 other parts)	dead-code	563		41 declarations not needed by CFSG.classification_finite_simple_groups
+Combinatorics	AperiodicCentralInvolutionMap	dead-code	231		22 declarations not needed by CFSG.classification_finite_simple_groups
+Combinatorics	HexagonStabilizerFaithfulSupport	dead-code	3		1 declarations not needed by CFSG.classification_finite_simple_groups
+Combinatorics	OuterLayerPredecessorsGraph	dead-code	200		6 declarations not needed by CFSG.classification_finite_simple_groups
+Combinatorics	OuterLayerPredecessorsSupport	dead-code	4		1 declarations not needed by CFSG.classification_finite_simple_groups
+CosetTable	Hinted	dead-code	153		11 declarations not needed by CFSG.classification_finite_simple_groups
+CosetTable	HintedColumns	dead-code	27		5 declarations not needed by CFSG.classification_finite_simple_groups
+CosetTable	HintedEnum	dead-code	63		12 declarations not needed by CFSG.classification_finite_simple_groups
+Dihedral	(61 other parts)	dead-code	3938		291 declarations not needed by CFSG.classification_finite_simple_groups
+Dihedral	DisconnectedInvolutionGraph	dead-code	584		47 declarations not needed by CFSG.classification_finite_simple_groups
+Dihedral	Glauberman	dead-code	48		5 declarations not needed by CFSG.classification_finite_simple_groups
+Dihedral	GorensteinWalter	dead-code	1298		79 declarations not needed by CFSG.classification_finite_simple_groups
+Evidence	TimmesfeldAGLInputs	dead-code	34		9 declarations not needed by CFSG.classification_finite_simple_groups
+F3	ConjBFSW	dead-code	69		5 declarations not needed by CFSG.classification_finite_simple_groups
+F3	ConjBFSWSuz	dead-code	69		5 declarations not needed by CFSG.classification_finite_simple_groups
+F3	ConjSpec	dead-code	6		2 declarations not needed by CFSG.classification_finite_simple_groups
+FeitThompson	(4 other parts)	dead-code	3294		703 declarations not needed by CFSG.classification_finite_simple_groups
+FeitThompson	Local	dead-code	6304		915 declarations not needed by CFSG.classification_finite_simple_groups
+FeitThompson	OddOrder	dead-code	1417		233 declarations not needed by CFSG.classification_finite_simple_groups
+FeitThompson	Representations	dead-code	10601		1453 declarations not needed by CFSG.classification_finite_simple_groups
+Fischer	(35 other parts)	dead-code	215		40 declarations not needed by CFSG.classification_finite_simple_groups
+Fischer	Classification	dead-code	275		42 declarations not needed by CFSG.classification_finite_simple_groups
+Fischer	NoF25	dead-code	4		1 declarations not needed by CFSG.classification_finite_simple_groups
+Fischer	Polar	dead-code	203		67 declarations not needed by CFSG.classification_finite_simple_groups
+Fischer	Uniq	dead-code	107		29 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	(8 other parts)	dead-code	51		14 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	Basic	dead-code	3		1 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	GilmanSolomonGrammar	dead-code	69		9 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	HigherElementaryThompson	dead-code	23		4 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	KCore	dead-code	54		16 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	KCoreOpen	dead-code	27		5 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	MaxCardThompson	dead-code	12		4 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	MaxOrderThompson	dead-code	349		24 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	SteinbergCADefinitionNodes	dead-code	57		7 declarations not needed by CFSG.classification_finite_simple_groups
+Foundations	SteinbergCAGeneratedCoreNodes	dead-code	82		3 declarations not needed by CFSG.classification_finite_simple_groups
+GF2Type	(23 other parts)	dead-code	11		4 declarations not needed by CFSG.classification_finite_simple_groups
+GF2Type	Aschbacher1976Full	dead-code	23		18 declarations not needed by CFSG.classification_finite_simple_groups
+GF2Type	Smith1979	dead-code	657		153 declarations not needed by CFSG.classification_finite_simple_groups
+GF2Type	Smith1979W3	dead-code	797		119 declarations not needed by CFSG.classification_finite_simple_groups
+GF2Type	Smith1980Orth	dead-code	78		34 declarations not needed by CFSG.classification_finite_simple_groups
+GF2Type	SmithTypeE	dead-code	135		22 declarations not needed by CFSG.classification_finite_simple_groups
+GH74	(36 other parts)	dead-code	3774		487 declarations not needed by CFSG.classification_finite_simple_groups
+GH74	GLS	dead-code	13706		1516 declarations not needed by CFSG.classification_finite_simple_groups
+GH74	Generic	dead-code	1280		141 declarations not needed by CFSG.classification_finite_simple_groups
+GH74	QTGen4	dead-code	12706		731 declarations not needed by CFSG.classification_finite_simple_groups
+GH74	Uniqueness	dead-code	1938		223 declarations not needed by CFSG.classification_finite_simple_groups
+Geometry	(3 other parts)	dead-code	178		19 declarations not needed by CFSG.classification_finite_simple_groups
+Geometry	GeneralizedQuadrangles	dead-code	51		9 declarations not needed by CFSG.classification_finite_simple_groups
+Goldschmidt	(18 other parts)	dead-code	388		33 declarations not needed by CFSG.classification_finite_simple_groups
+Goldschmidt	Steps	dead-code	1334		59 declarations not needed by CFSG.classification_finite_simple_groups
+Goldschmidt75	(52 other parts)	dead-code	78		8 declarations not needed by CFSG.classification_finite_simple_groups
+Goldschmidt75	CorollaryB1	dead-code	9		1 declarations not needed by CFSG.classification_finite_simple_groups
+GroupActions	(8 other parts)	dead-code	5		1 declarations not needed by CFSG.classification_finite_simple_groups
+GroupActions	CoreFreeMaximal	dead-code	65		1 declarations not needed by CFSG.classification_finite_simple_groups
+GroupActions	ExchangeMatsumoto	dead-code	10		4 declarations not needed by CFSG.classification_finite_simple_groups
+GroupActions	Iwasawa	dead-code	19		2 declarations not needed by CFSG.classification_finite_simple_groups
+GroupActions	NilpotentExpCommutator	dead-code	21		1 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	(748 other parts)	dead-code	6389		386 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	ABGDGroups	dead-code	248		11 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	ABGLocalTools	dead-code	866		44 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	CoprimeActionSupport	dead-code	135		25 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	QuasiDihedralFusion	dead-code	118		11 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	SylowIntersectionControl	dead-code	375		51 declarations not needed by CFSG.classification_finite_simple_groups
+GroupTheory	WeirSylow	dead-code	5		2 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	(58 other parts)	dead-code	3185		201 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Cooperstein	dead-code	1950		127 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Curtis	dead-code	261		31 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Dickson	dead-code	1999		182 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Foote	dead-code	1409		228 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Meierfrankenfeld	dead-code	338		43 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Solomon	dead-code	7265		450 declarations not needed by CFSG.classification_finite_simple_groups
+HardMathSupport	Timmesfeld	dead-code	8720		606 declarations not needed by CFSG.classification_finite_simple_groups
+Holt	(26 other parts)	dead-code	688		97 declarations not needed by CFSG.classification_finite_simple_groups
+Holt	H78	dead-code	202		47 declarations not needed by CFSG.classification_finite_simple_groups
+LargeExtraspecial	(1890 other parts)	dead-code	2701		385 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	(107 other parts)	dead-code	2413		259 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	AlgebraicGroups	dead-code	26150		1293 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	ChevTwo	dead-code	28		9 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	Chevalley	dead-code	8381		789 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	Ree	dead-code	675		83 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	SeitzGeneration	dead-code	1761		250 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	SpecialLinear	dead-code	413		71 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	Steinberg	dead-code	1876		324 declarations not needed by CFSG.classification_finite_simple_groups
+LieType	Universal	dead-code	688		91 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	(149 other parts)	dead-code	2721		184 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	CoprimeActions	dead-code	48		7 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	DesarguesianPlanes	dead-code	9		3 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	LinearGroups	dead-code	1325		61 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	OddSolvableUnitary	dead-code	112		9 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	RootGroupSL	dead-code	123		22 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	ScalarGraphAction	dead-code	2590		70 declarations not needed by CFSG.classification_finite_simple_groups
+LinearAlgebra	UnitaryInvolutionIndex	dead-code	60		6 declarations not needed by CFSG.classification_finite_simple_groups
+Literature	(16 other parts)	dead-code	30		14 declarations not needed by CFSG.classification_finite_simple_groups
+Literature	GL52Basic	dead-code	30		5 declarations not needed by CFSG.classification_finite_simple_groups
+Literature	Janko67ModelCore	dead-code	5		1 declarations not needed by CFSG.classification_finite_simple_groups
+Literature	Janko67ModelSub	dead-code	12		1 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	(306 other parts)	dead-code	74427		7095 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	AGLEmbedding	dead-code	4300		454 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	AGLEmbeddingD2	dead-code	26610		231 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	ComponentClassification	dead-code	50707		3823 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	EvenBN	dead-code	2984		662 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	EvenSporadicStandard	dead-code	9408		1262 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	GLTheoremA	dead-code	5017		651 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	GLTheoremB	dead-code	4761		345 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	OddStandard	dead-code	9867		1556 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	QuasithinUnique	dead-code	11882		1159 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	RankThreeTheoremC	dead-code	10215		559 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	SeitzReduction	dead-code	13739		1490 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	StandardType	dead-code	69415		5436 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	UniquenessCase	dead-code	20964		1964 declarations not needed by CFSG.classification_finite_simple_groups
+LocalAnalysis	WeakClosure81	dead-code	4564		469 declarations not needed by CFSG.classification_finite_simple_groups
+Mathlib	(9 other parts)	dead-code	5		2 declarations not needed by CFSG.classification_finite_simple_groups
+Mathlib	GroupTheory	dead-code	358		23 declarations not needed by CFSG.classification_finite_simple_groups
+Mathlib	LinearAlgebra	dead-code	1595		142 declarations not needed by CFSG.classification_finite_simple_groups
+Mathlib	RingTheory	dead-code	734		32 declarations not needed by CFSG.classification_finite_simple_groups
+Milestones	(110 other parts)	dead-code	1002		80 declarations not needed by CFSG.classification_finite_simple_groups
+Milestones	ASVolI	dead-code	338610		20951 declarations not needed by CFSG.classification_finite_simple_groups
+Models	(2 other parts)	dead-code	6		2 declarations not needed by CFSG.classification_finite_simple_groups
+Monster	(45 other parts)	dead-code	3099		509 declarations not needed by CFSG.classification_finite_simple_groups
+Monster	AxisCount	dead-code	1111		172 declarations not needed by CFSG.classification_finite_simple_groups
+Monster	B	dead-code	36981		3033 declarations not needed by CFSG.classification_finite_simple_groups
+Monster	Existence	dead-code	3113		449 declarations not needed by CFSG.classification_finite_simple_groups
+Monster	GMS	dead-code	1416		194 declarations not needed by CFSG.classification_finite_simple_groups
+Monster	Griess	dead-code	1205		175 declarations not needed by CFSG.classification_finite_simple_groups
+OddTranspositions	(139 other parts)	dead-code	248		45 declarations not needed by CFSG.classification_finite_simple_groups
+OddTranspositions	PartFour	dead-code	196		29 declarations not needed by CFSG.classification_finite_simple_groups
+OddTranspositions	PartThree	dead-code	2250		254 declarations not needed by CFSG.classification_finite_simple_groups
+Open	(50 other parts)	dead-code	139		31 declarations not needed by CFSG.classification_finite_simple_groups
+Open	Catalog	dead-code	8		1 declarations not needed by CFSG.classification_finite_simple_groups
+Open	Defs	dead-code	18		2 declarations not needed by CFSG.classification_finite_simple_groups
+Open	FusionDefs	dead-code	109		4 declarations not needed by CFSG.classification_finite_simple_groups
+Open	GLADefs	dead-code	56		56 declarations not needed by CFSG.classification_finite_simple_groups
+Open	GilmanSolomonDefs	dead-code	76		15 declarations not needed by CFSG.classification_finite_simple_groups
+Open	MonsterDefs	dead-code	17		4 declarations not needed by CFSG.classification_finite_simple_groups
+Open	OrderForm	dead-code	54		4 declarations not needed by CFSG.classification_finite_simple_groups
+Open	QuasithinDefs	dead-code	206		24 declarations not needed by CFSG.classification_finite_simple_groups
+Open	RankThreeDefs	dead-code	26		9 declarations not needed by CFSG.classification_finite_simple_groups
+Open	StandardComponentRecognitionMilestoneDefs	dead-code	47		15 declarations not needed by CFSG.classification_finite_simple_groups
+Open	StatedAPI	dead-code	5		1 declarations not needed by CFSG.classification_finite_simple_groups
+Open	StatedDefs	dead-code	1		1 declarations not needed by CFSG.classification_finite_simple_groups
+Open	StatedSUFieldChange	dead-code	38		2 declarations not needed by CFSG.classification_finite_simple_groups
+Perm	(4 other parts)	dead-code	81		3 declarations not needed by CFSG.classification_finite_simple_groups
+Perm	OrbitTree	dead-code	75		6 declarations not needed by CFSG.classification_finite_simple_groups
+Permutation	(31 other parts)	dead-code	275		54 declarations not needed by CFSG.classification_finite_simple_groups
+Permutation	FiveTransitive	dead-code	165930		4984 declarations not needed by CFSG.classification_finite_simple_groups
+Quasithin	(222 other parts)	dead-code	50940		4385 declarations not needed by CFSG.classification_finite_simple_groups
+Quasithin	Background	dead-code	142921		12087 declarations not needed by CFSG.classification_finite_simple_groups
+Quasithin	EmptyFaithful	dead-code	10659		1313 declarations not needed by CFSG.classification_finite_simple_groups
+Quasithin	H13	dead-code	10564		914 declarations not needed by CFSG.classification_finite_simple_groups
+Quasithin	Recognition	dead-code	14481		1090 declarations not needed by CFSG.classification_finite_simple_groups
+Quasithin	Vol2	dead-code	10361		1303 declarations not needed by CFSG.classification_finite_simple_groups
+RankThree	(78 other parts)	dead-code	9692		923 declarations not needed by CFSG.classification_finite_simple_groups
+RankThree	GF2n	dead-code	8384		1532 declarations not needed by CFSG.classification_finite_simple_groups
+RankThree	PartOne	dead-code	9398		888 declarations not needed by CFSG.classification_finite_simple_groups
+RankThree	PartTwo	dead-code	17537		1791 declarations not needed by CFSG.classification_finite_simple_groups
+RepresentationTheory	(10 other parts)	dead-code	4		1 declarations not needed by CFSG.classification_finite_simple_groups
+RepresentationTheory	FixedBaseChange	dead-code	87		12 declarations not needed by CFSG.classification_finite_simple_groups
+RepresentationTheory	SL2NatSum	dead-code	1		1 declarations not needed by CFSG.classification_finite_simple_groups
+RepresentationTheory	SzMartineau	dead-code	15		5 declarations not needed by CFSG.classification_finite_simple_groups
+SignalizerFunctorTheorem	(13 other parts)	dead-code	423		42 declarations not needed by CFSG.classification_finite_simple_groups
+SignalizerFunctorTheorem	CatalogBridge	dead-code	220		10 declarations not needed by CFSG.classification_finite_simple_groups
+SignalizerFunctorTheorem	Glauberman	dead-code	48		6 declarations not needed by CFSG.classification_finite_simple_groups
+SignalizerFunctorTheorem	McBride	dead-code	2517		249 declarations not needed by CFSG.classification_finite_simple_groups
+SignalizerFunctorTheorem	NonLocal	dead-code	33		13 declarations not needed by CFSG.classification_finite_simple_groups
+SignalizerFunctorTheorem	Quadratic	dead-code	82		14 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	(50 other parts)	dead-code	5780		944 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Bridge	dead-code	651		96 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Co1	dead-code	740		118 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Co1Patterson	dead-code	183		45 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Co2Cert	dead-code	243		56 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Co2Jc	dead-code	194		33 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Co2Schreier	dead-code	546		80 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Co2Smith	dead-code	533		71 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Fi24	dead-code	1244		133 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	FischerOddCore	dead-code	1018		145 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	HNOddCore	dead-code	560		76 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	HNSchreier	dead-code	2093		256 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	J4	dead-code	2532		345 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Recognition	dead-code	4896		522 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Schreier	dead-code	80007		953 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	SuzOddCore	dead-code	1096		129 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	SuzRecog	dead-code	1188		169 declarations not needed by CFSG.classification_finite_simple_groups
+Sporadic	Th	dead-code	3727		418 declarations not needed by CFSG.classification_finite_simple_groups
+StandardComponent	AschbacherSeitz	dead-code	8		5 declarations not needed by CFSG.classification_finite_simple_groups
+StronglyEmbedded	(15 other parts)	dead-code	54		4 declarations not needed by CFSG.classification_finite_simple_groups
+StronglyEmbedded	BenderRootModel	dead-code	14		1 declarations not needed by CFSG.classification_finite_simple_groups
+StronglyEmbedded	Catalog	dead-code	3		3 declarations not needed by CFSG.classification_finite_simple_groups
+StronglyEmbedded	TheoremSE	dead-code	12		1 declarations not needed by CFSG.classification_finite_simple_groups
+StronglyEmbedded	UniqueCosetZD	dead-code	30		1 declarations not needed by CFSG.classification_finite_simple_groups
+ThirdParty	(4 other parts)	dead-code	20670		1161 declarations not needed by CFSG.classification_finite_simple_groups
+ThirdParty	QiuzhenCFSG	dead-code	59121		2495 declarations not needed by CFSG.classification_finite_simple_groups
+Timmesfeld	(43 other parts)	dead-code	1499		115 declarations not needed by CFSG.classification_finite_simple_groups
+Timmesfeld	ARS	dead-code	1705		142 declarations not needed by CFSG.classification_finite_simple_groups
+Timmesfeld	Bridge	dead-code	14		6 declarations not needed by CFSG.classification_finite_simple_groups
+Timmesfeld	Exceptional	dead-code	1		1 declarations not needed by CFSG.classification_finite_simple_groups
+Timmesfeld	RankTwo	dead-code	177		33 declarations not needed by CFSG.classification_finite_simple_groups
+Timmesfeld	Transvection	dead-code	886		102 declarations not needed by CFSG.classification_finite_simple_groups
+Walter	(19 other parts)	dead-code	108		26 declarations not needed by CFSG.classification_finite_simple_groups
+Walter	Bender1970	dead-code	317		38 declarations not needed by CFSG.classification_finite_simple_groups
+Walter	J1	dead-code	118		11 declarations not needed by CFSG.classification_finite_simple_groups
+Walter	Ree	dead-code	21511		513 declarations not needed by CFSG.classification_finite_simple_groups
+Walter	ReeOrder	dead-code	794		74 declarations not needed by CFSG.classification_finite_simple_groups
+Walter	W67	dead-code	2598		191 declarations not needed by CFSG.classification_finite_simple_groups
+YGroups	(19 other parts)	dead-code	1324		176 declarations not needed by CFSG.classification_finite_simple_groups
+YGroups	DCE	dead-code	5312		445 declarations not needed by CFSG.classification_finite_simple_groups
+YGroups	Exact	dead-code	90		16 declarations not needed by CFSG.classification_finite_simple_groups
+YGroups	Y433	dead-code	490		109 declarations not needed by CFSG.classification_finite_simple_groups
+YGroups	Y442Twist	dead-code	4		1 declarations not needed by CFSG.classification_finite_simple_groups
+YGroups	Y443	dead-code	1383		236 declarations not needed by CFSG.classification_finite_simple_groups
+YardstoneContract(top)	(top)	dead-code	6		2 declarations not needed by CFSG.classification_finite_simple_groups
+Yardstones	(17 other parts)	dead-code	166		24 declarations not needed by CFSG.classification_finite_simple_groups
+Yardstones	M0362f3a873a3	dead-code	37		2 declarations not needed by CFSG.classification_finite_simple_groups
+Yardstones	M1442643da6f2	dead-code	38		1 declarations not needed by CFSG.classification_finite_simple_groups
+Yardstones	Md0ec50421ce4	dead-code	36		7 declarations not needed by CFSG.classification_finite_simple_groups
+Yardstones	Md42047359a2a	dead-code	1		1 declarations not needed by CFSG.classification_finite_simple_groups
