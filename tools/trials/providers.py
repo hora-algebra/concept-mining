@@ -5,17 +5,20 @@ Every provider exposes one method,
     complete(model, system, prompt, max_tokens) -> Completion
 
 so that the trial runner and the cost accounting never depend on a vendor.
-Keys are read from files in ~/.config/secrets/ (one KEY=value per line) and
-are never printed or logged. Adding a provider means adding one class here and
-its prices to pricing.json.
+OpenAI checks the repository's .env.local first. Providers also support their
+key files in ~/.config/secrets/ (one KEY=value per line). Keys are never printed
+or logged. Adding a provider means adding one class here and its prices to
+pricing.json.
 """
 
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 SECRETS = os.path.expanduser("~/.config/secrets")
+OPENAI_LOCAL_ENV = Path(__file__).resolve().parents[2] / ".env.local"
 
 
 @dataclass
@@ -29,17 +32,20 @@ class Completion:
     extra: dict = field(default_factory=dict)
 
 
-def read_key(filename: str, var: str) -> str:
+def read_key(filename: str, var: str, *, local_env: Path | None = None) -> str:
     path = os.path.join(SECRETS, filename)
+    sources = (local_env, path) if local_env is not None else (path,)
+    for source in sources:
+        try:
+            with open(source) as f:
+                for line in f:
+                    line = line.strip().removeprefix("export ")
+                    if line.startswith(var + "="):
+                        return line.split("=", 1)[1].strip().strip('"').strip("'")
+        except FileNotFoundError:
+            continue
     if not os.path.exists(path):
         raise RuntimeError(f"no key file {path} (expected a line {var}=...)")
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("export "):
-                line = line[len("export "):]
-            if line.startswith(var + "="):
-                return line.split("=", 1)[1].strip().strip('"').strip("'")
     raise RuntimeError(f"{var} not found in {path}")
 
 
@@ -74,7 +80,9 @@ class OpenAIProvider:
 
     def __init__(self, effort: str = "high"):
         import openai  # official SDK
-        self.client = openai.OpenAI(api_key=read_key("openai.env", "OPENAI_API_KEY"))
+        self.client = openai.OpenAI(
+            api_key=read_key("openai.env", "OPENAI_API_KEY", local_env=OPENAI_LOCAL_ENV)
+        )
         self.effort = effort
 
     def complete(self, model: str, system: str, prompt: str, max_tokens: int) -> Completion:

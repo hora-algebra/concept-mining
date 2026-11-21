@@ -294,7 +294,7 @@ def main() -> None:
     else:
         json.dump(json.load(open(os.path.join(pilot, "baseline.json"))), open(before, "w"))
     log("measuring (exports declarations with Lean)")
-    sh([sys.executable, os.path.join(HERE, "ledger.py"), "measure", "--root", root, "--prefix", f"CFSG.{target}",
+    sh([sys.executable, os.path.join(HERE, "ledger.py"), "measure", "--root", root, "--prefix", "CFSG." + target.replace("/", "."),
         "--protected", os.path.join(pilot, "protected.txt"), "--out", after])
     json.dump(json.load(open(after)), open(last, "w"), indent=2)
     uses = 0
