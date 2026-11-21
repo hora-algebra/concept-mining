@@ -53,7 +53,7 @@ contributor (or their agent) knows exactly what to fix.
 | Same axioms | `#print axioms` on every protected declaration prints exactly what it printed before | `axioms_unchanged` |
 | No shortcuts | no `sorry`, `admit`, `native_decide`, new `axiom`, or `set_option` that raises limits in changed files | `no_shortcuts` |
 | No code at compile time | the patch adds no `#eval`, `run_cmd`, `initialize`, new macros, syntax or elaborators, `unsafe` or IO code, and no new package imports (checked before building) | `no_metaprogramming` |
-| Allowed paths | the pull request changes only the upstream patch, its own ledger rows and the regenerated page data | `paths_allowed` |
+| Allowed paths | the pull request changes only the upstream patch and its own ledger rows | `paths_allowed` |
 | Numbers match | the numbers in the ledger rows equal the numbers the checker measured itself | `ledger_matches` |
 | Positive score | the points below are greater than zero | `positive_score` |
 

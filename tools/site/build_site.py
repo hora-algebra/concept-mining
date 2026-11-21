@@ -5,10 +5,11 @@ Reads
     data/map/blocks.json, data/map/summary.json      (stage 1 map)
     data/ledger/concepts.tsv, data/ledger/history.tsv (refactoring ledger; may be absent)
     data/site/*.tsv, data/candidates/first_issues.tsv (page text and work board)
-and writes docs/site/data/site.json.
+and writes docs/site/data/site.json. That file is generated, not committed: the
+Pages deployment and local previews rebuild it from the data.
 
     python3 tools/site/build_site.py            # check, then write
-    python3 tools/site/build_site.py --check    # check, and fail if site.json is stale
+    python3 tools/site/build_site.py --check    # check the data and that site.json can be built; write nothing
 
 Errors (exit status 1) are problems that make the numbers wrong: malformed
 rows, lines_saved != lines_before - lines_after, unknown targets, dates in the
@@ -444,11 +445,9 @@ def main() -> None:
     if rep.errors:
         sys.exit(1)
     if a.check:
-        old = open(a.out, encoding="utf-8").read() if os.path.exists(a.out) else ""
-        if old != text:
-            print(f"error: {os.path.relpath(a.out, ROOT)} is out of date; run python3 tools/site/build_site.py")
-            sys.exit(1)
-        print("site data is up to date")
+        # site.json is generated at deploy time; here it is enough that it can be built.
+        json.loads(text)
+        print("data is consistent; site.json can be built")
         return
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as fh:

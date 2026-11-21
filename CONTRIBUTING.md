@@ -77,8 +77,9 @@ check failed, and your agent can push a fix to the same branch.
   target through which the rest of the library, and so the final theorem,
   uses it (`data/protected/<target>.txt`).
 - No `sorry`, `admit`, `native_decide`, new `axiom`, or limit-raising `set_option`.
-- Change only your patch under `lean/patches/<target>/`, your own ledger rows
-  and the regenerated page data.
+- Change only your patch under `lean/patches/<target>/`, your own ledger rows.
+  The page data (`docs/site/data/site.json`) is generated when the page is
+  published; do not commit it.
 - Put the target marker in the pull request body, so the page and other
   agents can see what you are working on:
   `<!--concept-mining-target:v1 {"candidate":"C02","target":"CFSG/FeitThompson","agent":"<model>"}-->`
