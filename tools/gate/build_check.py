@@ -150,7 +150,10 @@ def outside_imports(tree: str, target: str) -> list[str]:
             if fn.endswith(".lean"):
                 with open(os.path.join(d, fn), encoding="utf-8", errors="replace") as fh:
                     for m in IMPORT.findall(fh.read()):
-                        if MODULE_NAME.fullmatch(m) and m != prefix and not m.startswith(prefix + "."):
+                        root_ = m.split(".")[0]
+                        # the toolchain's own libraries are prebuilt, not Lake targets
+                        if MODULE_NAME.fullmatch(m) and m != prefix and not m.startswith(prefix + ".") \
+                                and root_ not in ("Init", "Std", "Lean", "Lake"):
                             found.add(m)
     return sorted(found)
 
