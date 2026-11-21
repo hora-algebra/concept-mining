@@ -73,7 +73,9 @@ The full list of declarations with a price of at least 3,000 lines is in
 
 Rank 2 and 3 overlap each other and the proof-shape families of
 [compression-map.md](compression-map.md) (866,990 lines). Together they are of
-the order of 1–1.5 M lines, about 3–4 %. The family bound leaves out two false
+the order of 1 M lines, about 3 %, as an upper bound; where the repetition was
+measured more closely (per group, rank 3) it shrank to a tenth of the first
+count. The family bound leaves out two false
 matches: `Assembly.large_even` and `Assembly.rank_three_even` (their statements
 differ only in `4 ≤ evenRank` versus `evenRank = 3`) and the Feit–Thompson pair
 (counted in rank 1).
