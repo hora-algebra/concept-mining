@@ -15,12 +15,15 @@ on:
       - "docs/site/**"
       - ".github/workflows/site.yml"
   workflow_dispatch:
+  schedule:
+    - cron: "17,47 * * * *"   # refresh claims and open pull requests on the page
 
 permissions:
   contents: read
 
 jobs:
   check:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,9 +44,11 @@ jobs:
   # "GitHub Actions" source and sets the repository variable PAGES_ENABLED=true.
   deploy:
     needs: check
-    if: github.event_name != 'pull_request' && vars.PAGES_ENABLED == 'true'
+    if: always() && github.event_name != 'pull_request' && vars.PAGES_ENABLED == 'true' && (needs.check.result == 'success' || needs.check.result == 'skipped')
     runs-on: ubuntu-latest
     permissions:
+      contents: read
+      pull-requests: read
       pages: write
       id-token: write
     environment:
@@ -51,6 +56,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Add live claims and open pull requests to the page data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/site/claim.py list --json > "$RUNNER_TEMP/claims.json" || echo "[]" > "$RUNNER_TEMP/claims.json"
+          gh pr list --repo "${{ github.repository }}" --state open --limit 200 \
+            --json number,title,author,body,url,isDraft > "$RUNNER_TEMP/prs.json" || echo "[]" > "$RUNNER_TEMP/prs.json"
+          python3 tools/site/build_site.py --claims "$RUNNER_TEMP/claims.json" --open-prs "$RUNNER_TEMP/prs.json"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

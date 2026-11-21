@@ -27,7 +27,7 @@ function init(data) {
   SNAP = [{ date: null, removed: {}, concepts: [] }].concat(D.snapshots);
   state.t = SNAP.length - 1;
   document.querySelectorAll("[data-gh]").forEach(a => a.href = GH + a.dataset.gh);
-  header(); timeControl(); mapControls(); layout(); table(); timeline(); ranking(); work(); candidates(); footer();
+  header(); timeControl(); mapControls(); layout(); table(); timeline(); ranking(); rules(); scoreboard(); work(); candidates(); footer();
   let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { layout(); timeline(); }, 120); });
 }
 
@@ -36,13 +36,13 @@ function header() {
   const c = D.ledger.concepts;
   const saved = d3.sum(c, x => x.lines_saved);
   const names = new Set(c.map(x => x.concept));
-  const active = D.work.filter(w => w.status === "in-progress" || w.status === "claimed");
+  const active = D.work.filter(w => w.status === "in-progress" || w.status === "claimed").concat(D.in_flight || []);
   document.getElementById("lead-lines").textContent = Math.round(D.summary.lines_in_declarations / 1e6) + " million";
   const k = [
     [short(D.summary.lines_in_declarations), `lines in ${fmt(D.summary.declarations)} definitions and theorems, before any refactoring`],
     [saved ? fmt(saved) : "0", saved ? "lines removed so far, as recorded in the ledger" : "lines removed so far: the first trial is under way"],
     [String(names.size), names.size === 1 ? "concept found" : "concepts found"],
-    [String(active.length), active.length === 1 ? "part being refactored now" : "parts being refactored now"]
+    [String(active.length), active.length === 1 ? "piece of work in progress now" : "pieces of work in progress now"]
   ];
   document.getElementById("kpis").innerHTML = k.map(([v, l]) => `<div class="kpi"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join("");
   const label = { done: "Done", active: "Now", next: "Next" };
@@ -309,20 +309,52 @@ function ranking() {
     <div class="meta">${c.targets.map(esc).join(", ")} · used ${fmt(c.uses)} times · first recorded ${esc(c.date)}</div></li>`).join("")}</ol></div>`;
 }
 
+/* ---------- points ---------- */
+function rules() {
+  const r = [
+    ["1 point", "for every 100 tokens of Lean removed, with every protected theorem and its axioms unchanged."],
+    ["+0.5 per use", "of a new definition or lemma you introduce, up to the points your shrink earned."],
+    ["+1 per reuse", "when someone else's accepted change uses your concept."],
+    ["0 for formatting", "Line breaks, spacing, comments and name length never count. Dead code counts a quarter."]
+  ];
+  document.getElementById("rules").innerHTML = r.map(([b, t]) => `<div class="rule"><b>${b}</b>${t}</div>`).join("") +
+    `<div class="rule"><b>Accepted only if</b>Lean builds, the theorems are the same, and the points are positive. Checked again by this repository's CI. <a data-gh="docs/scoring.md" href="${GH}docs/scoring.md">Full rules</a></div>`;
+}
+function scoreboard() {
+  const box = document.getElementById("score"), S = D.scores || { contributors: [], concepts: [] };
+  if (!S.contributors.length) {
+    box.innerHTML = `<div class="empty"><b>No points yet.</b>The first accepted contribution will appear here, with who made it, which agent did the work, and the points it earned.</div>`;
+    return;
+  }
+  const people = S.contributors.map((p, i) => `<tr><td class="r">${i + 1}</td><td>${esc(p.contributor)}<div class="agent">${p.agents.map(esc).join(", ")}</div></td>
+    <td class="r"><b>${fmt(p.points)}</b></td><td class="r">${p.contributions}</td><td class="r">${fmt(p.tokens_saved)}</td><td class="r">${fmt(p.reuse_points)}</td></tr>`).join("");
+  const cons = S.concepts.map((c, i) => `<tr><td class="r">${i + 1}</td><td>${esc(c.concept)}<div class="agent">by ${esc(c.author)} · ${esc(c.agent)}</div></td>
+    <td class="r">${fmt(c.tokens_saved)}</td><td class="r">${fmt(c.uses)}</td><td class="r">${c.reused_by.length ? fmt(c.reuse_points) + "<div class='agent'>" + c.reused_by.map(esc).join(", ") + "</div>" : "0"}</td></tr>`).join("");
+  box.innerHTML = `<div class="boards">
+    <div class="panel tbl"><h3>Contributors</h3><table><tr><th class="r">#</th><th>Who · agent</th><th class="r">Points</th><th class="r">Changes</th><th class="r">Tokens saved</th><th class="r">From reuse</th></tr>${people}</table></div>
+    <div class="panel tbl"><h3>Concepts</h3><table><tr><th class="r">#</th><th>Concept</th><th class="r">Tokens saved</th><th class="r">Uses</th><th class="r">Reuse points</th></tr>${cons}</table></div></div>`;
+}
+
 /* ---------- work board ---------- */
+function holderOf(id) { return (D.in_flight || []).find(f => f.key === id); }
 function work() {
   const box = document.getElementById("work");
-  if (!D.work.length) { box.innerHTML = `<p class="small">Nobody has claimed a part yet.</p>`; return; }
-  box.innerHTML = `<table><tr><th>Part</th><th>Status</th><th>Who</th><th>What</th></tr>${D.work.map(w =>
-    `<tr><td><code>${esc(w.target)}</code></td><td><span class="pill p-${esc(w.status)}">${esc(w.status.replace("-", " "))}</span></td><td>${esc(w.who)}</td><td>${esc(w.note)}${w.link ? ` <a href="${esc(w.link)}">details</a>` : ""}</td></tr>`).join("")}</table>`;
+  const rows = D.work.map(w => ({ what: w.target, status: w.status, who: w.who, agent: "", note: w.note, link: w.link }))
+    .concat((D.in_flight || []).map(f => ({ what: f.key, status: f.kind === "claim" ? "claimed" : "in-progress", who: f.who, agent: f.agent,
+      note: f.kind === "claim" ? `claimed until ${new Date(f.until * 1000).toISOString().slice(0, 16).replace("T", " ")} UTC` : f.kind, link: f.link })));
+  if (!rows.length) { box.innerHTML = `<p class="small">Nobody is working on anything right now.</p>`; return; }
+  box.innerHTML = `<table><tr><th>Working on</th><th>Status</th><th>Who · agent</th><th>Note</th></tr>${rows.map(w =>
+    `<tr><td><code>${esc(w.what)}</code></td><td><span class="pill p-${esc(w.status)}">${esc(w.status.replace("-", " "))}</span></td><td>${esc(w.who)}${w.agent ? `<div class="agent">${esc(w.agent)}</div>` : ""}</td><td>${esc(w.note)}${w.link ? ` <a href="${esc(w.link)}">details</a>` : ""}</td></tr>`).join("")}</table>
+    <p class="small" style="margin:10px 0 0">Live claims and open pull requests are refreshed every 30 minutes once the page is published.</p>`;
 }
 function slug(s) { return s.toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, "").trim().replace(/\s/g, "-"); }
 function candidates() {
-  const kind = { name: ["No Lean needed"], refactor: ["Lean"], both: ["No Lean needed", "Lean"] };
+  const kind = { name: ["needs a name"], refactor: ["rewrite"], both: ["needs a name", "rewrite"] };
   document.getElementById("cands").innerHTML = D.candidates.map(c => {
     const href = c.issue ? `https://github.com/hora-algebra/concept-mining/issues/${encodeURIComponent(c.issue)}` : GH + "docs/first-issues.md#" + slug(`${c.id}. ${c.title}`);
-    const st = c.issue ? (c.status === "draft" ? "open" : c.status) : "draft";
-    return `<div class="card"><div class="top"><span class="id">${esc(c.id)}</span><span class="pill p-${esc(st)}">${st === "draft" ? "not yet an issue" : esc(st)}</span>${kind[c.kind].map(k => `<span class="tag">${k}</span>`).join("")}</div>
+    const h = holderOf(c.id);
+    const who = h ? `<span class="held">Taken by ${esc(h.who)}${h.agent ? " (" + esc(h.agent) + ")" : ""}</span>` : `<span class="free">Free</span>`;
+    return `<div class="card"><div class="top"><span class="id">${esc(c.id)}</span>${who}${kind[c.kind].map(k => `<span class="tag">${k}</span>`).join("")}</div>
       <h3>${esc(c.title)}</h3><div class="sz">${esc(c.size)} · ${esc(c.area)}</div><a class="go" href="${href}">Read the task →</a></div>`;
   }).join("");
 }

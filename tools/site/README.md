@@ -9,7 +9,8 @@ data/map/blocks.json   ─┐  stage 1 map, one entry per part   (aggregate_bloc
 data/map/summary.json  ─┤
 data/ledger/*.tsv      ─┼─> build_site.py ──> docs/site/data/site.json ──> page
 data/site/*.tsv        ─┤  (check, then write)
-data/candidates/*.tsv  ─┘
+data/candidates/*.tsv  ─┤
+data/ledger/contributions.tsv ─┘ (points, via scoring.py)
 ```
 
 ## Commands
@@ -59,6 +60,28 @@ The pull request summary also lists the ledger rows the pull request adds
 Not checked here: that the line counts match the Lean sources. Counting them
 needs a checkout of the upstream sources at the recorded commit, which CI
 does not have.
+
+## Scoring and claims
+
+- `scoring.py` holds the formula of [docs/scoring.md](../../docs/scoring.md).
+  `scoring.py verdict verdict.json` turns the checker's verdict into an
+  accept/reject decision with points and reasons (used by the workflow
+  *Verify contribution*); `scoring.py board data/ledger/contributions.tsv`
+  prints the scoreboard, which `build_site.py` also puts in `site.json`.
+- `claim.py` takes, renews, releases and lists claims (`refs/claims/<key>`,
+  compare-and-swap with `git push --force-with-lease`).
+- When the page is deployed, the workflow adds live claims and open pull
+  requests carrying the target marker to `site.json` (`--claims`,
+  `--open-prs`); this data is not committed.
+
+Workflows:
+
+| Workflow | Trigger | Rights | Does |
+|---|---|---|---|
+| `site.yml` | pull request, push to main, every 30 min | read; Pages write for deploy | tests, ledger check, staleness check; deploy when `PAGES_ENABLED` is `true` |
+| `verify-contribution.yml` | pull request touching `patches/` or `contributions.tsv` | read only, no secrets | runs `tools/verify_contribution.py`, scores, uploads the verdict |
+| `contribution-verdict.yml` | after the verify workflow | write, never runs PR code | comments, labels, merges when accepted, current head, and `AUTO_MERGE_ENABLED` is `true` |
+| `contribute.yml` | manual, in a contributor's fork | the fork's secrets | runs `tools/contribute.py` (claim, rewrite, check, record, open PR) |
 
 ## How the page uses the ledger
 

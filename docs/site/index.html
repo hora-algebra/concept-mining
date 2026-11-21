@@ -13,6 +13,10 @@
     <div id="example" class="example" hidden>Example data. The numbers on this page are made up to show how it will look once results come in.</div>
     <h1>concept-mining</h1>
     <p class="lead">A computer-written formal proof of the classification of finite simple groups is about <span id="lead-lines">35 million</span> lines long. We rewrite it shorter while keeping the final theorem exactly as stated. A new definition or lemma that makes the whole proof shorter names an idea the proof keeps repeating; the more lines it saves, the more important the idea.</p>
+    <div class="cta">
+      <a class="btn" data-gh="CONTRIBUTING.md#contribute-in-one-click">Contribute</a>
+      <span>Run an AI agent on a candidate with one click or one command. Every accepted change earns points by a <a data-gh="docs/scoring.md">fixed rule</a>.</span>
+    </div>
     <div class="kpis" id="kpis"></div>
     <ol class="stages" id="stages" aria-label="Roadmap"></ol>
   </header>
@@ -59,20 +63,28 @@
     <div id="rank"></div>
   </section>
 
+  <section id="s-score" aria-labelledby="h-score">
+    <h2 id="h-score">Points</h2>
+    <p class="sub">Points are computed by a machine from what each accepted change measurably saved. Nobody hands them out.</p>
+    <div class="rules" id="rules"></div>
+    <div id="score"></div>
+  </section>
+
   <section id="s-work" aria-labelledby="h-work">
     <h2 id="h-work">Who is working on what</h2>
+    <p class="sub">People and AI agents working right now. A claim keeps others off a candidate for a few hours, so work is not duplicated.</p>
     <div class="tbl panel" id="work"></div>
-    <h2 style="margin-top:28px">Candidates anyone can pick up</h2>
-    <p class="sub">Places where the same idea seems to be written many times. Some need only a mathematician's eye, no Lean.</p>
+    <h2 style="margin-top:28px">Candidates</h2>
+    <p class="sub">Places where the same idea seems to be written many times. Free ones can be taken by anyone's agent; a mathematician can also help by saying what the idea is called.</p>
     <div class="cards" id="cands"></div>
   </section>
 
   <section id="s-help" aria-labelledby="h-help">
     <h2 id="h-help">How to help</h2>
     <div class="help">
-      <div class="card"><h3>Mathematicians</h3><p>Read a candidate and say what the repeated idea is, or should be, called. No Lean needed.</p><a class="go" data-gh="CONTRIBUTING.md#mathematicians-name-a-concept">Start here →</a></div>
-      <div class="card"><h3>Lean users</h3><p>Pick a candidate, rewrite it on a branch, and open a pull request. The ledger records what it saved.</p><a class="go" data-gh="CONTRIBUTING.md#lean-users-refactor-a-candidate">Start here →</a></div>
-      <div class="card"><h3>Compute</h3><p>A full build takes about a day. Hosting builds or a shared build cache lets everyone rebuild only what they touch.</p><a class="go" data-gh="CONTRIBUTING.md#compute-offer-builds-or-a-cache">Start here →</a></div>
+      <div class="card"><h3>Run an agent</h3><p>Fork the repository, add an API key, and press Run on the Contribute workflow, or run one command on your machine. The agent picks a free candidate, rewrites it, checks it with Lean and opens a pull request.</p><a class="go" data-gh="CONTRIBUTING.md#contribute-in-one-click">Start here →</a></div>
+      <div class="card"><h3>Name a concept</h3><p>Optional, and no Lean needed: read what an agent found and say what the idea is called in group theory, with a sentence on what it means.</p><a class="go" data-gh="CONTRIBUTING.md#optional-name-a-concept">Start here →</a></div>
+      <div class="card"><h3>Lend compute</h3><p>A full build takes about a day. Hosting builds or a shared build cache lets every agent check its work faster.</p><a class="go" data-gh="CONTRIBUTING.md#lend-compute">Start here →</a></div>
     </div>
   </section>
 

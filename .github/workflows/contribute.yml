@@ -1,0 +1,66 @@
+name: Contribute
+
+# The "Contribute" button. Run it from the Actions tab of YOUR FORK
+# (Actions -> Contribute -> Run workflow). It claims a candidate, lets a model
+# search and rewrite, checks the result with Lean, and pushes a branch to your
+# fork. With the secret PR_TOKEN it also opens the pull request; without it,
+# the run summary gives a one-click link to open it.
+#
+# Secrets in your fork: ANTHROPIC_API_KEY and/or OPENAI_API_KEY (the model
+# provider you choose pays per use; set a budget below), optional PR_TOKEN
+# (a fine-grained token that can open pull requests on your behalf).
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: "Candidate id (e.g. C02), or 'auto' to take the best unclaimed one"
+        default: auto
+      provider:
+        description: "Model provider"
+        type: choice
+        options: [anthropic, openai]
+        default: anthropic
+      model:
+        description: "Model id (empty = the provider's default in tools/trials/pricing.json)"
+        default: ""
+      budget_usd:
+        description: "Hard spending limit for this run, in USD"
+        default: "5"
+
+permissions:
+  contents: write
+
+jobs:
+  contribute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check that the contribute command is installed
+        run: |
+          test -f tools/contribute.py || { echo "::error::tools/contribute.py is not in this repository yet"; exit 1; }
+      - name: Install Lean (elan)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Search, rewrite, check, record
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ secrets.PR_TOKEN || secrets.GITHUB_TOKEN }}
+          HAS_PR_TOKEN: ${{ secrets.PR_TOKEN != '' }}
+          CONTRIBUTOR: ${{ github.actor }}
+          UPSTREAM_REPO: hora-algebra/concept-mining
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          python3 tools/contribute.py --candidate "${{ inputs.candidate }}" --provider "${{ inputs.provider }}" \
+            --model "${{ inputs.model }}" --budget-usd "${{ inputs.budget_usd }}" \
+            --login "$CONTRIBUTOR" --upstream-repo "$UPSTREAM_REPO" \
+            $([ "$HAS_PR_TOKEN" = "true" ] && echo --open-pr || echo --push-only) --summary "$GITHUB_STEP_SUMMARY"

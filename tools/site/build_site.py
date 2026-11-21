@@ -25,7 +25,11 @@ import json
 import os
 import re
 import sys
+import time
 from collections import defaultdict
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import scoring  # noqa: E402
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -137,7 +141,45 @@ def resolve(target: str, folders: dict[str, dict]) -> tuple[str, str | None] | N
     return p[0], (merged[0] if merged else None)
 
 
-def build(ledger_dir: str, rep: Report, today: dt.date) -> dict:
+def read_json(path: str | None, rep: Report) -> list:
+    if not path:
+        return []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            v = json.load(fh)
+        return v if isinstance(v, list) else []
+    except (OSError, json.JSONDecodeError) as e:
+        rep.warn(path, f"could not read ({e}); shown as empty")
+        return []
+
+
+def in_flight(claims: list, prs: list, now: float) -> list[dict]:
+    """Work in progress: live claims and open pull requests that carry a target marker."""
+    out = []
+    for c in claims:
+        if c.get("expires_at", 0) > now:
+            out.append({"key": c.get("key", ""), "who": c.get("login") or c.get("owner", ""),
+                        "agent": c.get("agent", ""), "kind": "claim", "until": int(c.get("expires_at", 0)),
+                        "link": ""})
+    marker = re.compile(r"<!--concept-mining-target:v1 (\{.*?\})-->", re.S)
+    for p in prs:
+        m = marker.search(p.get("body") or "")
+        meta = {}
+        if m:
+            try:
+                meta = json.loads(m.group(1))
+            except json.JSONDecodeError:
+                meta = {}
+        if not m:
+            continue
+        out.append({"key": meta.get("candidate") or meta.get("target", ""), "who": (p.get("author") or {}).get("login", ""),
+                    "agent": meta.get("agent", ""), "kind": "draft PR" if p.get("isDraft") else "PR",
+                    "until": 0, "link": p.get("url", ""), "number": p.get("number")})
+    return out
+
+
+def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None = None,
+          prs_file: str | None = None) -> dict:
     with open(os.path.join(ROOT, "data/map/blocks.json"), encoding="utf-8") as fh:
         blocks = json.load(fh)
     with open(os.path.join(ROOT, "data/map/summary.json"), encoding="utf-8") as fh:
@@ -281,6 +323,16 @@ def build(ledger_dir: str, rep: Report, today: dt.date) -> dict:
         if c["kind"] not in {"name", "refactor", "both"}:
             rep.err(c["_where"], f"kind {c['kind']!r} is not name, refactor or both")
 
+    contrib_rows, problems = scoring.read_contributions(os.path.join(ledger_dir, "contributions.tsv"))
+    for p in problems:
+        rep.err("data/ledger/contributions.tsv", p)
+    for d in contrib_rows:
+        if resolve(d["target"], folders) is None:
+            rep.err(d["_where"], f"target {d['target']!r} is not a folder of the map")
+    scores = scoring.board(contrib_rows)
+    flight = in_flight(read_json(claims_file, rep), read_json(prs_file, rep),
+                       time.time())
+
     strip = lambda rows: [{k: v for k, v in r.items() if not k.startswith("_")} for r in rows]
     return {
         "summary": {k: summary[k] for k in ("commit", "declarations", "edges", "lines_in_declarations", "final")},
@@ -295,6 +347,8 @@ def build(ledger_dir: str, rep: Report, today: dt.date) -> dict:
         "stages": strip(stages),
         "work": strip(work),
         "candidates": strip(cands),
+        "scores": scores,
+        "in_flight": flight,
         "checks": {"errors": len(rep.errors), "warnings": rep.warnings},
     }
 
@@ -305,12 +359,14 @@ def main() -> None:
     ap.add_argument("--out", default=os.path.join(ROOT, "docs/site/data/site.json"))
     ap.add_argument("--check", action="store_true", help="do not write; fail if the output is stale")
     ap.add_argument("--today", help="YYYY-MM-DD, for tests")
+    ap.add_argument("--claims", help="JSON from `claim.py list --json` (deploy only)")
+    ap.add_argument("--open-prs", help="JSON from `gh pr list --json number,title,author,body,url,isDraft` (deploy only)")
     ap.add_argument("--example", action="store_true",
                     help="mark the output as example data (the page shows a banner)")
     a = ap.parse_args()
     today = dt.date.fromisoformat(a.today) if a.today else dt.datetime.now(dt.timezone.utc).date()
     rep = Report()
-    data = build(a.ledger, rep, today)
+    data = build(a.ledger, rep, today, a.claims, a.open_prs)
     if a.example:
         data = {"example": True, **data}
     for w in rep.warnings:

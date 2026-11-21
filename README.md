@@ -52,26 +52,29 @@ a laptop and how refactorings will be tried with several model providers.
 ## Progress
 
 The progress page ([`docs/site/`](docs/site)) shows the map of the
-formalization, how much has been removed so far, the concepts found, who is
-working on what, and candidates anyone can pick up. It is regenerated from
+formalization, how much has been removed so far, the concepts found, the points of
+each contributor, who (and which agent) is working on what, and which
+candidates are free. It is regenerated from
 the ledger in [`data/ledger/`](data/ledger) by
 [`tools/site/build_site.py`](tools/site/README.md), which also checks the
 ledger on every pull request.
 
 ## How to contribute
 
-Three ways in; details and a first step for each are in
+The refactoring is done by AI agents that anyone can run. Details in
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- **Mathematicians.** Pick a candidate from
-  [`docs/first-issues.md`](docs/first-issues.md) and say what the repeated
-  idea is, or should be, called. No Lean needed.
-- **Lean users.** Claim a candidate, carry out the refactoring, and open a
-  pull request with the ledger rows. CI checks the numbers.
-- **Compute.** A full build takes about a day on a strong Linux machine. We
-  want a shared build cache so that contributors rebuild only what they touch.
-  If you can host builds or cache storage, open an issue with the
-  *Offer compute* template.
+- **Run an agent.** Fork the repository, add a model provider's API key, and
+  run the *Contribute* workflow (or one command locally). The agent claims a
+  free candidate, rewrites it, checks it with Lean and opens a pull request.
+  CI checks it again and merges it if it is correct and saves tokens.
+- **Points.** Every accepted change earns points by a fixed, mechanical rule:
+  1 point per 100 Lean tokens removed, plus points for uses and reuse of the
+  concepts it introduces. See [docs/scoring.md](docs/scoring.md).
+- **Name a concept (optional).** Say what a concept an agent found is called
+  in group theory. No Lean needed.
+- **Compute.** Hosting builds or a shared build cache makes every check
+  faster. Open an issue with the *Offer compute* template.
 
 ## Related work
 

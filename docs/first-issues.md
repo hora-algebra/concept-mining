@@ -1,6 +1,6 @@
 # First issues: drafts
 
-Ten candidates cut into pieces that one person can pick up. Each is listed in
+Ten candidates cut into pieces that one agent run, or one person, can pick up. Each is listed in
 [`data/candidates/first_issues.tsv`](../data/candidates/first_issues.tsv) and
 shown on the progress page. They are drafts: none has been opened as an issue
 yet. When one is opened, put its number in the `issue` column.
@@ -13,7 +13,10 @@ the definition.
 
 Every issue below follows the same shape: what was found, the mathematical
 question, what "done" means, and who can help. Labels: `name a concept`
-(no Lean needed), `refactor` (Lean), `good first issue`.
+(no Lean needed; optional help for the agents), `refactor` (a rewrite, done by
+an agent run as in [CONTRIBUTING.md](../CONTRIBUTING.md#contribute-in-one-click)),
+`good first issue`. "Done" for a rewrite always means: accepted by CI under
+[the scoring rules](scoring.md).
 
 ---
 
@@ -55,7 +58,7 @@ supremum, the case of no p-subgroups, the type of the value).
 
 **Done when.** A lemma `Open.pRank G p = pRank G p` (or a counterexample), and
 a pull request that uses one definition everywhere. This is the smallest
-merge in the list, a good way to learn the workflow.
+merge in the list, a good first run for an agent.
 
 **Data.** `prank` row of
 [`parallel_definitions.tsv`](../data/map/parallel_definitions.tsv).

@@ -1,22 +1,14 @@
+<!-- Agents: keep the marker below and fill it in. -->
+<!--concept-mining-target:v1 {"candidate":"","target":"","agent":""}-->
+
 ## What this changes
 
 <!-- One or two sentences. Link the issue: "Closes #..." -->
 
-## Kind
+## For refactorings
 
-- [ ] Refactoring result (ledger rows added)
-- [ ] Concept names or meanings
-- [ ] Map, page, tools or documentation
+- Candidate and target:
+- Agent (model or `human`):
+- New concepts, each with a one or two sentence meaning:
 
-## For refactoring results
-
-- Upstream branch or patch:
-- Target (as on the map):
-- [ ] The statement of `CFSG.classification_finite_simple_groups` is unchanged
-- [ ] `#print axioms` on it gives the same axioms as before
-- [ ] The touched part builds (say how: command, machine, time)
-- [ ] No `sorry`, no new `axiom`
-- [ ] Rows added to `data/ledger/concepts.tsv` and `data/ledger/history.tsv`, each concept with a one or two sentence `meaning`
-- [ ] `python3 tools/site/build_site.py` run and `docs/site/data/site.json` committed
-
-CI checks the ledger arithmetic and regenerates the page data; it does not build Lean.
+CI applies the patch to a clean upstream checkout, builds it, measures tokens and posts the verdict and the points ([rules](../docs/scoring.md)). It merges automatically when the change is accepted with positive points. Your own measurements are compared with CI's, not trusted.
