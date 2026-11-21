@@ -57,9 +57,12 @@ def signatures(st, own):
                 if u[0].isalpha() or u[0] == "_":
                     bound.add(u)
     strict, loose = [], []
-    for t in st:
+    for i, t in enumerate(st):
         if t in KEEP or t[0].isdigit():
             strict.append(t)
+            continue
+        if i > 0 and st[i - 1] == "." and (t[0].isalpha() or t[0] == "_"):
+            strict.append("." + t)  # constructor names such as `.J4` or `.G2` tell cases apart
             continue
         if not (t[0].isalpha() or t[0] == "_") or t in bound or t in SKIP or LOCALNAME.fullmatch(t):
             continue
