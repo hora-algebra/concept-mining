@@ -52,6 +52,8 @@ def main() -> None:
     ap.add_argument("--pr-json", default=None)
     ap.add_argument("--changed", default=None)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--base-ref", default="origin/main",
+                    help="the default branch, used when --pr-dir is this checkout")
     a = ap.parse_args()
     prdir = os.path.abspath(a.pr_dir)
     up = os.path.abspath(os.path.expanduser(a.upstream))
@@ -73,7 +75,17 @@ def main() -> None:
 
     try:
         # 1. paths
-        main_patches = {os.path.relpath(p, REPO) for p in glob.glob(os.path.join(REPO, "lean/patches/*/*.patch"))}
+        # the default branch's patches: from git when the checker runs inside the
+        # pull request's own checkout (the preview run), else from this checkout
+        main_patches = set()
+        if os.path.samefile(prdir, REPO):
+            r = run(["git", "-C", REPO, "ls-tree", "-r", "--name-only", a.base_ref, "lean/patches"])
+            if r.returncode:
+                v["reasons"].append(f"setup: cannot read {a.base_ref}: {r.stderr[-300:]}")
+                finish(75)
+            main_patches = {p for p in r.stdout.split() if p.endswith(".patch")}
+        else:
+            main_patches = {os.path.relpath(p, REPO) for p in glob.glob(os.path.join(REPO, "lean/patches/*/*.patch"))}
         pr_patches = {os.path.relpath(p, prdir) for p in glob.glob(os.path.join(prdir, "lean/patches/*/*.patch"))}
         new = sorted(pr_patches - main_patches)
         changed = [l.strip() for l in open(a.changed)] if a.changed else new
@@ -108,7 +120,20 @@ def main() -> None:
         v["candidate"] = cand
 
         # 2. base
-        r = run([os.path.join(HERE, "apply_patches.sh"), up, target])
+        # base = pinned upstream + exactly the default branch's patches
+        import tempfile
+        pdir = tempfile.mkdtemp(prefix="main-patches-")
+        for p in sorted(x for x in main_patches if x.startswith(f"lean/patches/{target}/")):
+            if os.path.samefile(prdir, REPO):
+                body = run(["git", "-C", REPO, "show", f"{a.base_ref}:{p}"]).stdout
+            else:
+                body = open(os.path.join(REPO, p), encoding="utf-8").read()
+            open(os.path.join(pdir, os.path.basename(p)), "w", encoding="utf-8").write(body)
+        env = dict(os.environ, PATCHES_DIR=pdir)
+        summary = os.path.join(REPO, "data", "pilot", target, "summary.json")
+        if os.path.exists(summary) and json.load(open(summary)).get("edges_to_outside") == 0:
+            env["SPARSE_TARGET_ONLY"] = "1"  # a closed island: its folder alone builds
+        r = run([os.path.join(HERE, "apply_patches.sh"), up, target], env=env)
         if r.returncode:
             v["reasons"].append("setup: cannot prepare upstream: " + r.stderr[-500:])
             finish(75)

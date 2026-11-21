@@ -294,7 +294,7 @@ def main() -> None:
     else:
         json.dump(json.load(open(os.path.join(pilot, "baseline.json"))), open(before, "w"))
     log("measuring (exports declarations with Lean)")
-    sh([sys.executable, os.path.join(HERE, "ledger.py"), "measure", "--root", root, "--prefix", f"CFSG.{target}",
+    sh([sys.executable, os.path.join(HERE, "ledger.py"), "measure", "--root", root, "--prefix", "CFSG." + target.replace("/", "."),
         "--protected", os.path.join(pilot, "protected.txt"), "--out", after])
     json.dump(json.load(open(after)), open(last, "w"), indent=2)
     uses = 0
@@ -307,8 +307,9 @@ def main() -> None:
         "--commit", os.path.basename(patch)])
     sh([sys.executable, os.path.join(HERE, "ledger.py"), "history", "--target", target, "--measure", after,
         "--note", f"after {name}"])
-    contributor = a.contributor or (sh(["gh", "api", "user", "--jq", ".login"], cwd=REPO, check=False).stdout.strip()
-                                    if not a.no_pr else "")
+    contributor = a.contributor or sh(["gh", "api", "user", "--jq", ".login"], cwd=REPO, check=False).stdout.strip()
+    if not contributor:
+        raise SystemExit("cannot tell who contributes: pass --contributor <GitHub login>")
     prnum = re.search(r"/pull/(\d+)", pr_url or "")
     ctsv = os.path.join(REPO, "data", "ledger", "contributions.tsv")
     cols = ["date", "pr", "contributor", "agent", "target", "candidate", "tokens_before", "tokens_after",
