@@ -116,36 +116,25 @@ finally applied to (about 40 use sites read):
 A theorem's price is freed only when **all** its uses go away, so none of these
 subtrees can be dropped this way.
 
-### One candidate survives: the classical involution theorem for q = 3
+### The classical involution theorem for q = 3: also refuted
 
 The same check on the 19 other shared theorems of price at least 50,000 lines
 (Aschbacher's uniqueness case, weak closure, quasithin amalgams, the signalizer
 functor theorem, ...) found them applied to the simple group of their branch,
-or already built on facts about known groups, with one exception. The four
-pieces of Aschbacher's classical involution theorem for q = 3
+or already built on facts about known groups. One cluster looked different at
+first: the four pieces of Aschbacher's classical involution theorem for q = 3
 (`Q3Residuals₁₄.largeJ` 166,090, `Sec13.dLeafEnd_three` 72,191,
 `TwinPerp.twinPerp233E_proved` 64,721, `twinPerpV3E_proved` 51,304; together
-354,306 lines, 1.0 %) are applied only to groups smaller than G:
-
-- in the component branch the theorem meets a component J, which is
-  quasisimple, so J/O(J) is SL₂(q) with q ≥ 5 or 2A₇ and the case q = 3 does
-  not arise;
-- inside the classical involution theorem, `CIT3Below` is an induction
-  hypothesis on smaller groups (`Q3JITyped9.lean`, `MilestoneAssemblyWired14.lean`);
-- the other consumer, `QuaternionInspectionLie`, is stated under `KProper`.
-
-So `KProper` could take over every use. What it would need is one fact about
-the known groups that the library does not seem to have: a K-group generated
-by a class of such subgroups is, modulo its odd core, of Lie type over F₃. Its
-size is not known; it needs centralizers of involutions in the known groups.
-Not traced: whether one solvable branch (`partOne_of_l2PrimeBalance`) applies
-the theorem to G itself. The milestone for the quaternion component already
-takes `KProper` as an argument and does not use it. This is the best
-concept-level candidate found tonight; it needs the full build. The catalog of facts about the known groups
-would still help: several intermediate statements (`GH74ModelsInput`,
-`gorensteinWalterStatement`, `theorem_SE`, ...) are quantified over all groups
-without a K-group hypothesis, and the uses on sections could be rerouted. That
-removes uses, not lines.
+354,306 lines, 1.0 %). They use an induction hypothesis on smaller groups
+(`CIT3Below`), which first read as "they are applied only to smaller groups".
+A closer trace shows the opposite: they are the top step of that induction and
+are applied to the ambient group, through `partOne_of_l2PrimeBalance`
+(`ClassicalInvolution/PerfectCase.lean`, the solvable case) and the tightly
+embedded case (`Q3/TL3Weak.lean`), both inside the classical involution
+milestone, which has no K-group hypothesis. Freeing these lines would mean
+restating that milestone and finding new proofs for two of its cases. The
+facts about known groups that would serve the smaller-group uses
+(`IsKGroup Y → InClass3 Λ → LieSystemMod3 Λ`) are also not in the library.
 
 ### A calibration
 
@@ -174,7 +163,7 @@ proved again is not measured yet.
 
 | Strategy | What it looks at | Cost | Expected | Status |
 |---|---|---|---|---|
-| **Price-tag search** (new) | the expensive declarations and their statements; asks what else in the library, Mathlib or the induction hypothesis implies each one | an hour of analysis per class; one Lean bridge per hit | 1.44 % found (Feit–Thompson); one 1.0 % candidate (classical involutions, q = 3) | 25 shared theorems checked |
+| **Price-tag search** (new) | the expensive declarations and their statements; asks what else in the library, Mathlib or the induction hypothesis implies each one | an hour of analysis per class; one Lean bridge per hit | 1.44 % found (Feit–Thompson); nothing else among 25 shared theorems | done for prices ≥ 50,000 |
 | Two-layer search over files ([two-layer-search.md](two-layer-search.md)) | files and hypothesis bundles of one region | ~1 h per region | StageK: 0.9 % of Feit–Thompson | done once |
 | Statement-schema families | statements equal up to numbers and type names | prototypes need only Mathlib | ≤ 2.8 % | handed to miner-b |
 | Cumulative stages / bundled contexts (StageK, generalized) | repeated hypotheses in statements | ~1 h + build per region | ~1 % of each region | proven on Feit–Thompson |
@@ -245,7 +234,7 @@ from another folder, by lines freed:
 | Move | Lines freed | Build | Status |
 |---|---|---|---|
 | Feit–Thompson: ThirdParty/QiuzhenCFSG's proof becomes an application of CFSG/FeitThompson's | 504,232 (1.44 %) | laptop (0.62 M lines) | in progress |
-| Classical involution theorem for q = 3 replaced by the induction hypothesis | 354,306 (1.0 %) | full build | needs one new fact about the known groups; one branch untraced |
+| Classical involution theorem for q = 3 replaced by the induction hypothesis | 0 | | refuted: applied to the ambient group (see above) |
 | Exact statement twins in different places (265 groups; one proof kept, the others call it) | about 296,000 (0.84 %) | 70,000 of it on the laptop, the rest full build | the basic group-theory layer; 131,000 of it needs the other copy kept to avoid an import cycle |
 
 Exact twins are matched on normalized statements (bound names, binder style
