@@ -27,7 +27,7 @@ function init(data) {
   SNAP = [{ date: null, removed: {}, concepts: [] }].concat(D.snapshots);
   state.t = SNAP.length - 1;
   document.querySelectorAll("[data-gh]").forEach(a => a.href = GH + a.dataset.gh);
-  header(); timeControl(); mapControls(); layout(); table(); timeline(); ranking(); rules(); scoreboard(); work(); candidates(); footer();
+  header(); timeControl(); mapControls(); layout(); table(); timeline(); ranking(); search(); rules(); scoreboard(); work(); candidates(); footer();
   let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { layout(); timeline(); }, 120); });
 }
 
@@ -167,7 +167,9 @@ function layout() {
       }
       el._d = { f, p, kind: n.data.kind, rem: n.data.rem };
       const st = statusOf(f.folder, p.part, state.t);
-      el.className = "leaf " + (n.data.kind === "gone" ? "gone" : state.color === "field" ? "k-" + f.field : "s-" + st);
+      el.className = "leaf " + (n.data.kind === "gone" ? "gone" : state.color === "field" ? "k-" + f.field : state.color === "bound" ? "b" : "s-" + st);
+      if (state.color === "bound" && n.data.kind !== "gone") { const b = boundShare(f.folder, p.part); el.style.background = ramp(b); el.style.color = b > 0.55 ? "#fff" : "var(--fg)"; }
+      else { el.style.background = ""; el.style.color = ""; }
       const w = n.x1 - n.x0, h = n.y1 - n.y0;
       // let the browser register the starting box of a new element before moving it
       requestAnimationFrame(() => Object.assign(el.style, { left: n.x0 + "px", top: n.y0 + "px", width: w + "px", height: h + "px", display: "" }));
@@ -191,9 +193,26 @@ function layout() {
   leafEl.forEach((el, k) => { if (!seenL.has(k)) { if (k.endsWith("#gone")) { el.remove(); leafEl.delete(k); } else el.style.display = "none"; } });
   legend(shown);
 }
+function boundOf(f, p) { return ((D.potential || {}).blocks || {})[f + "/" + p]; }
+function boundShare(f, p) {
+  const b = boundOf(f, p), part = folders.find(x => x.folder === f).parts.find(x => x.part === p);
+  return b && part.lines ? Math.min(1, b.lines / part.lines) : 0;
+}
+function ramp(t) {
+  const cs = getComputedStyle(document.documentElement);
+  return d3.interpolateRgb(cs.getPropertyValue("--idle").trim(), cs.getPropertyValue("--c2").trim())(t);
+}
 function legend(shown) {
   const el = document.getElementById("legend");
   const hasGone = state.area === "lines" && Object.keys(SNAP[state.t].removed).length > 0;
+  if (state.color === "bound") {
+    const ms = (D.potential || {}).methods || [];
+    const tot = d3.sum(Object.values((D.potential || {}).blocks || {}), b => b.lines);
+    el.innerHTML = ms.length
+      ? `<li>Share of the part that could go, at most:</li><li>0%<i class="ramp" style="background:linear-gradient(90deg,${[0, .25, .5, .75, 1].map(ramp).join(",")})"></i>100%</li><li>Methods: ${ms.map(esc).join(", ")}</li><li><span class="v">${fmt(tot)}</span> lines in all</li>`
+      : `<li>No upper bounds recorded yet.</li>`;
+    return;
+  }
   if (state.color === "field") {
     const tot = d3.sum(shown, f => d3.sum(f.parts, p => p[state.area]));
     el.innerHTML = D.map.fields.map(fl => {
@@ -212,6 +231,7 @@ function tipShow(e, el) {
   tip.innerHTML = `<b>${esc(showFolder(f.folder))} ▸ ${esc(showPart(p.part))}</b>${f.gloss ? esc(f.gloss) + "<br>" : ""}<span class="n">` +
     `${fmt(p.lines)} lines (${pct(p.lines / TOT.lines)} of all)<br>used ${fmt(p.used)} times by other parts<br>` +
     (rem > 0 ? `${fmt(rem)} lines removed (${pct(rem / p.lines)} of this part)<br>` : "") +
+    (boundOf(f.folder, p.part) ? `at most ${fmt(boundOf(f.folder, p.part).lines)} lines could go (${Object.entries(boundOf(f.folder, p.part).methods).map(([m, v]) => esc(m) + " " + fmt(v)).join(", ")})<br>` : "") +
     `</span>Status: ${esc(st)}${w && state.t === SNAP.length - 1 ? " (" + esc(w.who) + ")" : ""}` + (kind === "gone" ? "<br><i>Hatched: lines already removed.</i>" : "");
   tip.hidden = false;
   const r = tip.getBoundingClientRect();
@@ -324,6 +344,31 @@ function ranking() {
     <div class="track"><div class="fill" style="width:${Math.max(0.5, 78 * val(c) / max)}%"></div><span class="val">${useTok ? `−${fmt(c.tokens || 0)} tokens · ` : ""}−${fmt(c.saved)} lines</span></div>
     ${c.meaning ? `<div class="mean">${esc(c.meaning)}</div>` : ""}
     <div class="meta">${c.targets.map(esc).join(", ")} · used ${fmt(c.uses)} times · first recorded ${esc(c.date)}</div></li>`).join("")}</ol></div>`;
+}
+
+/* ---------- two-layer search ---------- */
+const STAT = ["accepted", "verifying", "selected", "rejected", "duplicate", "proposed"];
+function search() {
+  const box = document.getElementById("search"), S = D.search || { hypotheses: [], statuses: [] }, H = S.hypotheses;
+  if (!H.length) {
+    box.innerHTML = `<div class="empty"><b>No search run yet.</b>When it runs, this shows how many hypotheses were proposed, by which models, how many survived deduplication, and which ones Lean accepted or rejected.</div>`;
+    return;
+  }
+  const c = s => H.filter(h => h.status === s).length;
+  const tried = c("verifying") + c("accepted") + c("rejected");
+  const steps = [["Proposed", H.length, ""], ["After removing duplicates", H.length - c("duplicate"), ""],
+    ["Selected for a try", c("selected") + tried, ""], ["Tried with Lean", tried, ""], ["Accepted", c("accepted"), "ok"], ["Rejected", c("rejected"), "no"]];
+  const max = H.length;
+  const models = d3.rollups(H, v => v.length, h => (h.provider ? h.provider + "/" : "") + (h.model || "unknown")).sort((a, b) => b[1] - a[1]);
+  const shown = H.filter(h => h.status !== "proposed" && h.status !== "duplicate")
+    .sort((a, b) => STAT.indexOf(a.status) - STAT.indexOf(b.status) || b.statements - a.statements);
+  box.innerHTML = `<div class="panel"><div class="funnel">${steps.map(([l, n, k]) =>
+      `<div class="row"><span>${l}</span><div class="bar ${k}" style="width:${Math.max(0.5, 100 * n / max)}%"></div><span class="n">${fmt(n)}</span></div>`).join("")}</div>
+    <p class="small" style="margin:0">Proposed by ${models.map(([m, n]) => `${esc(m)} (${n})`).join(", ")}.</p></div>` +
+    (shown.length ? `<div class="panel tbl" style="margin-top:12px"><table class="hyp"><tr><th>Concept</th><th>Proposed by</th><th>Regions</th><th class="r">Reach</th><th>Result</th></tr>${shown.map(h =>
+      `<tr><td><b>${esc(h.concept)}</b>${h.meaning ? `<div class="mean">${esc(h.meaning)}</div>` : ""}</td><td>${esc(h.model || h.provider)}${h.viewpoint ? `<div class="agent">${esc(h.viewpoint)}</div>` : ""}</td>
+      <td>${h.regions.map(esc).join(", ")}</td><td class="r">${h.statements ? fmt(h.statements) + " statements" : ""}</td>
+      <td><span class="pill p-${h.status === "accepted" ? "done" : h.status === "rejected" ? "draft" : "in-progress"}">${esc(h.status)}</span>${h.status === "accepted" && h.tokens_saved ? `<div class="agent">−${fmt(h.tokens_saved)} tokens</div>` : ""}${h.status === "rejected" && h.reasons.length ? `<div class="agent">${esc(h.reasons[0])}</div>` : ""}</td></tr>`).join("")}</table></div>` : "");
 }
 
 /* ---------- points ---------- */
