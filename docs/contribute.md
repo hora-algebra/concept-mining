@@ -119,7 +119,12 @@ Only a pull request that passes is merged automatically. Building the
 FeitThompson target from scratch takes roughly 1.5 hours on a standard 4-core
 GitHub runner (measured: 9,800 CPU-seconds on an M5 Max, about twice that on a
 runner core); caching the base build keyed by the patch list on `main` brings a
-typical recheck down to the modules downstream of the change. Lean code from a
+typical recheck down to the modules downstream of the change. For a target
+that imports nothing else from CFSG (FeitThompson), the checker checks out only
+the target folder and Lake's files, so the runner needs the Mathlib cache
+(about 7 GB), the other Lake packages (about 0.7 GB) and the target's build
+output (about 3.7 GB). The default branch's patches are read from git, never
+from the pull request's checkout. Lean code from a
 pull request is compiled, so the job runs without secrets or write tokens, and
 the guards above refuse compile-time code execution.
 
