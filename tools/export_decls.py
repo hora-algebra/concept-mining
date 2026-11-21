@@ -42,7 +42,8 @@ def main() -> None:
     out = os.path.abspath(a.out)
     body = open(os.path.join(HERE, "lean", "ExportDecls.lean"), encoding="utf-8").read()
     src = "".join(f"import {m}\n" for m in modules(root, a.prefix)) + body
-    src += f'\n#eval exportDecls `{a.prefix} "{out}"\n'
+    # the export walks every constant of the folder; no heartbeat limit for this tool run
+    src += f'\nset_option maxHeartbeats 0 in\n#eval exportDecls `{a.prefix} "{out}"\n'
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=root, delete=False, encoding="utf-8") as f:
         f.write(src)
         path = f.name
