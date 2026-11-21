@@ -282,7 +282,7 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
     def map_lines(f: str) -> int:
         return sum(c["lines"] for c in folders[f]["parts"])
     base: dict[str, int] = {}
-    for f in {c["folder"] for c in good_c}:
+    for f in sorted({c["folder"] for c in good_c}):
         whole = sorted((h for h in good_h if h["folder"] == f and h["part"] is None), key=lambda h: h["date"])
         base[f] = whole[0]["lines_total"] if whole else max(c["lines_before"] for c in good_c if c["folder"] == f)
     dates = sorted({c["date"] for c in good_c} | {h["date"] for h in good_h})
@@ -373,7 +373,7 @@ def main() -> None:
         print("warning:", w)
     for e in rep.errors:
         print("error:", e)
-    text = json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n"
+    text = json.dumps(data, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
     n_c, n_h = len(data["ledger"]["concepts"]), len(data["ledger"]["history"])
     print(f"{n_c} concepts, {n_h} history rows, {len(data['snapshots'])} snapshots, "
           f"{len(rep.errors)} errors, {len(rep.warnings)} warnings")
