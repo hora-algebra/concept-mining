@@ -1,0 +1,801 @@
+{
+  "files": 194224,
+  "decls_scanned": 374068,
+  "lines_scanned": 7222786,
+  "lines_scanned_by_folder": {
+    "Permutation": 20,
+    "StronglyEmbedded.lean": 20,
+    "Quasithin": 714030,
+    "StronglyEmbedded": 2069,
+    "Mathlib": 96,
+    "Goldschmidt75": 1598,
+    "GF2Type": 37476,
+    "Literature": 3,
+    "ClassicalGroups": 1640,
+    "LieType": 223988,
+    "Fischer": 1065,
+    "Assembly": 5192,
+    "Dihedral": 97,
+    "F3": 1680,
+    "Sporadic": 420350,
+    "RepresentationTheory": 6719,
+    "CharacterTheory": 1776,
+    "Models": 6,
+    "OddTranspositions": 3196,
+    "StandardComponent": 421,
+    "Holt": 9040,
+    "HardMathSupport": 425578,
+    "GroupTheory": 5466,
+    "YGroups": 505,
+    "Adapters": 5865,
+    "Walter": 96607,
+    "Timmesfeld": 16008,
+    "CGT": 34958,
+    "LocalAnalysis": 3149641,
+    "Milestones": 141853,
+    "RankThree": 635823,
+    "Yardstones": 273,
+    "LinearAlgebra": 1171,
+    "SignalizerFunctorTheorem": 7401,
+    "ClassicalInvolution": 190039,
+    "FeitThompson": 111,
+    "ThirdParty": 262301,
+    "Goldschmidt": 3684,
+    "Open": 294,
+    "Monster": 213139,
+    "Algebra": 25,
+    "Blueprint": 317,
+    "GH74": 577200,
+    "LargeExtraspecial": 24045
+  },
+  "cfsg_lines": 35093004,
+  "by_name": {
+    "group_named_decls": 283068,
+    "group_named_lines": 5326875,
+    "families": 7968,
+    "family_lines": 402498,
+    "save80": 42147,
+    "save50": 60024,
+    "argument_save80": 26788,
+    "argument_save50": 43023,
+    "by_folder": {
+      "LocalAnalysis": {
+        "families": 3838,
+        "lines": 196517,
+        "save80": 13757,
+        "save50": 22980
+      },
+      "LocalAnalysis (data)": {
+        "families": 208,
+        "lines": 19770,
+        "save80": 9347,
+        "save50": 9651
+      },
+      "ClassicalInvolution": {
+        "families": 279,
+        "lines": 16100,
+        "save80": 3599,
+        "save50": 4832
+      },
+      "Quasithin (data)": {
+        "families": 58,
+        "lines": 15228,
+        "save80": 3594,
+        "save50": 3739
+      },
+      "HardMathSupport": {
+        "families": 616,
+        "lines": 25150,
+        "save80": 1871,
+        "save50": 3262
+      },
+      "Sporadic": {
+        "families": 630,
+        "lines": 17959,
+        "save80": 1959,
+        "save50": 3118
+      },
+      "Quasithin": {
+        "families": 629,
+        "lines": 25109,
+        "save80": 1228,
+        "save50": 2369
+      },
+      "RankThree": {
+        "families": 644,
+        "lines": 32656,
+        "save80": 1452,
+        "save50": 2256
+      },
+      "RankThree (data)": {
+        "families": 36,
+        "lines": 7240,
+        "save80": 604,
+        "save50": 1677
+      },
+      "HardMathSupport (data)": {
+        "families": 28,
+        "lines": 7085,
+        "save80": 1601,
+        "save50": 1616
+      },
+      "GF2Type": {
+        "families": 136,
+        "lines": 6234,
+        "save80": 1105,
+        "save50": 1162
+      },
+      "LieType": {
+        "families": 244,
+        "lines": 8040,
+        "save80": 472,
+        "save50": 805
+      },
+      "GH74": {
+        "families": 172,
+        "lines": 7990,
+        "save80": 339,
+        "save50": 588
+      },
+      "F3": {
+        "families": 38,
+        "lines": 1680,
+        "save80": 555,
+        "save50": 555
+      },
+      "Timmesfeld": {
+        "families": 76,
+        "lines": 2853,
+        "save80": 98,
+        "save50": 228
+      },
+      "Adapters": {
+        "families": 30,
+        "lines": 1298,
+        "save80": 164,
+        "save50": 205
+      },
+      "Milestones": {
+        "families": 77,
+        "lines": 4060,
+        "save80": 88,
+        "save50": 191
+      },
+      "Sporadic (data)": {
+        "families": 25,
+        "lines": 794,
+        "save80": 108,
+        "save50": 136
+      },
+      "Monster": {
+        "families": 44,
+        "lines": 817,
+        "save80": 11,
+        "save50": 82
+      },
+      "CGT": {
+        "families": 30,
+        "lines": 1096,
+        "save80": 30,
+        "save50": 78
+      },
+      "ClassicalInvolution (data)": {
+        "families": 10,
+        "lines": 308,
+        "save80": 68,
+        "save50": 77
+      },
+      "SignalizerFunctorTheorem": {
+        "families": 16,
+        "lines": 874,
+        "save80": 16,
+        "save50": 73
+      },
+      "LinearAlgebra": {
+        "families": 22,
+        "lines": 990,
+        "save80": 0,
+        "save50": 71
+      },
+      "LieType (data)": {
+        "families": 7,
+        "lines": 604,
+        "save80": 16,
+        "save50": 67
+      },
+      "OddTranspositions": {
+        "families": 6,
+        "lines": 350,
+        "save80": 3,
+        "save50": 63
+      },
+      "GroupTheory": {
+        "families": 5,
+        "lines": 193,
+        "save80": 8,
+        "save50": 50
+      },
+      "Fischer": {
+        "families": 6,
+        "lines": 187,
+        "save80": 16,
+        "save50": 30
+      },
+      "GH74 (data)": {
+        "families": 3,
+        "lines": 89,
+        "save80": 6,
+        "save50": 21
+      },
+      "LargeExtraspecial": {
+        "families": 17,
+        "lines": 449,
+        "save80": 16,
+        "save50": 20
+      },
+      "Timmesfeld (data)": {
+        "families": 9,
+        "lines": 106,
+        "save80": 10,
+        "save50": 10
+      },
+      "Assembly": {
+        "families": 1,
+        "lines": 33,
+        "save80": 0,
+        "save50": 4
+      },
+      "LargeExtraspecial (data)": {
+        "families": 1,
+        "lines": 19,
+        "save80": 3,
+        "save50": 3
+      },
+      "Monster (data)": {
+        "families": 9,
+        "lines": 82,
+        "save80": 1,
+        "save50": 2
+      },
+      "CGT (data)": {
+        "families": 5,
+        "lines": 61,
+        "save80": 0,
+        "save50": 1
+      },
+      "Open": {
+        "families": 4,
+        "lines": 51,
+        "save80": 1,
+        "save50": 1
+      },
+      "Blueprint (data)": {
+        "families": 1,
+        "lines": 15,
+        "save80": 1,
+        "save50": 1
+      },
+      "Goldschmidt75": {
+        "families": 2,
+        "lines": 30,
+        "save80": 0,
+        "save50": 0
+      },
+      "ClassicalGroups": {
+        "families": 1,
+        "lines": 156,
+        "save80": 0,
+        "save50": 0
+      },
+      "Walter": {
+        "families": 2,
+        "lines": 32,
+        "save80": 0,
+        "save50": 0
+      },
+      "Open (data)": {
+        "families": 1,
+        "lines": 7,
+        "save80": 0,
+        "save50": 0
+      },
+      "Blueprint": {
+        "families": 2,
+        "lines": 186,
+        "save80": 0,
+        "save50": 0
+      }
+    },
+    "share80": 0.001201,
+    "share50": 0.00171,
+    "argument_share50": 0.001226
+  },
+  "by_skeleton": {
+    "clusters": 10116,
+    "cluster_lines": 497960,
+    "save80": 107658,
+    "save50": 195437,
+    "argument_save80": 63160,
+    "argument_save50": 120299,
+    "by_folder": {
+      "LocalAnalysis": {
+        "families": 4298,
+        "lines": 146708,
+        "save80": 25454,
+        "save50": 54433
+      },
+      "Sporadic (data)": {
+        "families": 28,
+        "lines": 81822,
+        "save80": 9329,
+        "save50": 25832
+      },
+      "LocalAnalysis (data)": {
+        "families": 133,
+        "lines": 34080,
+        "save80": 15895,
+        "save50": 20860
+      },
+      "Quasithin": {
+        "families": 1195,
+        "lines": 48853,
+        "save80": 12243,
+        "save50": 16798
+      },
+      "Quasithin (data)": {
+        "families": 47,
+        "lines": 23020,
+        "save80": 10438,
+        "save50": 12967
+      },
+      "HardMathSupport": {
+        "families": 901,
+        "lines": 30426,
+        "save80": 5188,
+        "save50": 11142
+      },
+      "ClassicalInvolution": {
+        "families": 370,
+        "lines": 19520,
+        "save80": 6000,
+        "save50": 9250
+      },
+      "RankThree": {
+        "families": 733,
+        "lines": 22862,
+        "save80": 3283,
+        "save50": 8344
+      },
+      "LieType (data)": {
+        "families": 21,
+        "lines": 9741,
+        "save80": 5506,
+        "save50": 6738
+      },
+      "Sporadic": {
+        "families": 787,
+        "lines": 18972,
+        "save80": 3339,
+        "save50": 5810
+      },
+      "RankThree (data)": {
+        "families": 20,
+        "lines": 10976,
+        "save80": 744,
+        "save50": 5323
+      },
+      "LieType": {
+        "families": 531,
+        "lines": 13261,
+        "save80": 1549,
+        "save50": 3861
+      },
+      "Milestones": {
+        "families": 244,
+        "lines": 8563,
+        "save80": 1873,
+        "save50": 2866
+      },
+      "GH74": {
+        "families": 227,
+        "lines": 6812,
+        "save80": 1103,
+        "save50": 2350
+      },
+      "HardMathSupport (data)": {
+        "families": 22,
+        "lines": 3329,
+        "save80": 1911,
+        "save50": 1998
+      },
+      "GF2Type": {
+        "families": 100,
+        "lines": 4278,
+        "save80": 1140,
+        "save50": 1419
+      },
+      "ThirdParty": {
+        "families": 8,
+        "lines": 1130,
+        "save80": 228,
+        "save50": 713
+      },
+      "Timmesfeld (data)": {
+        "families": 2,
+        "lines": 933,
+        "save80": 501,
+        "save50": 705
+      },
+      "Adapters": {
+        "families": 94,
+        "lines": 1961,
+        "save80": 226,
+        "save50": 606
+      },
+      "Monster (data)": {
+        "families": 4,
+        "lines": 767,
+        "save80": 130,
+        "save50": 576
+      },
+      "F3": {
+        "families": 38,
+        "lines": 1680,
+        "save80": 555,
+        "save50": 555
+      },
+      "Timmesfeld": {
+        "families": 47,
+        "lines": 1314,
+        "save80": 136,
+        "save50": 421
+      },
+      "CGT": {
+        "families": 65,
+        "lines": 1542,
+        "save80": 208,
+        "save50": 409
+      },
+      "Walter": {
+        "families": 32,
+        "lines": 1376,
+        "save80": 239,
+        "save50": 357
+      },
+      "Monster": {
+        "families": 66,
+        "lines": 1210,
+        "save80": 77,
+        "save50": 269
+      },
+      "SignalizerFunctorTheorem": {
+        "families": 12,
+        "lines": 404,
+        "save80": 28,
+        "save50": 125
+      },
+      "Assembly": {
+        "families": 8,
+        "lines": 304,
+        "save80": 102,
+        "save50": 124
+      },
+      "LargeExtraspecial": {
+        "families": 24,
+        "lines": 413,
+        "save80": 46,
+        "save50": 93
+      },
+      "GH74 (data)": {
+        "families": 6,
+        "lines": 207,
+        "save80": 6,
+        "save50": 72
+      },
+      "LinearAlgebra": {
+        "families": 8,
+        "lines": 255,
+        "save80": 0,
+        "save50": 72
+      },
+      "OddTranspositions": {
+        "families": 4,
+        "lines": 188,
+        "save80": 3,
+        "save50": 63
+      },
+      "GroupTheory": {
+        "families": 6,
+        "lines": 167,
+        "save80": 15,
+        "save50": 57
+      },
+      "ClassicalInvolution (data)": {
+        "families": 7,
+        "lines": 200,
+        "save80": 31,
+        "save50": 54
+      },
+      "StandardComponent": {
+        "families": 2,
+        "lines": 145,
+        "save80": 52,
+        "save50": 52
+      },
+      "StronglyEmbedded": {
+        "families": 1,
+        "lines": 90,
+        "save80": 33,
+        "save50": 33
+      },
+      "Fischer": {
+        "families": 3,
+        "lines": 103,
+        "save80": 16,
+        "save50": 30
+      },
+      "Holt": {
+        "families": 3,
+        "lines": 83,
+        "save80": 23,
+        "save50": 23
+      },
+      "Goldschmidt": {
+        "families": 2,
+        "lines": 41,
+        "save80": 0,
+        "save50": 15
+      },
+      "CGT (data)": {
+        "families": 5,
+        "lines": 59,
+        "save80": 3,
+        "save50": 6
+      },
+      "Open": {
+        "families": 3,
+        "lines": 48,
+        "save80": 1,
+        "save50": 6
+      },
+      "Milestones (data)": {
+        "families": 3,
+        "lines": 34,
+        "save80": 0,
+        "save50": 3
+      },
+      "Yardstones": {
+        "families": 2,
+        "lines": 33,
+        "save80": 0,
+        "save50": 3
+      },
+      "LargeExtraspecial (data)": {
+        "families": 1,
+        "lines": 19,
+        "save80": 3,
+        "save50": 3
+      },
+      "Blueprint (data)": {
+        "families": 1,
+        "lines": 15,
+        "save80": 1,
+        "save50": 1
+      },
+      "RepresentationTheory": {
+        "families": 2,
+        "lines": 16,
+        "save80": 0,
+        "save50": 0
+      }
+    },
+    "share80": 0.003068,
+    "share50": 0.005569,
+    "argument_share50": 0.003428
+  },
+  "by_file": {
+    "families": 1996,
+    "family_lines": 956790,
+    "save80": 17120,
+    "save50": 35217,
+    "argument_save80": 7434,
+    "argument_save50": 13119,
+    "by_folder": {
+      "LocalAnalysis (data)": {
+        "families": 44,
+        "lines": 33259,
+        "save80": 7822,
+        "save50": 10940
+      },
+      "Quasithin (data)": {
+        "families": 10,
+        "lines": 19356,
+        "save80": 0,
+        "save50": 5297
+      },
+      "RankThree (data)": {
+        "families": 13,
+        "lines": 13634,
+        "save80": 1638,
+        "save50": 4846
+      },
+      "LocalAnalysis": {
+        "families": 848,
+        "lines": 404269,
+        "save80": 2257,
+        "save50": 4754
+      },
+      "ClassicalInvolution": {
+        "families": 82,
+        "lines": 33711,
+        "save80": 2756,
+        "save50": 3741
+      },
+      "Sporadic": {
+        "families": 147,
+        "lines": 57238,
+        "save80": 564,
+        "save50": 1133
+      },
+      "GF2Type": {
+        "families": 36,
+        "lines": 10188,
+        "save80": 1017,
+        "save50": 1056
+      },
+      "LieType (data)": {
+        "families": 22,
+        "lines": 8555,
+        "save80": 123,
+        "save50": 460
+      },
+      "HardMathSupport": {
+        "families": 161,
+        "lines": 62985,
+        "save80": 231,
+        "save50": 457
+      },
+      "Quasithin": {
+        "families": 207,
+        "lines": 84788,
+        "save80": 165,
+        "save50": 436
+      },
+      "Adapters": {
+        "families": 9,
+        "lines": 2179,
+        "save80": 149,
+        "save50": 415
+      },
+      "RankThree": {
+        "families": 207,
+        "lines": 106887,
+        "save80": 64,
+        "save50": 393
+      },
+      "LieType": {
+        "families": 48,
+        "lines": 19381,
+        "save80": 56,
+        "save50": 343
+      },
+      "HardMathSupport (data)": {
+        "families": 10,
+        "lines": 9035,
+        "save80": 0,
+        "save50": 286
+      },
+      "GH74": {
+        "families": 70,
+        "lines": 25618,
+        "save80": 50,
+        "save50": 212
+      },
+      "Sporadic (data)": {
+        "families": 14,
+        "lines": 4618,
+        "save80": 49,
+        "save50": 179
+      },
+      "Timmesfeld": {
+        "families": 1,
+        "lines": 214,
+        "save80": 125,
+        "save50": 125
+      },
+      "ClassicalInvolution (data)": {
+        "families": 3,
+        "lines": 810,
+        "save80": 54,
+        "save50": 54
+      },
+      "Monster": {
+        "families": 19,
+        "lines": 2356,
+        "save80": 0,
+        "save50": 40
+      },
+      "Monster (data)": {
+        "families": 2,
+        "lines": 612,
+        "save80": 0,
+        "save50": 18
+      },
+      "GH74 (data)": {
+        "families": 4,
+        "lines": 204,
+        "save80": 0,
+        "save50": 18
+      },
+      "CGT": {
+        "families": 12,
+        "lines": 2859,
+        "save80": 0,
+        "save50": 14
+      },
+      "Milestones": {
+        "families": 11,
+        "lines": 39153,
+        "save80": 0,
+        "save50": 0
+      },
+      "Holt": {
+        "families": 3,
+        "lines": 9020,
+        "save80": 0,
+        "save50": 0
+      },
+      "SignalizerFunctorTheorem": {
+        "families": 3,
+        "lines": 2767,
+        "save80": 0,
+        "save50": 0
+      },
+      "Goldschmidt": {
+        "families": 1,
+        "lines": 842,
+        "save80": 0,
+        "save50": 0
+      },
+      "LargeExtraspecial": {
+        "families": 4,
+        "lines": 1331,
+        "save80": 0,
+        "save50": 0
+      },
+      "OddTranspositions": {
+        "families": 1,
+        "lines": 364,
+        "save80": 0,
+        "save50": 0
+      },
+      "Goldschmidt75": {
+        "families": 1,
+        "lines": 286,
+        "save80": 0,
+        "save50": 0
+      },
+      "GroupTheory": {
+        "families": 1,
+        "lines": 192,
+        "save80": 0,
+        "save50": 0
+      },
+      "Fischer": {
+        "families": 1,
+        "lines": 52,
+        "save80": 0,
+        "save50": 0
+      },
+      "Walter": {
+        "families": 1,
+        "lines": 27,
+        "save80": 0,
+        "save50": 0
+      }
+    },
+    "share80": 0.000488,
+    "share50": 0.001004,
+    "argument_share50": 0.000374
+  }
+}
