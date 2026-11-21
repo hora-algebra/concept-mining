@@ -236,6 +236,24 @@ figures come from the same graph plus the module imports of upstream
 `965a077` (the proof map is of `3e39d10`, so every deletion is still checked by
 building).
 
+## Replacements across folders, ranked
+
+Imports of modules from other CFSG folders are allowed from 2026-11-21 (owner's
+decision; the checker is being changed accordingly). Moves that reuse a proof
+from another folder, by lines freed:
+
+| Move | Lines freed | Build | Status |
+|---|---|---|---|
+| Feit–Thompson: ThirdParty/QiuzhenCFSG's proof becomes an application of CFSG/FeitThompson's | 504,232 (1.44 %) | laptop (0.62 M lines) | in progress |
+| Classical involution theorem for q = 3 replaced by the induction hypothesis | 354,306 (1.0 %) | full build | needs one new fact about the known groups; one branch untraced |
+| Exact statement twins in different places (265 groups; one proof kept, the others call it) | about 296,000 (0.84 %) | 70,000 of it on the laptop, the rest full build | the basic group-theory layer; 131,000 of it needs the other copy kept to avoid an import cycle |
+
+Exact twins are matched on normalized statements (bound names, binder style
+and universes ignored; constructor names such as `.J4` kept, so different
+groups do not match). Table: `crosstwins.tsv` in the shared notes; script:
+`tools/strategy/schema_families.py` (twins) with the import graph of the
+upstream checkout.
+
 ## Next moves (decided)
 
 | Who | What | Why |
@@ -283,7 +301,8 @@ None of these is changed here; each is a proposal.
    needed proof unneeded and then deletes it, would be paid at a quarter of the
    rate although it is exactly the kind of concept this project looks for.
 
-5. **Imports across folders.** The checker accepts new imports only from
+5. **Imports across folders.** *Approved by the owner on 2026-11-21; the
+   checker change is in progress.* The checker accepted new imports only from
    Mathlib or the target folder. The Feit–Thompson route replacement must
    import CFSG/FeitThompson from ThirdParty/QiuzhenCFSG. Proposal: also accept
    an import of a module of another folder when (a) that folder does not import
