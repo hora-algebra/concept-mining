@@ -1,0 +1,20 @@
+From ea8c3a0ffa81dde133650f69acc186e206e94e18 Mon Sep 17 00:00:00 2001
+From: concept-mining-gate-test <gate-test@users.noreply.github.com>
+Date: Sun, 22 Nov 2026 02:07:08 +0900
+Subject: [PATCH] Gate wiring test: a patch the gate must refuse
+
+---
+ CFSG/FeitThompson/GateWiringTest.lean | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 CFSG/FeitThompson/GateWiringTest.lean
+
+diff --git a/CFSG/FeitThompson/GateWiringTest.lean b/CFSG/FeitThompson/GateWiringTest.lean
+new file mode 100644
+index 0000000..7f31ac7
+--- /dev/null
++++ b/CFSG/FeitThompson/GateWiringTest.lean
+@@ -0,0 +1 @@
++#eval 1
+-- 
+2.54.0 (Apple Git-157)
+
