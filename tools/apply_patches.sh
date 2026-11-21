@@ -32,6 +32,6 @@ git -C "$dest" checkout -q "$commit"
 git -C "$dest" checkout -q -B "concept-mining/$target"
 for p in "${PATCHES_DIR:-$here/lean/patches/$target}"/*.patch; do
   [ -e "$p" ] || continue
-  git -C "$dest" am -q --keep-cr "$p"
+  git -C "$dest" -c user.name=concept-mining -c user.email=concept-mining@users.noreply.github.com am -q --keep-cr "$p"
   echo "applied $(basename "$p")"
 done
