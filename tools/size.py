@@ -7,17 +7,28 @@ symbol. Whitespace, line breaks and comments count for nothing, so joining
 lines or shortening names does not make a file smaller; only removing actual
 terms, binders, tactic steps or declarations does.
 
+Tokens come from tools/lean_lex.py, which reads comments and strings exactly
+as Lean does (a `"/-"` string does not open a comment). Symbols are grouped as
+before: := => <- -> <;> .. :: || && count as one token, any other symbol
+character as one. A file Lean could not lex raises lean_lex.LexError.
+
     python3 tools/size.py FILE...            # tokens per file and total
     python3 tools/size.py --git ROOT REV DIR # tokens of DIR at a git revision
 """
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
 
-COMMENT = re.compile(r"/-.*?-/|--[^\n]*", re.S)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from lean_lex import COMMENT_KINDS, LexError, tokenize  # noqa: E402
+
+# Legacy regex tokenizer, kept for the analysis tools that split text they
+# have already cut out of a file (skeletons.py, data_share.py, ...). The size
+# measure itself no longer uses it.
 TOKEN = re.compile(
     r"""
     "(?:[^"\\]|\\.)*"                                   # string literal
@@ -33,22 +44,62 @@ TOKEN = re.compile(
     re.X,
 )
 
+__all__ = ["LexError", "TOKEN", "code_lines", "strip_comments", "tokens", "tree_size"]
+
+
+def _blank_comments(src: str, toks) -> str:
+    out, last = [], 0
+    for t in toks:
+        if t.kind in COMMENT_KINDS:
+            out.append(src[last:t.start])
+            out.append("\n" * t.text.count("\n"))
+            last = t.end
+    out.append(src[last:])
+    return "".join(out)
+
 
 def strip_comments(src: str) -> str:
-    # nested block comments: remove innermost first
-    prev = None
-    while prev != src:
-        prev = src
-        src = re.sub(r"/-(?:(?!/-|-/).)*?-/", " ", src, flags=re.S)
-    return re.sub(r"--[^\n]*", " ", src)
+    """src with every comment blanked out (line breaks kept). For analysis
+    tools: a file Lean could not lex falls back to the old approximation."""
+    src = src.replace("\r\n", "\n")
+    try:
+        return _blank_comments(src, tokenize(src))
+    except LexError:
+        prev = None
+        while prev != src:
+            prev = src
+            src = re.sub(r"/-(?:(?!/-|-/).)*?-/", lambda m: re.sub(r"[^\n]", " ", m.group()), src, flags=re.S)
+        return re.sub(r"--[^\n]*", "", src)
+
+
+def _adjacent(a, b) -> bool:
+    return a.line == b.line and a.col + len(a.text) == b.col
 
 
 def tokens(src: str) -> int:
-    return len(TOKEN.findall(strip_comments(src)))
+    """Number of Lean tokens outside comments. Raises LexError.
+
+    A projection chain written with field indices counts like one written
+    with field names: `h.2.1` and `x.1.symm` are one token each, as
+    `h.right.left` is, so renaming between the two forms earns nothing."""
+    toks = [t for t in tokenize(src) if t.kind not in COMMENT_KINDS]
+    n = 0
+    i = 0
+    while i < len(toks):
+        n += 1
+        if toks[i].kind in ("ident", "field_idx"):
+            while (i + 2 < len(toks) and toks[i + 1].kind == "symbol" and toks[i + 1].text == "."
+                   and toks[i + 2].kind in ("field_idx", "ident")
+                   and _adjacent(toks[i], toks[i + 1]) and _adjacent(toks[i + 1], toks[i + 2])):
+                i += 2
+        i += 1
+    return n
 
 
 def code_lines(src: str) -> int:
-    return sum(1 for l in strip_comments(src).splitlines() if l.strip())
+    """Number of non-blank lines once comments are removed. Raises LexError."""
+    src = src.replace("\r\n", "\n")
+    return sum(1 for line in _blank_comments(src, tokenize(src)).splitlines() if line.strip())
 
 
 def tree_size(root: str, rev: str, directory: str) -> dict:

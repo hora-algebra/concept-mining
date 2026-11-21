@@ -9,8 +9,10 @@ Writes
                    lines, reachable from the final theorem, users inside and
                    outside the target
     protected.txt  the declarations of the target that something outside the
-                   target uses and that the final theorem needs; their
-                   statements and axioms must not change
+                   target uses and that the final theorem needs (with
+                   --milestones: or one of the statements under
+                   CFSG.Milestones); their statements and axioms must not
+                   change
     unreachable_modules.tsv  modules of the target whose declarations the
                    final theorem never needs, with their lines
     summary.json   totals (lines, reachable lines, declarations, ...)
@@ -36,6 +38,8 @@ def main() -> None:
     ap.add_argument("--cache", required=True)
     ap.add_argument("--prefix", required=True, help="module prefix, e.g. CFSG.FeitThompson")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--milestones", action="store_true",
+                    help="also keep everything the CFSG.Milestones statements need")
     a = ap.parse_args()
     meta, kinds, mods, kind, module, line, lines, idom, names, dep_off, deps = load(os.path.expanduser(a.cache))
     n, final = meta["points"], meta["final"]
@@ -46,8 +50,10 @@ def main() -> None:
             inside[p] = 1
 
     reach = bytearray(n)
-    reach[final] = 1
-    stack = [final]
+    roots = [final] + ([m["p"] for m in meta.get("milestones", [])] if a.milestones else [])
+    for r in roots:
+        reach[r] = 1
+    stack = list(roots)
     while stack:
         u = stack.pop()
         for e in range(dep_off[u], dep_off[u + 1]):

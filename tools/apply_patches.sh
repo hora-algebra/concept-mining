@@ -15,6 +15,8 @@
 #                 files; enough for a target that imports nothing else from
 #                 CFSG (such as FeitThompson), and much smaller
 set -eu
+# patches apply in byte order of their names, as in the gate (Python sorted)
+export LC_ALL=C
 dest=$1
 target=${2:-FeitThompson}
 here=$(cd "$(dirname "$0")/.." && pwd)

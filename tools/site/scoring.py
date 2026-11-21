@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Points of contributions, as defined in docs/scoring.md (version scoring/v1).
+"""Points of contributions, as defined in docs/scoring.md (version scoring/v2).
 
 This file is the only place where the formula lives. It is used in two ways:
 
@@ -22,13 +22,15 @@ import os
 import sys
 from collections import defaultdict
 
-VERSION = "scoring/v1"
+VERSION = "scoring/v2"
 TOKENS_PER_POINT = 100
 CLEANUP_TOKENS_PER_POINT = 400
 POINTS_PER_USE = 0.5
 POINTS_PER_REUSE = 1.0
-CHECKS = ["build", "protected_unchanged", "axioms_unchanged", "no_shortcuts", "no_metaprogramming",
-          "paths_allowed", "ledger_matches"]
+# the gate's checks (tools/gate/build_check.py, then the AI review), in the
+# order they run; a contribution is accepted only if every one is true
+CHECKS = ["paths_allowed", "applies", "no_metaprogramming", "no_shortcuts", "saves_tokens", "build",
+          "protected_unchanged", "axioms_unchanged", "value_review"]
 CONTRIB_COLS = ["date", "pr", "contributor", "agent", "target", "candidate", "tokens_before", "tokens_after",
                 "cleanup_tokens", "lines_saved", "concepts", "reused", "upstream_commit", "head_sha"]
 
@@ -71,8 +73,8 @@ def decide(verdict: dict) -> dict:
         tb, ta, cl = int(verdict["tokens_before"]), int(verdict["tokens_after"]), int(verdict.get("cleanup_tokens", 0))
     except (KeyError, TypeError, ValueError):
         tb = ta = cl = 0
-        reasons.append("ledger_matches: token counts missing from the verdict")
-        failed.append("ledger_matches")
+        reasons.append("saves_tokens: token counts missing from the verdict")
+        failed.append("saves_tokens")
     uses = [int(c.get("uses", 0)) for c in verdict.get("concepts", [])]
     s, c = contribution_points(tb, ta, cl, uses)
     if s <= 0:
