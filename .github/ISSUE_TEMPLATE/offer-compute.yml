@@ -1,0 +1,32 @@
+name: Offer compute
+description: Offer machines for builds, or storage for a shared build cache.
+title: "[compute] "
+labels: ["compute"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not post credentials or keys here. We will follow up in this issue.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What can you offer?
+      multiple: true
+      options:
+        - Build machine
+        - Cache or object storage
+        - CI runners
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: spec
+    attributes:
+      label: Size and duration
+      description: Cores, memory, disk or storage, and for how long.
+    validations:
+      required: true
+  - type: textarea
+    id: conditions
+    attributes:
+      label: Conditions
+      description: Who may use it, limits, how to get access.

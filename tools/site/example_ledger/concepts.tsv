@@ -1,0 +1,4 @@
+date	target	concept	meaning	lines_before	lines_after	lines_saved	uses	commit
+2026-11-22	CFSG/FeitThompson	Example concept A	Example text: a structure bundling the minimal counterexample context.	274110	261400	12710	1036	abc1234
+2026-11-24	CFSG/FeitThompson	Example concept B	Example text: one definition of the p-core instead of two.	261400	259800	1600	458	def5678
+2026-11-27	CFSG/FeitThompson/Local	Example concept C	Example text: a lemma shared by many local cases.	259800	251000	8800	210	0a1b2c3

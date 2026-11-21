@@ -1,0 +1,34 @@
+name: Name a concept
+description: Say what a repeated idea in the formalization is, or should be, called. No Lean needed.
+title: "[concept] "
+labels: ["name a concept"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Candidates are listed in docs/first-issues.md and on the progress page. You can also propose your own.
+  - type: input
+    id: candidate
+    attributes:
+      label: Candidate
+      description: An id from docs/first-issues.md (e.g. C05), or "new".
+      placeholder: C05
+  - type: textarea
+    id: copies
+    attributes:
+      label: Which copies are the same notion?
+      description: Sort the definitions or lemmas into "same notion", "variant", "different". A short table is fine.
+    validations:
+      required: true
+  - type: textarea
+    id: name
+    attributes:
+      label: The concept
+      description: Its usual name and a one or two sentence meaning that a mathematician can read without Lean. This text may go into the ledger.
+    validations:
+      required: true
+  - type: input
+    id: reference
+    attributes:
+      label: Reference (optional)
+      description: A book or paper where the notion is defined.

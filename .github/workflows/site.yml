@@ -1,0 +1,59 @@
+name: Ledger and site
+
+on:
+  pull_request:
+    paths:
+      - "data/**"
+      - "tools/site/**"
+      - "docs/site/**"
+      - ".github/workflows/site.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "tools/site/**"
+      - "docs/site/**"
+      - ".github/workflows/site.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test the checker
+        run: python3 tools/site/test_build_site.py
+      - name: Check the ledger and that the page data is up to date
+        run: python3 tools/site/build_site.py --check
+      - name: Report the ledger change
+        if: github.event_name == 'pull_request'
+        run: python3 tools/site/ledger_diff.py --base "origin/${{ github.base_ref }}" >> "$GITHUB_STEP_SUMMARY"
+
+  # Publishing is off until the repository enables GitHub Pages with the
+  # "GitHub Actions" source and sets the repository variable PAGES_ENABLED=true.
+  deploy:
+    needs: check
+    if: github.event_name != 'pull_request' && vars.PAGES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>concept-mining progress</title>
+<meta name="description" content="Progress of concept-mining: refactoring the Lean formalization of the classification of finite simple groups to find the concepts that matter.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div id="example" class="example" hidden>Example data. The numbers on this page are made up to show how it will look once results come in.</div>
+    <h1>concept-mining</h1>
+    <p class="lead">A computer-written formal proof of the classification of finite simple groups is about <span id="lead-lines">35 million</span> lines long. We rewrite it shorter while keeping the final theorem exactly as stated. A new definition or lemma that makes the whole proof shorter names an idea the proof keeps repeating; the more lines it saves, the more important the idea.</p>
+    <div class="kpis" id="kpis"></div>
+    <ol class="stages" id="stages" aria-label="Roadmap"></ol>
+  </header>
+
+  <section id="s-map" aria-labelledby="h-map">
+    <h2 id="h-map">The map</h2>
+    <p class="sub">Each rectangle is one part of the formalization. Parts are grouped by folder. Removed lines show up as hatched area inside the part they came from.</p>
+    <div class="time" id="time">
+      <button type="button" class="play" id="play" aria-label="Play through time">▶</button>
+      <input type="range" id="slider" min="0" max="0" value="0" step="1" aria-label="Point in time">
+      <div class="when" id="when"></div>
+    </div>
+    <div class="bar">
+      <div class="ctl"><span class="ctl-label">Area</span>
+        <div class="seg" role="group" aria-label="Area shows">
+          <button type="button" data-area="lines" aria-pressed="true">Lines written</button>
+          <button type="button" data-area="used" aria-pressed="false">Times used</button>
+        </div></div>
+      <div class="ctl"><span class="ctl-label">Color</span>
+        <div class="seg" role="group" aria-label="Color shows">
+          <button type="button" data-color="progress" aria-pressed="true">Progress</button>
+          <button type="button" data-color="field" aria-pressed="false">Field</button>
+        </div></div>
+      <div class="ctl"><span class="ctl-label">Show</span>
+        <div class="seg" role="group" aria-label="Show">
+          <button type="button" data-scope="all" aria-pressed="true">Everything</button>
+          <button type="button" data-scope="work" aria-pressed="false">Worked parts</button>
+        </div></div>
+    </div>
+    <div id="map" role="img" aria-label="Treemap of the formalization by part. The same data is in the table below."></div>
+    <ul class="legend" id="legend"></ul>
+    <details style="margin-top:14px"><summary>Table of folders</summary><div class="tbl"><table id="tbl"></table></div></details>
+  </section>
+
+  <section id="s-timeline" aria-labelledby="h-timeline">
+    <h2 id="h-timeline">Shrinking over time</h2>
+    <p class="sub">Line count of each part being refactored, as recorded in the ledger. Every step down is a new concept.</p>
+    <div id="timeline"></div>
+  </section>
+
+  <section id="s-rank" aria-labelledby="h-rank">
+    <h2 id="h-rank">Concepts found</h2>
+    <p class="sub">Each concept is a definition or lemma that was introduced to shorten the proof, ranked by the lines it saved.</p>
+    <div id="rank"></div>
+  </section>
+
+  <section id="s-work" aria-labelledby="h-work">
+    <h2 id="h-work">Who is working on what</h2>
+    <div class="tbl panel" id="work"></div>
+    <h2 style="margin-top:28px">Candidates anyone can pick up</h2>
+    <p class="sub">Places where the same idea seems to be written many times. Some need only a mathematician's eye, no Lean.</p>
+    <div class="cards" id="cands"></div>
+  </section>
+
+  <section id="s-help" aria-labelledby="h-help">
+    <h2 id="h-help">How to help</h2>
+    <div class="help">
+      <div class="card"><h3>Mathematicians</h3><p>Read a candidate and say what the repeated idea is, or should be, called. No Lean needed.</p><a class="go" data-gh="CONTRIBUTING.md#mathematicians-name-a-concept">Start here →</a></div>
+      <div class="card"><h3>Lean users</h3><p>Pick a candidate, rewrite it on a branch, and open a pull request. The ledger records what it saved.</p><a class="go" data-gh="CONTRIBUTING.md#lean-users-refactor-a-candidate">Start here →</a></div>
+      <div class="card"><h3>Compute</h3><p>A full build takes about a day. Hosting builds or a shared build cache lets everyone rebuild only what they touch.</p><a class="go" data-gh="CONTRIBUTING.md#compute-offer-builds-or-a-cache">Start here →</a></div>
+    </div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+<div id="tip" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

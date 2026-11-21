@@ -1,0 +1,5 @@
+stage	title	status	summary
+1	Map	done	Dependency graph of all 2.2 million declarations extracted without a build.
+2	Mine	active	Listing candidates: parallel definitions, repeated lemmas, repeated hypotheses.
+3	Pilot	active	First trial refactoring inside the Feit–Thompson part, measured line by line.
+4	Scale	next	Apply the abstractions that worked across the whole library.

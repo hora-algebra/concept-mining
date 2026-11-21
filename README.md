@@ -49,15 +49,29 @@ most used declarations, and candidate ranges for stages 2 and 3, and
 [Compute plan and model trials](docs/compute-and-trials.md) for what runs on
 a laptop and how refactorings will be tried with several model providers.
 
+## Progress
+
+The progress page ([`docs/site/`](docs/site)) shows the map of the
+formalization, how much has been removed so far, the concepts found, who is
+working on what, and candidates anyone can pick up. It is regenerated from
+the ledger in [`data/ledger/`](data/ledger) by
+[`tools/site/build_site.py`](tools/site/README.md), which also checks the
+ledger on every pull request.
+
 ## How to contribute
 
-- **Mathematicians.** Look at a candidate from stage 2 and say what the common
-  idea is called, or should be called. No Lean needed.
-- **Lean users.** Pick a candidate, carry out the refactoring on a branch, and
-  open a pull request. CI reports the change in size.
+Three ways in; details and a first step for each are in
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+- **Mathematicians.** Pick a candidate from
+  [`docs/first-issues.md`](docs/first-issues.md) and say what the repeated
+  idea is, or should be, called. No Lean needed.
+- **Lean users.** Claim a candidate, carry out the refactoring, and open a
+  pull request with the ledger rows. CI checks the numbers.
 - **Compute.** A full build takes about a day on a strong Linux machine. We
   want a shared build cache so that contributors rebuild only what they touch.
-  If you can host builds or cache storage, please open an issue.
+  If you can host builds or cache storage, open an issue with the
+  *Offer compute* template.
 
 ## Related work
 
