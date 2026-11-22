@@ -1,0 +1,112 @@
+From c034645993d3a233c589e3e8ef591e88cd7ea821 Mon Sep 17 00:00:00 2001
+From: concept-mining <concept-mining@users.noreply.github.com>
+Date: Sun, 22 Nov 2026 13:47:32 +0900
+Subject: [PATCH] Concept: irreducible characters trivial on a subgroup
+ (irrTrivialOn)
+
+Two files defined the set of irreducible characters whose kernel contains a
+subgroup N, once at top level and once in OneBlockRestriction, each with its
+own membership lemmas. Keep the top-level definition and put next to it the
+fact that an integer combination of such characters is constant on N, which
+was also proved twice; point every use at them.
+
+Made by Claude Code (AI).
+---
+ .../DetectingFamilyImagePuncturedNorm.lean    |  9 -------
+ .../OneBlockRestrictionPuncturedNorm.lean     | 24 ++++---------------
+ .../QuotientIrreducibleCharsDegreeSum.lean    |  8 +++++++
+ 3 files changed, 13 insertions(+), 28 deletions(-)
+
+diff --git a/CFSG/FeitThompson/Representations/DetectingFamilyImagePuncturedNorm.lean b/CFSG/FeitThompson/Representations/DetectingFamilyImagePuncturedNorm.lean
+index 68ecc70..483303a 100644
+--- a/CFSG/FeitThompson/Representations/DetectingFamilyImagePuncturedNorm.lean
++++ b/CFSG/FeitThompson/Representations/DetectingFamilyImagePuncturedNorm.lean
+@@ -16,15 +16,6 @@ set_option maxSynthPendingDepth 3
+ 
+ namespace CFSG.FeitThompson
+ 
+-theorem apply_eq_apply_one_of_mem_span_irrTrivialOn {K : Type*} [Group K] {N : Subgroup K}
+-    {α : K → ℂ} (hα : α ∈ Submodule.span ℤ (irrTrivialOn N)) {z : K} (hz : z ∈ N) :
+-    α z = α 1 := by
+-  induction hα using Submodule.span_induction with
+-  | mem f hf => exact (mem_irrTrivialOn.1 hf).2 z hz
+-  | zero => rfl
+-  | add f g _ _ hf hg => simp only [Pi.add_apply, hf, hg]
+-  | smul m f _ hf => simp only [Pi.smul_apply, hf]
+-
+ theorem sum_norm_sq_compl_one_ge_of_isMulCommutative {K : Type*} [Group K] [IsMulCommutative K]
+     [Fintype K] [DecidableEq K] {Q : Subgroup K} (hQ : Q ≠ ⊥) {α : K → ℂ}
+     (hα : α ∈ Submodule.span ℤ (irrTrivialOn Q)) (hα0 : α ≠ 0) :
+diff --git a/CFSG/FeitThompson/Representations/OneBlockRestrictionPuncturedNorm.lean b/CFSG/FeitThompson/Representations/OneBlockRestrictionPuncturedNorm.lean
+index 2a22ca0..041733c 100644
+--- a/CFSG/FeitThompson/Representations/OneBlockRestrictionPuncturedNorm.lean
++++ b/CFSG/FeitThompson/Representations/OneBlockRestrictionPuncturedNorm.lean
+@@ -4,6 +4,7 @@ public import CFSG.FeitThompson.Representations.InducedIrreducibleNormOrbitFormu
+ public import CFSG.FeitThompson.Representations.EqualDegreeZeroLatticeBasis
+ public import CFSG.FeitThompson.Representations.ConstantValuePuncturedSubgroupInteger
+ public import CFSG.FeitThompson.Representations.CentralLayerDegreeSquareDivisor
++public import CFSG.FeitThompson.Representations.QuotientIrreducibleCharsDegreeSum
+ import Mathlib.Analysis.Complex.Polynomial.Basic
+ 
+ public section
+@@ -19,26 +20,9 @@ namespace OneBlockRestriction
+ 
+ variable {K : Type*} [Group K]
+ 
+-def irrTrivialOn (Q : Subgroup K) : Set (K → ℂ) :=
+-  {χ ∈ Irr K | (Q : Set K) ⊆ charValueKernel χ}
+-
+-theorem mem_irrTrivialOn {Q : Subgroup K} {χ : K → ℂ} :
+-    χ ∈ irrTrivialOn Q ↔ χ ∈ Irr K ∧ ∀ x ∈ Q, χ x = χ 1 := by
+-  simp [irrTrivialOn, Set.subset_def]
+-
+-theorem irrTrivialOn_subset_Irr (Q : Subgroup K) : irrTrivialOn Q ⊆ Irr K := fun _ hχ => hχ.1
+-
+-theorem apply_eq_apply_one_of_mem_span_irrTrivialOn {Q : Subgroup K} {α : K → ℂ}
+-    (hα : α ∈ Submodule.span ℤ (irrTrivialOn Q)) {x : K} (hx : x ∈ Q) : α x = α 1 := by
+-  induction hα using Submodule.span_induction with
+-  | mem f hf => exact mem_charValueKernel.1 (hf.2 hx)
+-  | zero => rfl
+-  | add f g _ _ hf hg => simp only [Pi.add_apply, hf, hg]
+-  | smul m f _ hf => simp only [Pi.smul_apply, hf]
+-
+ theorem exists_int_apply_one_of_mem_span_irrTrivialOn {Q : Subgroup K} {α : K → ℂ}
+     (hα : α ∈ Submodule.span ℤ (irrTrivialOn Q)) : ∃ m : ℤ, α 1 = (m : ℂ) :=
+-  exists_int_apply_one_of_mem_span_Irr (Submodule.span_mono (irrTrivialOn_subset_Irr Q) hα)
++  exists_int_apply_one_of_mem_span_Irr (Submodule.span_mono irrTrivialOn_subset_Irr hα)
+ 
+ theorem conj_apply_one_of_mem_span_irrTrivialOn {Q : Subgroup K} {α : K → ℂ}
+     (hα : α ∈ Submodule.span ℤ (irrTrivialOn Q)) : conj (α 1) = α 1 := by
+@@ -50,7 +34,9 @@ theorem cfInner_eq_zero_of_mem_span_irrTrivialOn [Fintype K] {Q : Subgroup K} {
+     (hα : α ∈ Submodule.span ℤ (irrTrivialOn Q)) (hψ : ψ ∈ Irr K)
+     (hψQ : ¬ (Q : Set K) ⊆ charValueKernel ψ) : cfInner α ψ = 0 := by
+   induction hα using Submodule.span_induction with
+-  | mem x hx => exact cfInner_eq_zero_of_mem_Irr hx.1 hψ fun h => hψQ (h ▸ hx.2)
++  | mem x hx =>
++    exact cfInner_eq_zero_of_mem_Irr (irrTrivialOn_subset_Irr hx) hψ fun h =>
++      hψQ fun z hz => mem_charValueKernel.2 (h ▸ (mem_irrTrivialOn.1 hx).2 z hz)
+   | zero => exact cfInner_zero_left ψ
+   | add x y _ _ hx hy => rw [cfInner_add_left, hx, hy, add_zero]
+   | smul m x _ hx => rw [cfInner_zsmul_left, hx, mul_zero]
+diff --git a/CFSG/FeitThompson/Representations/QuotientIrreducibleCharsDegreeSum.lean b/CFSG/FeitThompson/Representations/QuotientIrreducibleCharsDegreeSum.lean
+index 1b50c97..e1dbaac 100644
+--- a/CFSG/FeitThompson/Representations/QuotientIrreducibleCharsDegreeSum.lean
++++ b/CFSG/FeitThompson/Representations/QuotientIrreducibleCharsDegreeSum.lean
+@@ -53,6 +53,14 @@ theorem mem_irrTrivialOn {χ : G → ℂ} :
+ 
+ theorem irrTrivialOn_subset_Irr : irrTrivialOn N ⊆ Irr G := fun _ h => h.1
+ 
++theorem apply_eq_apply_one_of_mem_span_irrTrivialOn {α : G → ℂ}
++    (hα : α ∈ Submodule.span ℤ (irrTrivialOn N)) {z : G} (hz : z ∈ N) : α z = α 1 := by
++  induction hα using Submodule.span_induction with
++  | mem f hf => exact (mem_irrTrivialOn.1 hf).2 z hz
++  | zero => rfl
++  | add f g _ _ hf hg => simp only [Pi.add_apply, hf, hg]
++  | smul m f _ hf => simp only [Pi.smul_apply, hf]
++
+ theorem finite_irrTrivialOn [Finite G] : (irrTrivialOn N).Finite :=
+   finite_Irr.subset irrTrivialOn_subset_Irr
+ 
+-- 
+2.54.0 (Apple Git-157)
+
