@@ -27,6 +27,12 @@ import re
 from collections import defaultdict
 
 AUX = re.compile(r"\._|\.(match_|proof_|eq_\d|eq_def)")
+# a line holding only attributes, e.g. "@[simp]" or "@[simp, norm_cast]"
+ATTR_ONLY = re.compile(r"^\s*@\[[^\]]*\]\s*$")
+
+
+def aux(n):
+    return bool(AUX.search(n.replace("_private.", "", 1)))
 
 
 def load(path):
@@ -56,25 +62,31 @@ def needed(D, roots):
     return seen
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", required=True)
     ap.add_argument("--before", required=True)
     ap.add_argument("--after", required=True)
     ap.add_argument("--protected", required=True)
     ap.add_argument("--dry-run", action="store_true")
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
     root = os.path.expanduser(a.root)
     roots = [l.strip() for l in open(a.protected) if l.strip()]
     B, A = load(a.before), load(a.after)
     nb, na = needed(B, roots), needed(A, roots)
-    gone = [n for n in nb - na if n in A and A[n]["s"] > 0 and not AUX.search(n.replace("_private.", "", 1))]
+    candidates = {n for n in nb - na if n in A and A[n]["s"] > 0}
+    # everything that stays in the source (needed or not) keeps its dependencies:
+    # a candidate still used by a remaining declaration is not deleted
+    stays = [n for n in A if n not in candidates]
+    keep = needed(A, stays)
+    gone = sorted(n for n in candidates - keep if not aux(n))
     by_file = defaultdict(list)
     for n in gone:
         by_file[A[n]["mod"]].append((A[n]["s"], A[n]["e"], n))
+    gone_set = set(gone)
     kept_decls = defaultdict(int)
     for n, d in A.items():
-        if d["s"] > 0 and n not in gone and not AUX.search(n.replace("_private.", "", 1)):
+        if d["s"] > 0 and n not in gone_set and not aux(n):
             kept_decls[d["mod"]] += 1
     print(f"needed before {len(nb)}, after {len(na)}; deleting {len(gone)} declarations in {len(by_file)} modules")
     if a.dry_run:
@@ -83,14 +95,19 @@ def main():
     for mod, spans in by_file.items():
         p = os.path.join(root, *mod.split(".")) + ".lean"
         lines = open(p, encoding="utf-8").read().split("\n")
+        # lines of declarations that stay in this file are never dropped
+        kept_lines = set()
+        for n, d in A.items():
+            if d["mod"] == mod and d["s"] > 0 and n not in gone_set:
+                kept_lines.update(range(d["s"] - 1, d["e"]))
         drop = set()
         for s, e, _ in spans:
             # include the doc comment and attributes directly above
             k = s - 2
-            while k >= 0 and (lines[k].lstrip().startswith(("@[", "/--")) or
+            while k >= 0 and k not in kept_lines and (ATTR_ONLY.match(lines[k]) or lines[k].lstrip().startswith("/--") or
                               (lines[k].strip() and not lines[k][:1].isspace() and lines[k].rstrip().endswith("-/")
                                and "/--" in "\n".join(lines[max(0, k - 30):k + 1]))):
-                if lines[k].lstrip().startswith("/--") or lines[k].lstrip().startswith("@["):
+                if lines[k].lstrip().startswith("/--") or ATTR_ONLY.match(lines[k]):
                     drop.update(range(k, s - 1))
                     k -= 1
                     continue
@@ -104,6 +121,7 @@ def main():
                 else:
                     break
             drop.update(range(s - 1, e))
+        drop -= kept_lines
         removed_lines += len(drop)
         out = [l for i, l in enumerate(lines) if i not in drop]
         text = re.sub(r"\n{3,}", "\n\n", "\n".join(out))
