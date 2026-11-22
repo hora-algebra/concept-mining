@@ -158,11 +158,19 @@ def lean_path(root: str) -> str:
     return os.pathsep.join(parts)
 
 
-def command(root: str, request_path: str, out_path: str) -> list[str]:
+def command(root: str, request_path: str, out_path: str, interface: bool = False) -> list[str]:
     """argv of the checker: the toolchain's own `lean` (not the elan proxy, not
-    lake); run it with cwd = root and LEAN_PATH = lean_path(root)."""
+    lake); run it with cwd = root and LEAN_PATH = lean_path(root). With
+    `interface`, it prints the public face of the requested modules."""
     return [os.path.join(toolchain_dir(root), "bin", "lean"), "--run", CHECKER,
-            os.path.abspath(request_path), os.path.abspath(out_path)]
+            *(["--interface"] if interface else []), os.path.abspath(request_path), os.path.abspath(out_path)]
+
+
+def policy(target: str, repo: str = REPO) -> str:
+    """`interface` (the target's whole public face is protected) or `list`
+    (the declarations of data/protected/<target>.txt)."""
+    p = os.path.join(repo, "data", "protected", target + ".json")
+    return (read_json(p).get("policy") if os.path.exists(p) else None) or "list"
 
 
 def protected_names(target: str, repo: str = REPO) -> list[str]:
@@ -173,11 +181,15 @@ def protected_names(target: str, repo: str = REPO) -> list[str]:
 
 
 def request(root: str, target: str, modules: list[str] | None = None, replay: bool = False,
-            roots: list[str] | None = None, protected: list[str] | None = None, emit_refs: bool = True) -> dict:
+            roots: list[str] | None = None, protected: list[str] | None = None, emit_refs: bool = True,
+            union_roots: list[str] | None = None) -> dict:
+    if protected is None:
+        protected = [] if policy(target) == "interface" else protected_names(target)
     return {
+        "union_roots": list(union_roots or []),
         "modules": sorted(modules if modules is not None else target_modules(root, target)),
         "target_prefix": module_prefix(target),
-        "protected": list(protected if protected is not None else protected_names(target)),
+        "protected": list(protected),
         "roots": list(roots or []),
         "closure_prefixes": CLOSURE_PREFIXES,
         "forbidden_prefixes": FORBIDDEN_PREFIXES,
@@ -265,6 +277,7 @@ def compact(raw: dict) -> dict:
         "modules_loaded": raw.get("modules_loaded"),
         "target_modules": raw.get("target_modules"),
         "protected": prot,
+        "union": raw.get("union"),
         "meta_constants": sorted(meta, key=lambda m: m["name"]),
         "constants": len(kinds),
         "kinds": kinds,
@@ -313,7 +326,19 @@ def compare(facts: dict, baseline: dict, max_meta: int = 30) -> list[str]:
     problems: list[str] = []
     bprot = baseline.get("protected") or {}
     fprot = facts.get("protected") or {}
-    if not bprot:
+    if baseline.get("policy") == "interface":
+        # the public face is compared with main's by interface.py; here only
+        # the absolute bound on the axioms behind it
+        u = facts.get("union") or {}
+        allowed_ax = set(baseline.get("axioms") or PERMITTED_AXIOMS)
+        extra = sorted(set(u.get("axioms") or []) - allowed_ax)
+        if not u:
+            problems.append("protected_unchanged: the public face was not inspected")
+        elif extra:
+            problems.append("axioms_unchanged: the target's public statements depend on " + ", ".join(extra)
+                            + ", beyond " + ", ".join(sorted(allowed_ax)))
+        bprot = {}
+    elif not bprot:
         problems.append("protected_unchanged: the baseline lists no protected declarations")
     for name in sorted(bprot):
         b, f = bprot[name], fprot.get(name)

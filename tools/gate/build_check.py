@@ -10,18 +10,20 @@ ever runs inside the sandbox (tools/gate/sandbox.py). Phases, cheapest first;
 the first failing phase ends the run:
 
   paths     the patch touches only CFSG/<target>/*.lean, as plain text files
-  applies   base = pinned upstream + main's patches; head = the same series
-            with the new patch inserted in file-name order (exactly what main
-            will apply after the merge); every patch applies with `git am`
+  applies   base = pinned upstream + main's patches of every open target;
+            head = the same with the new patch inserted in file-name order in
+            its target's series (exactly what main will be after the merge);
+            every patch applies with `git am`
   guard     no new compile-time code, shortcuts or unusual options (count of
             each risky construct per file may not grow)
   size      the target shrinks by at least MIN_TOKENS Lean tokens
   build     base and head build in the sandbox
   inspect   the built environment (tools/gate/CheckEnv.lean, also sandboxed):
-            protected statements unchanged (structural digest of the
-            statement and of every CFSG definition it mentions), axioms within
-            propext, Classical.choice, Quot.sound, no new metaprogramming,
-            unsafe, partial, extern or implemented_by declarations
+            the target's public face unchanged (tools/gate/interface.py: what
+            files outside the target can see of it, and the meaning of its
+            public statements), no new axioms behind them, no new
+            metaprogramming, unsafe, partial, extern or implemented_by
+            declarations
 
 Writes out/facts.json, out/lean.diff (the source diff the AI review reads,
 written before any Lean runs) and logs. Exit 0 when facts.json was written
@@ -47,6 +49,7 @@ sys.path.insert(0, TOOLS)
 import common  # noqa: E402
 import env_facts  # noqa: E402
 import guard  # noqa: E402
+import interface  # noqa: E402
 import patchcheck  # noqa: E402
 import sandbox  # noqa: E402
 from size import tree_size  # noqa: E402
@@ -256,13 +259,29 @@ def main() -> None:
             if a.no_lean:
                 git(up, "sparse-checkout", "set", "--no-cone", "/lean-toolchain", f"/{folder}/", f"/{folder}.lean")
             else:
-                git(up, "sparse-checkout", "set", "--no-cone", "/*", "!/CFSG/Certificates/", "!/Certificates/")
+                # the Lean files of the certificate data too (their imports
+                # are scanned), not the data itself
+                git(up, "sparse-checkout", "set", "--no-cone", "/*", "!/Certificates/**", "/Certificates/**/*.lean")
+        # main's patches of the other open targets: the target is checked
+        # against main as it is, not against the pinned upstream
+        targets = common.supported_targets()
+        clash = common.overlapping_targets(targets)
+        if clash:
+            raise Setup("open targets overlap: " + ", ".join(clash))
+        # (the measurement without Lean reads only the target's folder, which
+        # these patches never touch, from a checkout of that folder alone)
+        others = [] if a.no_lean else [os.path.join(common.ROOT, "lean/patches", t, n)
+                                       for t in targets if t != target for n in common.series(t)]
         git(up, "checkout", "-q", "--force", upstream["commit"])
-        git(up, "checkout", "-q", "-B", "gate-base")
+        git(up, "checkout", "-q", "-B", "gate-main")
+        bad = am(up, others)
+        if bad:
+            raise Setup(f"main's patch {bad} of another target does not apply to the pinned upstream")
+        git(up, "checkout", "-q", "-B", "gate-base", "gate-main")
         bad = am(up, [os.path.join(base_dir, n) for n in sorted(os.listdir(base_dir))])
         if bad:
             raise Setup(f"main's own patch {bad} does not apply to the pinned upstream")
-        git(up, "checkout", "-q", "-B", "gate-head", upstream["commit"])
+        git(up, "checkout", "-q", "-B", "gate-head", "gate-main")
         bad = am(up, [os.path.join(head_dir, n) for n in sorted(os.listdir(head_dir))])
         if bad:
             last = max([int(m.group(1)) for m in (re.match(r"(\d+)-", x) for x in main_series) if m] or [0])
@@ -312,6 +331,18 @@ def main() -> None:
         if a.no_lean:
             raise Stop
 
+        # the target's public face: the target modules that files outside it
+        # import (outside files are the same in base and head), closed under
+        # what importers see (interface.py)
+        git(up, "checkout", "-q", "gate-base")
+        prefix = common.module_prefix(target)
+        entry = interface.entries(up, target)
+        levels = interface.interface(interface.target_headers(tb, target), entry, prefix)
+        for m, full in interface.interface(interface.target_headers(th, target), entry, prefix).items():
+            levels[m] = levels.get(m, False) or full
+        f["interface"] = {"entries": len(entry), "modules": len(levels),
+                          "full": sum(1 for v in levels.values() if v)}
+
         # build (sandboxed), base then head
         elan = os.environ.get("ELAN_HOME") or os.path.expanduser("~/.elan")
         lake = os.path.join(elan, "bin", "lake")
@@ -330,20 +361,30 @@ def main() -> None:
             open(os.path.join(out, f"build-{label}.log"), "w").write((r.stdout + r.stderr)[-200000:])
             return r, mods
 
-        def inspect(label, mods, replay=False):
+        def checker(label, req_data, interface_mode=False):
             scratch = tempfile.mkdtemp(prefix=f"gate-env-{label}-")
             req = os.path.join(scratch, "request.json")
             res = os.path.join(scratch, "facts.json")
-            json.dump(env_facts.request(up, target, mods, replay=replay), open(req, "w"))
+            json.dump(req_data, open(req, "w"))
             t0 = time.time()
-            r = sandbox.run(env_facts.command(up, req, res), cwd=up, rw=[scratch],
+            r = sandbox.run(env_facts.command(up, req, res, interface=interface_mode), cwd=up, rw=[scratch],
                             ro=[up, os.path.join(TOOLS, "gate")], timeout=3 * 3600, elan_home=elan,
                             env={"LEAN_PATH": env_facts.lean_path(up)})
-            f["seconds"][f"inspect_{label}"] = round(time.time() - t0)
-            open(os.path.join(out, f"inspect-{label}.log"), "w").write((r.stdout + r.stderr)[-50000:])
+            f["seconds"][label] = round(time.time() - t0)
+            open(os.path.join(out, f"{label}.log"), "w").write((r.stdout + r.stderr)[-50000:])
             if r.returncode or not os.path.exists(res):
                 return None
-            return env_facts.compact(json.load(open(res)))
+            return json.load(open(res))
+
+        def inspect(label, mods, replay=False, union_roots=None):
+            raw = checker(f"inspect-{label}", env_facts.request(up, target, mods, replay=replay,
+                                                                 union_roots=union_roots))
+            return None if raw is None else env_facts.compact(raw)
+
+        def face(label, mods):
+            """The public face of the target as built now (interface modules
+            that exist in this tree)."""
+            return checker(f"face-{label}", interface.request(levels, set(mods)), interface_mode=True)
 
         # Everything outside the target is trusted (the patch cannot touch
         # it): build the modules the target imports from outside it, and so
@@ -365,7 +406,11 @@ def main() -> None:
         r, mods = build("base")
         if r.returncode:
             raise Setup("main does not build in the gate (base build failed); the maintainers must fix main")
-        base_env = inspect("base", mods)
+        base_face = face("base", mods)
+        if base_face is None:
+            raise Setup("could not read the public face of the base build")
+        face_roots = interface.roots(base_face)
+        base_env = inspect("base", mods, union_roots=face_roots)
         if base_env is None:
             raise Setup("could not inspect the base environment")
         git(up, "checkout", "-q", "gate-head")
@@ -390,16 +435,23 @@ def main() -> None:
             errs = [line for line in (r.stdout + r.stderr).splitlines() if "error" in line][:15]
             fail("build", ["Lean reports errors:"] + [e[:300] for e in errs])
         f["checks"]["build"] = True
-        head_env = inspect("head", mods, replay=a.replay)
+        head_face = face("head", mods)
+        if head_face is None:
+            fail("build", ["the public face of the built target could not be read"])
+        head_env = inspect("head", mods, replay=a.replay, union_roots=face_roots)
         if head_env is None and a.replay:
             # tell a kernel re-check that did not finish (memory, time) from
             # an environment that cannot be loaded at all
-            if inspect("head-noreplay", mods) is not None:
+            if inspect("head-noreplay", mods, union_roots=face_roots) is not None:
                 raise Setup("the kernel re-check of the built environment did not finish")
         if head_env is None:
             fail("build", ["the built environment could not be loaded for inspection"])
         baseline = json.load(open(common.baseline_path(target)))
         problems = env_facts.compare(head_env, baseline)
+        # what files outside the target see, and what the public statements
+        # mean, compared with main
+        problems += interface.compare(base_face, head_face)
+        problems += interface.compare_union(base_env.get("union"), head_env.get("union"))
         # modules that files outside the target import must keep existing
         for m in baseline.get("imported_from_outside", []):
             if not os.path.exists(os.path.join(up, *m.split(".")) + ".lean"):

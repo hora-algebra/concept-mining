@@ -76,6 +76,17 @@ def _read(path: str) -> bytes:
         return fh.read()
 
 
+def overlapping_targets(targets: list[str]) -> list[str]:
+    """Pairs of open targets of which one contains the other (each Lean file
+    must belong to at most one target)."""
+    out = []
+    for a in targets:
+        for b in targets:
+            if a != b and b.startswith(a + "/"):
+                out.append(f"{a} contains {b}")
+    return out
+
+
 def series(target: str, root: str = ROOT) -> list[str]:
     """The target's patches on this checkout, in the order they are applied."""
     d = os.path.join(root, "lean", "patches", target)
@@ -85,7 +96,9 @@ def series(target: str, root: str = ROOT) -> list[str]:
 
 
 def fingerprint(target: str, root: str = ROOT) -> str:
-    """What a verdict for `target` depends on, besides the pull request itself."""
+    """What a verdict for `target` depends on, besides the pull request itself:
+    the gate's own files, the target's baseline, and main's patches and
+    baselines of every open target."""
     h = hashlib.sha256()
     files = list(GATE_FILES) + [os.path.relpath(baseline_path(target, root), root),
                                 os.path.join("data", "protected", target + ".txt")]
@@ -99,9 +112,14 @@ def fingerprint(target: str, root: str = ROOT) -> str:
         full = os.path.join(root, p)
         h.update(p.encode() + b"\0")
         h.update((_sha(_read(full)) if os.path.exists(full) else "absent").encode() + b"\n")
-    for name in series(target, root):
-        data = _read(os.path.join(root, "lean", "patches", target, name))
-        h.update(f"patch {name} {_sha(data)}\n".encode())
+    # every target's patches: a target is checked against main as a whole
+    # (the targets it imports carry their own patches), and the set of open
+    # targets decides what counts as outside
+    for t in supported_targets(root):
+        for name in series(t, root):
+            data = _read(os.path.join(root, "lean", "patches", t, name))
+            h.update(f"patch {t}/{name} {_sha(data)}\n".encode())
+        h.update(f"target {t} {_sha(_read(baseline_path(t, root)))}\n".encode())
     return h.hexdigest()
 
 

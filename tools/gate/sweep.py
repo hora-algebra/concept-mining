@@ -5,8 +5,9 @@
 
 Needs GH_TOKEN (pull-requests, issues and actions: write) and REPO.
 
-  requeue   after a merge into target T, every other open contribution to T
-            was checked against an older main: check them again
+  requeue   after a merge into target T, every other open contribution was
+            checked against an older main (a target is checked against main's
+            patches of every target): check them again
   retry     open pull requests whose current head has no final verdict
             (cancelled or failed runs, `error` at most three times per
             head), those that waited for the AI-review budget on an earlier
@@ -107,8 +108,9 @@ def main() -> None:
         last = (meta or {}).get("checked_at") or ""
         state = (meta or {}).get("state")
         if a.requeue_target:
-            # a verdict that main's change can alter; a rejection waits for the author
-            if not p["draft"] and state != "rejected" and patch_target(repo, n) == a.requeue_target:
+            # a verdict that main's change can alter (every target's: the fingerprint
+            # covers all patches); a rejection waits for the author
+            if not p["draft"] and state != "rejected" and "contribution" in labels:
                 dispatch.append((last, n))
             continue
         if "keep" in labels:

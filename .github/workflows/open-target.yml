@@ -1,0 +1,46 @@
+name: Open a target
+
+# Builds a folder of CFSG on main and writes the baseline that opens it for
+# contributions (tools/gate/open_target.py). Everything built is trusted (the
+# pinned upstream and main's patches). The baseline comes back as an
+# artifact; a maintainer adds it as data/protected/<target>.json by a pull
+# request.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "folder under CFSG/, e.g. ThirdParty/OddOrder"
+        required: true
+
+permissions: {}
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Prepare the runner
+        run: sh tools/gate/setup_runner.sh
+      - name: Open the target
+        env:
+          TARGET: ${{ inputs.target }}
+        run: python3 tools/gate/open_target.py --target "$TARGET" --upstream "$RUNNER_TEMP/cfsg" --out out
+      - name: Name the artifact
+        if: always()
+        env:
+          TARGET: ${{ inputs.target }}
+        run: echo "NAME=open-$(echo "$TARGET" | tr -c 'A-Za-z0-9_\n' '_')" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: ${{ env.NAME }}
+          path: |
+            out/*.json
+            out/*.log
+          retention-days: 30

@@ -234,6 +234,64 @@ def axiomsOf (env : Environment) (root : Name) : Array Name × Array Name := Id.
         unless seen.contains c do todo := todo.push c
   return (axs.toArray.qsort Name.lt, missing.toArray.qsort Name.lt)
 
+/-- One statement closure for many roots: every constant in scope reached
+from the roots through statements and the values of definitions (not through
+proofs), each printed once. -/
+def closureUnion (env : Environment) (inScope : Name → Bool) (limit : Nat) (roots : Array Name) :
+    Except String (Array (String × String) × Array Name) := do
+  let mut todo : Array Name := roots
+  let mut seen : NameSet := {}
+  let mut members : Array ConstantInfo := #[]
+  let mut missing : Array Name := #[]
+  let push (todo : Array Name) (e : Expr) : Array Name :=
+    e.getUsedConstants.foldl (fun t c => if inScope c then t.push c else t) todo
+  while h : todo.size > 0 do
+    let n := todo[todo.size - 1]
+    todo := todo.pop
+    if seen.contains n then continue
+    seen := seen.insert n
+    match env.find? n with
+    | none => missing := missing.push n
+    | some ci =>
+      match ci with
+      | .ctorInfo v => members := members.push ci; todo := push (todo.push v.induct) v.type
+      | .recInfo v => todo := todo ++ v.all.toArray
+      | .inductInfo v =>
+        members := members.push ci
+        todo := push todo v.type
+        for c in v.ctors do todo := todo.push c
+      | .thmInfo v => members := members.push ci; todo := push todo v.type
+      | .defnInfo v => members := members.push ci; todo := push (push todo v.type) v.value
+      | .opaqueInfo v => members := members.push ci; todo := push (push todo v.type) v.value
+      | _ => members := members.push ci; todo := push todo ci.type
+  let mut out := #[]
+  let mut total := 0
+  for ci in members do
+    let ((), st) ← ((dumpConst ci).run limit).run {}
+    total := total + st.bytes
+    if total > limit then throw s!"the closure of the public face exceeds {limit} bytes"
+    out := out.push (ci.name.toString, String.join st.parts.toList)
+  return (out.qsort (fun a b => a.1 < b.1), missing.qsort Name.lt)
+
+/-- Axioms reachable from any of the roots, in one walk. -/
+def axiomsUnion (env : Environment) (roots : Array Name) : Array Name × Array Name := Id.run do
+  let mut todo : Array Name := roots
+  let mut seen : Std.HashSet Name := {}
+  let mut axs : NameSet := {}
+  let mut missing : NameSet := {}
+  while h : todo.size > 0 do
+    let n := todo[todo.size - 1]
+    todo := todo.pop
+    if seen.contains n then continue
+    seen := seen.insert n
+    match env.find? n with
+    | none => missing := missing.insert n
+    | some ci =>
+      if ci matches .axiomInfo _ then axs := axs.insert n
+      for c in ci.getUsedConstantsAsSet do
+        unless seen.contains c do todo := todo.push c
+  return (axs.toArray.qsort Name.lt, missing.toArray.qsort Name.lt)
+
 /-! ## Request -/
 
 structure Request where
@@ -247,6 +305,9 @@ structure Request where
   replay : Bool
   emitRefs : Bool
   maxClosureBytes : Nat
+  /-- roots of one shared statement closure (`closure_union`) and one axiom
+  set (`axioms_union`): the public face of the target -/
+  unionRoots : Array Name
 
 def strArray (j : Json) (k : String) : Except String (Array String) := do
   match j.getObjValD k with
@@ -273,9 +334,10 @@ def parseRequest (j : Json) : Except String Request := do
   let replay := (j.getObjValD "replay").getBool?.toOption.getD false
   let emitRefs := (j.getObjValD "emit_refs").getBool?.toOption.getD false
   let maxClosureBytes := (j.getObjValD "max_closure_bytes").getNat?.toOption.getD (64 * 1024 * 1024)
+  let unionRoots ← (← strArray j "union_roots").mapM parseName
   if modules.isEmpty then throw "request lists no modules"
   return { modules, targetPrefix, protectedNames, roots, closurePrefixes, forbiddenPrefixes, autoParamRefs, replay,
-           emitRefs, maxClosureBytes }
+           emitRefs, maxClosureBytes, unionRoots }
 
 /-! ## Run -/
 
@@ -396,6 +458,16 @@ def run (reqPath outPath : String) : IO Unit := do
         ("exists", true), ("kind", kindStr ci), ("module", (modOf n).map nameJ |>.getD Json.null),
         ("level_params", namesJ ci.levelParams.toArray), ("closure", closure),
         ("axioms", namesJ axs), ("axioms_missing", namesJ axMissing)])
+  -- the public face, as one closure and one axiom set
+  let union ← if req.unionRoots.isEmpty then pure Json.null else do
+    let isTargetConst (c : Name) : Bool := (modOf c).any isTarget
+    let (axs, axMissing) := axiomsUnion env req.unionRoots
+    let cl := match closureUnion env isTargetConst req.maxClosureBytes req.unionRoots with
+      | .ok (dumps, missing) => Json.mkObj [("dumps", Json.mkObj (dumps.toList.map fun (n, d) => (n, Json.str d))),
+          ("missing", namesJ missing), ("error", Json.null)]
+      | .error e => Json.mkObj [("dumps", Json.null), ("error", e)]
+    pure (Json.mkObj [("closure", cl), ("axioms", namesJ axs), ("axioms_missing", namesJ axMissing),
+      ("roots", toJson req.unionRoots.size)])
   let protMs ← elapsed t1
   IO.eprintln s!"CheckEnv: protected declarations in {protMs} ms"
   -- every constant of the target
@@ -448,7 +520,7 @@ def run (reqPath outPath : String) : IO Unit := do
   for (n, _, ci, refs) in entries do
     byName := byName.insert n (ci, refs)
   let mut reach : NameSet := {}
-  let mut todo : Array Name := req.protectedNames ++ req.roots
+  let mut todo : Array Name := req.protectedNames ++ req.roots ++ req.unionRoots
   while h : todo.size > 0 do
     let n := todo[todo.size - 1]
     todo := todo.pop
@@ -479,12 +551,108 @@ def run (reqPath outPath : String) : IO Unit := do
     ("modules_loaded", toJson modNames.size),
     ("target_modules", toJson targetIdxs.size),
     ("protected", Json.mkObj prot.toList),
+    ("union", union),
     ("constants", Json.mkObj sortedOut.toList),
     ("forbidden_prefixes_seen", namesJ forbiddenSeen.toArray),
-    ("roots", namesJ (req.protectedNames ++ req.roots)),
+    ("roots", namesJ (req.protectedNames ++ req.roots ++ req.unionRoots)),
     ("reachable", .arr (reachable.map Json.str)),
     ("replay", replay),
     ("ms", Json.mkObj [("load", toJson loadMs), ("protected", toJson protMs), ("scan", toJson scanMs)])]
+  IO.FS.writeFile outPath result.compress
+
+/-! ## The public face of modules (`--interface`)
+
+What a module of the module system gives to the modules that import it: its
+exported constants (theorems as statements, definitions with a value only when
+exposed), its exported imports and its exported extension entries. A module
+imported with `import all` or `meta import` gives everything (`full`). Files
+outside a target compile against nothing else, so when this is unchanged they
+need not be rebuilt.
+
+Request: `modules` [{name, full}]. Output: `modules` {name: {imports
+[{module, all, exported, meta}], constants {name: dump line}, ext_counts {ext:
+n}, attrs [simp lemmas, instances with priority, reducibility, classes]}},
+read from the raw entries of Lean's built-in extensions; nothing is
+initialised and nothing of the loaded modules runs.
+-/
+
+def importJ (i : Import) : Json :=
+  Json.mkObj [("module", nameJ i.module), ("all", i.importAll), ("exported", i.isExported), ("meta", i.isMeta)]
+
+def constDumps (cs : Array ConstantInfo) (limit : Nat) : Except String (Array (String × Json)) := do
+  let mut out := #[]
+  for ci in cs do
+    let ((), st) ← ((dumpConst ci).run limit).run {}
+    out := out.push (ci.name.toString, Json.str (String.join st.parts.toList))
+  return out.qsort (fun a b => a.1 < b.1)
+
+def moduleFace (md : ModuleData) (limit : Nat) : Except String Json := do
+  let consts ← constDumps md.constants limit
+  let counts := (md.entries.filterMap fun (n, es) =>
+    if es.size == 0 then none else some (n.toString, toJson es.size)).qsort (fun a b => a.1 < b.1)
+  return Json.mkObj [("imports", .arr (md.imports.map importJ)), ("constants", Json.mkObj consts.toList),
+    ("ext_counts", Json.mkObj counts.toList)]
+
+def scopeStr {α : Type} : ScopedEnvExtension.Entry α → String × α
+  | .global a => ("global", a)
+  | .scoped ns a => ("scoped " ++ nameStr ns, a)
+
+def redStr (st : ReducibilityStatus) : String := toString (repr st)
+
+/-- The attribute entries a module exports for the elaborator of its
+importers: simp lemmas, instances, reducibility and classes, read from the
+raw module entries of Lean's built-in extensions (no extension state is
+built, nothing runs). -/
+def moduleAttrs (env : Environment) (idx : ModuleIdx) : Array String := Id.run do
+  let mut out := #[]
+  for e in Meta.simpExtension.ext.getModuleEntries env idx do
+    let (sc, a) := scopeStr e
+    out := out.push <| match a with
+      | .thm t => s!"simp {sc} {repr t.origin} post={t.post} prio={t.priority} perm={t.perm}"
+      | .toUnfold n => s!"simp {sc} unfold {nameStr n}"
+      | .toUnfoldThms n ts => s!"simp {sc} unfold {nameStr n} {namesStr ts.toList}"
+  for e in Meta.instanceExtension.ext.getModuleEntries env idx do
+    let (sc, a) := scopeStr e
+    out := out.push s!"instance {sc} {(a.globalName?.map nameStr).getD "?"} prio={a.priority} order={a.synthOrder}"
+  for (n, st) in reducibilityCoreExt.getModuleEntries env idx do
+    out := out.push s!"reducibility global {nameStr n} {redStr st}"
+  for e in reducibilityExtraExt.ext.getModuleEntries env idx do
+    let (sc, (n, st)) := scopeStr e
+    out := out.push s!"reducibility {sc} {nameStr n} {redStr st}"
+  for c in classExtension.getModuleEntries env idx do
+    out := out.push s!"class {nameStr c.name} outparams={c.outParams}"
+  return out.qsort (· < ·)
+
+def interfaceRun (reqPath outPath : String) : IO Unit := do
+  let j ← IO.ofExcept (Json.parse (← IO.FS.readFile reqPath))
+  let mods ← IO.ofExcept <| do
+    let .arr xs := j.getObjValD "modules" | throw "request field modules: expected an array"
+    xs.mapM fun x => do
+      let n ← parseName (← x.getObjValAs? String "name")
+      return (n, (x.getObjValD "full").getBool?.toOption.getD false)
+  let limit := (j.getObjValD "max_dump_bytes").getNat?.toOption.getD (64 * 1024 * 1024)
+  initSearchPath (← getBuildDir)
+  withImporting (pure ())
+  let t0 ← IO.monoMsNow
+  let names := mods.map (·.1)
+  -- what an ordinary `import` sees
+  let envX ← importModules (names.map ({ module := · })) {} (loadExts := false) (level := .exported)
+  let fulls := mods.filter (·.2) |>.map (·.1)
+  let envP? ← if fulls.isEmpty then pure none else
+    some <$> importModules (fulls.map ({ module := · })) {} (loadExts := false)
+  let mut out : Array (String × Json) := #[]
+  for (n, full) in mods do
+    let env := if full then envP?.getD envX else envX
+    let some idx := env.header.moduleNames.idxOf? n
+      | throw <| IO.userError s!"module {n} was not loaded"
+    let md := env.header.moduleData[idx]!
+    let face ← IO.ofExcept (moduleFace md limit)
+    let attrs := moduleAttrs env idx
+    out := out.push (n.toString, (face.setObjVal! "full" (toJson full)).setObjVal! "attrs" (toJson attrs))
+  let result := Json.mkObj [
+    ("schema", "concept-mining-interface/v1"), ("lean_version", Lean.versionString),
+    ("modules", Json.mkObj (out.qsort (fun a b => a.1 < b.1)).toList),
+    ("ms", toJson ((← IO.monoMsNow) - t0))]
   IO.FS.writeFile outPath result.compress
 
 end GateCheck
@@ -498,6 +666,13 @@ def main (args : List String) : IO UInt32 := do
     catch e =>
       IO.eprintln s!"CheckEnv: error: {e}"
       return 1
+  | ["--interface", reqPath, outPath] =>
+    try
+      GateCheck.interfaceRun reqPath outPath
+      return 0
+    catch e =>
+      IO.eprintln s!"CheckEnv: error: {e}"
+      return 1
   | _ =>
-    IO.eprintln "usage: lean --run CheckEnv.lean <request.json> <out.json>"
+    IO.eprintln "usage: lean --run CheckEnv.lean [--interface] <request.json> <out.json>"
     return 2

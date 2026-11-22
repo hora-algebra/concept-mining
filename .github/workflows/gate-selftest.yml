@@ -1,0 +1,84 @@
+name: Gate self-test (branch only)
+
+# Runs the gate's scripts on real cases before they are on main: opening
+# targets (tools/gate/open_target.py), main's latest FeitThompson patch
+# re-submitted as if new (must pass every machine check), and a patch that
+# makes a new declaration visible outside the target (must be refused).
+# Not merged.
+
+on:
+  push:
+    branches: [open-targets]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  open:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [FeitThompson, ThirdParty/OddOrder, ThirdParty/QiuzhenCFSG/Glauberman, Permutation/FiveTransitive]
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Prepare the runner
+        run: sh tools/gate/setup_runner.sh
+      - name: Open the target
+        env:
+          TARGET: ${{ matrix.target }}
+        run: python3 tools/gate/open_target.py --target "$TARGET" --upstream "$RUNNER_TEMP/cfsg" --out out
+      - name: Name the artifact
+        if: always()
+        env:
+          TARGET: ${{ matrix.target }}
+        run: echo "NAME=open-$(echo "$TARGET" | tr -c 'A-Za-z0-9_\n' '_')" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: ${{ env.NAME }}
+          path: |
+            out/*.json
+            out/*.log
+          retention-days: 7
+  case:
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [resubmit, new-public]
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Prepare the runner
+        run: sh tools/gate/setup_runner.sh
+      - name: Make the case
+        env:
+          CASE: ${{ matrix.case }}
+        run: python3 tools/gate/selftest_cases.py "$CASE" out
+      - name: Run the build job's script
+        run: |
+          set +e
+          python3 tools/gate/build_check.py --target FeitThompson --patch out/new.patch \
+            --patch-name "$(cat out/patch_name)" --upstream "$RUNNER_TEMP/cfsg" --out out --replay
+          echo "exit $?"
+          cat out/facts.json
+      - name: Compare with the expected outcome
+        env:
+          CASE: ${{ matrix.case }}
+        run: python3 tools/gate/selftest_cases.py --check "$CASE" out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: selftest-${{ matrix.case }}
+          path: out/
+          retention-days: 7
