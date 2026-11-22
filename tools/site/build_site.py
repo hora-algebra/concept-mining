@@ -5,10 +5,11 @@ Reads
     data/map/blocks.json, data/map/summary.json      (stage 1 map)
     data/ledger/concepts.tsv, data/ledger/history.tsv (refactoring ledger; may be absent)
     data/site/*.tsv, data/candidates/first_issues.tsv (page text and work board)
-and writes docs/site/data/site.json.
+and writes docs/site/data/site.json. That file is generated, not committed: the
+Pages deployment and local previews rebuild it from the data.
 
     python3 tools/site/build_site.py            # check, then write
-    python3 tools/site/build_site.py --check    # check, and fail if site.json is stale
+    python3 tools/site/build_site.py --check    # check the data and that site.json can be built; write nothing
 
 Errors (exit status 1) are problems that make the numbers wrong: malformed
 rows, lines_saved != lines_before - lines_after, unknown targets, dates in the
@@ -31,6 +32,9 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import scoring  # noqa: E402
 import potential  # noqa: E402
+
+# Upper-bound rows (same columns) written by different tools; read together.
+POTENTIAL_FILES = ["data/potential/blocks.tsv", "data/map/potential_rows.tsv"]
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -342,9 +346,17 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
                        time.time())
 
     # --- upper bounds and the two-layer search ----------------------------
-    pot_rows, problems = potential.read_potential(os.path.join(ROOT, "data/potential/blocks.tsv"))
-    for p in problems:
-        rep.err("data/potential/blocks.tsv", p)
+    pot_rows, seen_keys = [], {}
+    for rel in POTENTIAL_FILES:
+        rows, problems = potential.read_potential(os.path.join(ROOT, rel))
+        for p in problems:
+            rep.err(rel, p)
+        for r in rows:
+            key = (r["folder"], r["part"], r["method"])
+            if key in seen_keys:
+                rep.err(r["_where"], f"{key} is also given in {seen_keys[key]}"); continue
+            seen_keys[key] = r["_where"]
+            pot_rows.append(r)
     pot: dict[str, dict] = {}
     methods: set[str] = set()
     for r in pot_rows:
@@ -354,6 +366,9 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
         parts = folders[f]["parts"]
         if r["part"]:
             match = [c for c in parts if c["part"] == r["part"]]
+            if not match:
+                # Small parts are merged into "(N other parts)" on the map.
+                match = [c for c in parts if c["part"].endswith("other parts)")]
             if not match:
                 rep.err(r["_where"], f"part {r['part']!r} is not a part of {f} on the map"); continue
             shares = [(match[0], 1.0)]
@@ -369,7 +384,7 @@ def build(ledger_dir: str, rep: Report, today: dt.date, claims_file: str | None 
         cap = next(c["lines"] for c in folders[f]["parts"] if c["part"] == part)
         total = sum(e["methods"].values())
         if total > cap:
-            rep.warn("data/potential/blocks.tsv", f"{key}: upper bounds add up to {total} lines, more than the "
+            rep.warn("upper bounds", f"{key}: upper bounds add up to {total} lines, more than the "
                      f"{cap} lines of the part; shown capped (methods may overlap)")
         e["lines"] = min(total, cap)
     hyps, problems = potential.read_hypotheses(hypotheses_file or os.path.join(ROOT, "data/search/hypotheses.jsonl"))
@@ -430,11 +445,9 @@ def main() -> None:
     if rep.errors:
         sys.exit(1)
     if a.check:
-        old = open(a.out, encoding="utf-8").read() if os.path.exists(a.out) else ""
-        if old != text:
-            print(f"error: {os.path.relpath(a.out, ROOT)} is out of date; run python3 tools/site/build_site.py")
-            sys.exit(1)
-        print("site data is up to date")
+        # site.json is generated at deploy time; here it is enough that it can be built.
+        json.loads(text)
+        print("data is consistent; site.json can be built")
         return
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as fh:

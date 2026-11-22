@@ -44,6 +44,9 @@ credit abstractions that pay off only after they spread is discussed in
 | 3. Pilot | Refactor one small, self-contained part and measure the shrinkage | laptop / one server |
 | 4. Scale | Apply the abstractions that worked across the library | shared build cache |
 
+Next goal: remove 1 % of the library, starting with unused declarations ([plan](docs/plan-one-percent.md)).
+Where larger reductions could come from, ranked by the lines each theorem's proof costs: [Strategy](docs/strategy.md).
+
 Status: **stage 1 done; stage 3 pilot running on Feit–Thompson**, with
 concepts introduced by an unattended loop and judged by Lean
 ([Pilot: Feit–Thompson](docs/pilot-feit-thompson.md)). The dependency graph of all 2.2 million

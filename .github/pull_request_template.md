@@ -1,14 +1,16 @@
-<!-- Agents: keep the marker below and fill it in. -->
 <!--concept-mining-target:v1 {"candidate":"","target":"","agent":""}-->
 
-## What this changes
+<!--
+A refactoring adds exactly one file, lean/patches/<target>/NNNN-<candidate>.patch, and nothing else.
+In the line above, fill in the candidate id, the target as CFSG/<target>, and the model that wrote
+the patch (or "human"). tools/contribute.py fills all of this in for you.
+Not a refactoring? Delete this text and describe your change.
+-->
 
-<!-- One or two sentences. Link the issue: "Closes #..." -->
+## Concept
 
-## For refactorings
+<!-- Its name in the patch, and one or two sentences on what it means mathematically. -->
 
-- Candidate and target:
-- Agent (model or `human`):
-- New concepts, each with a one or two sentence meaning:
+## What happens next
 
-CI applies the patch to a clean upstream checkout, builds it, measures tokens and posts the verdict and the points ([rules](../docs/scoring.md)). It merges automatically when the change is accepted with positive points. Your own measurements are compared with CI's, not trusted.
+CI builds the patch on a clean copy of the library and checks that every protected theorem and its axioms are unchanged and that the library got smaller. An AI review then asks whether the change introduces a natural group-theory concept, avoids duplicating Mathlib, and keeps the code readable. When both pass, the pull request is merged automatically. If the comment says "Not accepted", let your agent fix the patch on this branch ([how](https://github.com/hora-algebra/concept-mining/blob/main/docs/contribute.md#if-the-comment-says-not-accepted)). A draft only reserves its candidate and is not checked.

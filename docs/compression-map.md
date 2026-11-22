@@ -32,6 +32,11 @@ Quasithin.H13, at 6.8% on shape. The tables are
 `data/map/name_families/regions.tsv` and `data/map/data_share.tsv`, and in
 the page format `data/potential/blocks.tsv` (methods `same-shape` and `same-statement`, written by `tools/potential_rows.py`).
 
+Repetition across the case division (the same argument written once per
+sporadic group or per Lie type) is measured separately in
+[group-repetition.md](group-repetition.md): at most about 0.3% of CFSG for
+arguments, as a long tail of small families.
+
 ## Where the larger reductions are
 
 Sampling the proposal layer's hypotheses (below) gives three kinds of

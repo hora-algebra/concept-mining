@@ -34,7 +34,7 @@ jobs:
           python-version: "3.12"
       - name: Test the checker
         run: python3 tools/site/test_build_site.py
-      - name: Check the ledger and that the page data is up to date
+      - name: Check the ledger and that the page data can be built from it
         run: python3 tools/site/build_site.py --check
       - name: Report the ledger change
         if: github.event_name == 'pull_request'
@@ -63,7 +63,10 @@ jobs:
           python3 tools/site/claim.py list --json > "$RUNNER_TEMP/claims.json" || echo "[]" > "$RUNNER_TEMP/claims.json"
           gh pr list --repo "${{ github.repository }}" --state open --limit 200 \
             --json number,title,author,body,url,isDraft > "$RUNNER_TEMP/prs.json" || echo "[]" > "$RUNNER_TEMP/prs.json"
-          python3 tools/site/build_site.py --claims "$RUNNER_TEMP/claims.json" --open-prs "$RUNNER_TEMP/prs.json"
+          # contributions accepted by the gate are recorded in its comments, not in data/ledger
+          python3 tools/site/gate_ledger.py --repo "${{ github.repository }}" --ledger data/ledger --out "$RUNNER_TEMP/ledger"
+          python3 tools/site/build_site.py --ledger "$RUNNER_TEMP/ledger" \
+            --claims "$RUNNER_TEMP/claims.json" --open-prs "$RUNNER_TEMP/prs.json"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

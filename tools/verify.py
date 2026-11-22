@@ -8,19 +8,24 @@ The change is the difference between --base and --head (default: the working
 tree, untracked files included). The phases run cheapest first and the first
 failure decides; every phase fails closed.
 
-  scope      only .lean files under CFSG/<target>/ change, and imports stay
-             inside Mathlib and CFSG.<target>
-  guards     added lines contain no sorry, admit, native_decide, axiom,
-             unsafe, implemented_by, extern, kernel-check switches, and no
-             metaprogramming that runs code at compile time (#eval, run_cmd,
-             initialize, elab, macro, syntax, IO)
+  scope      only .lean files under CFSG/<target>/ change, and new imports
+             come from Mathlib or CFSG
+  guards     the gate's source guard (tools/gate/guard.py): no new sorry,
+             admit, native_decide, axiom, unsafe, implemented_by, extern,
+             set_option, and no metaprogramming that runs code at compile
+             time (#eval, run_cmd, initialize, elab, macro, syntax, printing
+             attributes, Lean.* or IO code)
   size       the target's size in tokens (tools/size.py: whitespace, line
              breaks, comments and name lengths do not count) drops by at
              least --min-tokens
   build      `lake build` of every module of the target succeeds
-  protected  `#check @n` and `#print axioms n` for every protected
-             declaration print exactly the recorded baseline, and the axioms
-             are among propext, Classical.choice, Quot.sound
+  protected  on the built environment (tools/gate/CheckEnv.lean): every
+             protected declaration has the recorded statement digest, its
+             axioms are among propext, Classical.choice, Quot.sound, and no
+             declaration of the target is metaprogramming
+
+These are the gate's checks (docs/gate.md) minus the AI review and the
+sandbox; passing them here means the gate's machine checks should pass.
 
 Exit status: 0 accepted, 1 rejected, 75 could not be decided (setup error).
 The JSON verdict has the fields documented in docs/contribute.md.
@@ -39,19 +44,12 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(HERE, "gate"))
 from size import code_lines, tokens, tree_size  # noqa: E402
+import env_facts  # noqa: E402
+import guard  # noqa: E402
 
 REPO = os.path.dirname(HERE)
-PERMITTED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
-FORBIDDEN = re.compile(
-    r"\bsorry\b|\badmit\b|\bnative_decide\b|^\s*(?:private\s+|protected\s+)?axiom\s|\bunsafe\b|implemented_by|"
-    r"\bextern\b|debug\.skipKernelTC|Lean\.ofReduceBool|trustCompiler|^\s*@\[csimp\]|"
-    # metaprogramming runs code while compiling; a refactor has no need for it
-    r"#eval|#exit|\brun_cmd\b|\brun_tac\b|\b(?:builtin_)?initialize\b|^\s*(?:elab|macro|syntax|macro_rules|elab_rules)\b|"
-    r"declare_syntax_cat|\bIO\.|\bunsafeCast\b|@\[(?:command_)?elab|^\s*(?:local\s+|scoped\s+)?(?:notation|infix[lr]?|prefix|postfix)\b|"
-    # raising resource limits hides slow or looping proofs
-    r"set_option\s+(?:maxHeartbeats|maxRecDepth|synthInstance\.maxHeartbeats|synthInstance\.maxSize|"
-    r"maxSynthPendingDepth|exponentiation\.threshold)\b", re.M)
 IMPORT = re.compile(r"^\s*(?:public\s+)?(?:meta\s+)?import\s+(?:all\s+)?(\S+)", re.M)
 
 
@@ -111,20 +109,6 @@ def modules(root, folder):
     return sorted(out)
 
 
-def probe(root, names, imports):
-    body = "".join(f"import {m}\n" for m in imports)
-    body += "".join(f"#check @{n}\n#print axioms {n}\n" for n in names)
-    with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=root, delete=False, encoding="utf-8") as f:
-        f.write(body)
-        path = f.name
-    try:
-        r = subprocess.run(["lake", "env", "lean", path], cwd=root, capture_output=True, text=True, timeout=3600)
-        # stdout only: Lake prints unrelated notices on stderr
-        return r.returncode, r.stdout.replace(path, "<probe>")
-    finally:
-        os.unlink(path)
-
-
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", required=True)
@@ -141,7 +125,6 @@ def main() -> None:
     a = ap.parse_args()
     root = os.path.expanduser(a.root)
     folder = f"CFSG/{a.target}"
-    pilot = os.path.join(REPO, "data", "pilot", a.target)
     v = {"target": a.target, "base": git(root, "rev-parse", a.base).strip(),
          "head": git(root, "rev-parse", a.head).strip() if a.head else "worktree",
          "verdict": "error", "phase": None, "reason": "",
@@ -164,30 +147,35 @@ def main() -> None:
             s = read_head(root, a.head, f) or ""
             before = set(IMPORT.findall(read_base(root, a.base, f)))
             for imp in set(IMPORT.findall(s)) - before:
-                if not (imp.startswith("Mathlib") or imp == f"CFSG.{a.target}" or imp.startswith(f"CFSG.{a.target}.")):
+                if not (imp.startswith("Mathlib") or imp.startswith("CFSG.")):
                     v["checks"]["paths_allowed"] = False
-                    raise Reject(f"{f} imports {imp}, outside Mathlib and CFSG.{a.target}")
+                    raise Reject(f"{f} imports {imp}, outside Mathlib and CFSG")
         v["checks"]["paths_allowed"] = True
-        # guards: only lines that the change adds
+        # guards: the gate's source guard, on the target folder before and after
         v["phase"] = "guards"
-        # file headers such as `set_option maxSynthPendingDepth 3` are the
-        # project's convention, not a shortcut: allow options already used in
-        # at least 100 files of the target at base
-        hdr = git(root, "grep", "-h", "-E", r"^set_option ", a.base, "--", folder)
-        common = {l.split(":", 1)[-1].strip() for l in hdr.splitlines()}
+        hdr = subprocess.run(["git", "-C", root, "grep", "-h", "-E", r"^set_option [A-Za-z0-9_.]+ [A-Za-z0-9_.]+\s*$",
+                              a.base, "--", folder], capture_output=True, text=True).stdout  # exit 1: no match
         counts = {}
         for l in hdr.splitlines():
-            k = l.split(":", 1)[-1].strip()
+            k = " ".join(l.split(":", 1)[-1].split()[1:3])
             counts[k] = counts.get(k, 0) + 1
         common = {k for k, n in counts.items() if n >= 100}
-        for f in files:
-            new = read_head(root, a.head, f) or ""
-            old = set(read_base(root, a.base, f).splitlines()) | common
-            added = "\n".join(l for l in new.splitlines() if l not in old)
-            m = FORBIDDEN.search(added)
-            if m:
-                v["checks"]["no_shortcuts"] = False
-                raise Reject(f"{f} adds forbidden construct: {m.group(0).strip()}")
+        with tempfile.TemporaryDirectory() as tmp:
+            tb, th = os.path.join(tmp, "base"), os.path.join(tmp, "head")
+            for f in files:
+                for d, text in ((tb, read_base(root, a.base, f)), (th, read_head(root, a.head, f))):
+                    if text is None:
+                        continue
+                    os.makedirs(os.path.dirname(os.path.join(d, f)), exist_ok=True)
+                    open(os.path.join(d, f), "w", encoding="utf-8").write(text)
+            os.makedirs(os.path.join(tb, folder), exist_ok=True)
+            os.makedirs(os.path.join(th, folder), exist_ok=True)
+            problems = guard.check_tree(tb, th, a.target, common)
+        if problems:
+            short = [p for p in problems if p.startswith("no_shortcuts")]
+            v["checks"]["no_shortcuts"] = not short
+            v["problems"] = problems[:30]
+            raise Reject(problems[0])
         v["checks"]["no_shortcuts"] = True
         # size
         v["phase"] = "size"
@@ -220,30 +208,26 @@ def main() -> None:
             v["checks"]["build"] = False
             raise Reject("build failed")
         v["checks"]["build"] = True
-        # protected
+        # protected: on the built environment, by the gate's checker
         v["phase"] = "protected"
-        plist = os.path.join(REPO, "data", "protected", f"{a.target}.txt")
-        prot = [l.strip() for l in open(plist if os.path.exists(plist) else os.path.join(pilot, "protected.txt")) if l.strip()]
-        imports = [l.strip() for l in open(os.path.join(pilot, "protected_imports.txt")) if l.strip()]
-        baseline = open(os.path.join(pilot, "protected_baseline.txt"), encoding="utf-8").read()
-        rc, out = probe(root, prot, imports)
-        if rc != 0:
-            v["checks"]["protected_unchanged"] = False
-            raise Reject("protected declarations do not elaborate")
-        is_ax = lambda l: "depends on axioms" in l or "does not depend on any axioms" in l
-        split = lambda t: ([l for l in t.splitlines() if not is_ax(l)], [l for l in t.splitlines() if is_ax(l)])
-        (st_new, ax_new), (st_old, ax_old) = split(out), split(baseline)
-        v["checks"]["protected_unchanged"] = st_new == st_old
-        v["checks"]["axioms_unchanged"] = ax_new == ax_old
-        if not v["checks"]["protected_unchanged"]:
-            raise Reject("protected statement changed")
-        if not v["checks"]["axioms_unchanged"]:
-            raise Reject("axioms of a protected declaration changed")
-        axioms = set(re.findall(r"\b(propext|Classical\.choice|Quot\.sound|[\w.]+)\b",
-                                " ".join(re.findall(r"depends on axioms: \[([^\]]*)\]", out))))
-        if not axioms <= PERMITTED_AXIOMS:
-            raise Reject("axioms outside " + ", ".join(sorted(PERMITTED_AXIOMS)))
-        v["axioms"] = sorted(axioms)
+        baseline_file = os.path.join(REPO, "data", "protected", f"{a.target}.json")
+        with tempfile.TemporaryDirectory() as tmp:
+            req, res = os.path.join(tmp, "request.json"), os.path.join(tmp, "facts.json")
+            json.dump(env_facts.request(root, a.target, modules(root, folder)), open(req, "w"))
+            r = subprocess.run(env_facts.command(root, req, res), cwd=root, capture_output=True, text=True,
+                               timeout=3600, env=dict(os.environ, LEAN_PATH=env_facts.lean_path(root)))
+            if r.returncode or not os.path.exists(res):
+                v["checks"]["protected_unchanged"] = False
+                v["log_tail"] = (r.stdout + r.stderr)[-3000:]
+                raise Reject("the built environment could not be inspected")
+            facts = env_facts.compact(json.load(open(res)))
+        problems = env_facts.compare(facts, json.load(open(baseline_file)))
+        v["checks"]["protected_unchanged"] = not any(p.startswith("protected_unchanged") for p in problems)
+        v["checks"]["axioms_unchanged"] = not any(p.startswith("axioms_unchanged") for p in problems)
+        if problems:
+            v["problems"] = problems[:30]
+            raise Reject(problems[0])
+        v["axioms"] = sorted({ax for p in facts["protected"].values() for ax in p.get("axioms") or []})
         v["verdict"], v["phase"], v["reason"] = "accept", "done", ""
         code = 0
     except Reject as e:

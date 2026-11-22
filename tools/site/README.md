@@ -2,7 +2,9 @@
 
 The progress page lives in [`docs/site/`](../../docs/site). It is static (no
 build step): `index.html`, `app.js` and `style.css` read one data file,
-`docs/site/data/site.json`, which this folder's script writes.
+`docs/site/data/site.json`, which this folder's script writes. The file is
+generated, not committed (it is in `.gitignore`): the Pages deployment
+rebuilds it from the data, and so does a local preview.
 
 ```
 data/map/blocks.json   ─┐  stage 1 map, one entry per part   (aggregate_blocks.py)
@@ -16,8 +18,8 @@ data/ledger/contributions.tsv ─┘ (points, via scoring.py)
 ## Commands
 
 ```bash
-python3 tools/site/build_site.py              # check the ledger, rewrite site.json
-python3 tools/site/build_site.py --check      # check only; fail if site.json is stale
+python3 tools/site/build_site.py              # check the ledger, write site.json (for a preview)
+python3 tools/site/build_site.py --check      # check only, as CI does on pull requests
 python3 tools/site/test_build_site.py         # tests of the checks
 python3 -m http.server -d docs/site 8000      # then open http://localhost:8000
 ```
@@ -48,7 +50,7 @@ Run on every pull request that touches `data/`, `tools/site/` or `docs/site/`
 | `lines_saved = lines_before - lines_after` | error |
 | `commit` is a git hash | error |
 | `target` is a folder of the map (`CFSG/FeitThompson`, `CFSG.FeitThompson.Local`, ...) | error |
-| `site.json` is what the script produces from the current data | error |
+| `site.json` can be built from the current data | error |
 | a concept has no `meaning` | warning |
 | consecutive concepts in one target do not chain (`lines_after` ≠ next `lines_before`) | warning |
 | the drop of `lines_total` in `history.tsv` differs from the sum of `lines_saved` over the same period | warning |
@@ -63,7 +65,7 @@ does not have.
 
 ## Upper bounds and search results
 
-`data/potential/blocks.tsv` (upper bound per part and method) and
+`data/potential/blocks.tsv` and `data/map/potential_rows.tsv` (upper bound per part and method) and
 `data/search/hypotheses.jsonl` (two-layer search) are described in
 [docs/potential-and-search.md](../../docs/potential-and-search.md);
 `potential.py` reads and checks them, `potential_dead_code.py` writes the
@@ -75,22 +77,23 @@ other search results (an example is in `example_search/`).
 - `scoring.py` holds the formula of [docs/scoring.md](../../docs/scoring.md).
   `scoring.py verdict verdict.json` turns the checker's verdict into an
   accept/reject decision with points and reasons (used by the workflow
-  *Verify contribution*); `scoring.py board data/ledger/contributions.tsv`
+  *Contribution gate*); `scoring.py board data/ledger/contributions.tsv`
   prints the scoreboard, which `build_site.py` also puts in `site.json`.
 - `claim.py` takes, renews, releases and lists claims (`refs/claims/<key>`,
   compare-and-swap with `git push --force-with-lease`).
 - When the page is deployed, the workflow adds live claims and open pull
   requests carrying the target marker to `site.json` (`--claims`,
-  `--open-prs`); this data is not committed.
+  `--open-prs`), and the rows of contributions the gate accepted
+  (`gate_ledger.py`, from the gate's comments); this data is not committed.
 
 Workflows:
 
 | Workflow | Trigger | Rights | Does |
 |---|---|---|---|
 | `site.yml` | pull request, push to main, every 30 min | read; Pages write for deploy | tests, ledger check, staleness check; deploy when `PAGES_ENABLED` is `true` |
-| `verify-contribution.yml` | pull request touching `patches/` or `contributions.tsv` | read only, no secrets | runs `tools/verify_contribution.py`, scores, uploads the verdict |
-| `contribution-verdict.yml` | after the verify workflow | write, never runs PR code | comments, labels, merges when accepted, current head, and `AUTO_MERGE_ENABLED` is `true` |
-| `contribute.yml` | manual, in a contributor's fork | the fork's secrets | runs `tools/contribute.py` (claim, rewrite, check, record, open PR) |
+| `contribution-gate.yml` | every pull request to main (`pull_request_target`), or by hand with a number | per job: the Lean build has no token and runs sandboxed; only the last job (which runs no PR content) can comment and merge | shape, apply, guard, size, build, inspect, AI review, comment, merge (see `docs/gate.md`) |
+| `contribution-sweep.yml` | every 3 hours, and after each merge | write, never runs PR code | re-checks stale or unfinished pull requests, closes stalled ones |
+| `contribute.yml` | manual, in a contributor's fork | the fork's secrets | runs `tools/contribute.py` (pick, rewrite, check, open PR) |
 
 ## How the page uses the ledger
 

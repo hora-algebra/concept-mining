@@ -16,7 +16,7 @@ let D, SNAP, folders, TOT;
 const state = { area: store.get("cm-area", "lines"), color: store.get("cm-color", "progress"), scope: "all", t: 0 };
 
 fetch("data/site.json").then(r => r.json()).then(init).catch(e => {
-  document.getElementById("map").outerHTML = `<p class="empty">Could not load the data (${esc(e.message)}). If you opened the file directly, serve the folder over HTTP instead, for example <code>python3 -m http.server -d docs/site</code>.</p>`;
+  document.getElementById("map").outerHTML = `<p class="empty">Could not load the data (${esc(e.message)}). To preview locally, build the data first with <code>python3 tools/site/build_site.py</code>, then serve the folder over HTTP, for example <code>python3 -m http.server -d docs/site</code>.</p>`;
 });
 
 function init(data) {
@@ -37,6 +37,14 @@ function header() {
   const saved = d3.sum(c, x => x.lines_saved);
   const names = new Set(c.map(x => x.concept));
   const active = D.work.filter(w => w.status === "in-progress" || w.status === "claimed").concat(D.in_flight || []);
+  // Ledger lines are measured per target; the snapshots convert them to the map's measure, as is the total.
+  const last = D.snapshots.length ? D.snapshots[D.snapshots.length - 1].removed : {};
+  const mapSaved = d3.sum(Object.values(last));
+  const total = D.summary.lines_in_declarations, share = mapSaved / total;
+  const sig = share === 0 ? "0" : share >= 0.01 ? (share * 100).toFixed(1) : (share * 100).toPrecision(2);
+  document.getElementById("headline").innerHTML =
+    `<div class="big">${sig}%</div><div class="cap">of the whole CFSG proof (${(total / 1e6).toFixed(2)} million lines) removed so far: ` +
+    `about <b>${fmt(mapSaved)}</b> lines, by ${names.size} ${names.size === 1 ? "concept" : "concepts"}.</div>`;
   document.getElementById("lead-lines").textContent = Math.round(D.summary.lines_in_declarations / 1e6) + " million";
   const k = [
     [short(D.summary.lines_in_declarations), `lines in ${fmt(D.summary.declarations)} definitions and theorems, before any refactoring`],

@@ -6,6 +6,13 @@ them on every pull request.
 
 ## The upper-bound map: `data/potential/blocks.tsv`
 
+The page reads rows of this format from two files: `data/potential/blocks.tsv`
+(written by `tools/site/potential_dead_code.py`) and
+`data/map/potential_rows.tsv` (written by the stage 3 tools, see
+[compression-map.md](compression-map.md)). A (folder, part, method) row may
+appear in only one of them. A part that the map merges into "(N other parts)"
+is counted there.
+
 For each part of the map, how many lines **at most** could be removed by a
 given method. One row per (folder, part, method):
 
