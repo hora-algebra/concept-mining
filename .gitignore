@@ -6,3 +6,4 @@ __pycache__/
 /.venv/
 # generated from the ledger by tools/site/build_site.py (at deploy time and for local previews)
 /docs/site/data/site.json
+/.env.local

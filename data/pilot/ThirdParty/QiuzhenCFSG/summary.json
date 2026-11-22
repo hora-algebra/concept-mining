@@ -1,0 +1,12 @@
+{
+  "target": "CFSG.ThirdParty.QiuzhenCFSG",
+  "graph_commit": "3e39d100faa71fc30bb04ae4a57689bd96f67f92",
+  "modules": 1915,
+  "declarations": 28543,
+  "declaration_lines": 1249827,
+  "reachable_declarations": 26048,
+  "reachable_lines": 1190706,
+  "protected": 1414,
+  "edges_to_outside": 177,
+  "single_user_declarations": 14696
+}

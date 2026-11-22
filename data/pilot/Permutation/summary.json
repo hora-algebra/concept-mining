@@ -1,0 +1,14 @@
+{
+  "target": "CFSG.Permutation",
+  "graph_commit": "3e39d100faa71fc30bb04ae4a57689bd96f67f92",
+  "modules": 1942,
+  "declarations": 6479,
+  "declaration_lines": 185668,
+  "reachable_declarations": 1441,
+  "reachable_lines": 19463,
+  "protected": 367,
+  "edges_to_outside": 1261,
+  "single_user_declarations": 3791,
+  "protected_rule": "used outside the target (needed by the final theorem or not)",
+  "protected_modules": 73
+}
